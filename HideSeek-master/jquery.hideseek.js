@@ -33,6 +33,51 @@
 
   */
 
+
+// The function "recursiveRemove" modifies the original content of the HideSeek library by pruning out nodes recursively
+function recursiveRemove(q, $this, element, depth) {
+
+  var data = element.text().toLowerCase();
+
+  var treaty = data.removeAccents($this.opts.ignore_accents).indexOf(q) == -1 || q === ($this.opts.hidden_mode ? '' : false)
+
+  if (treaty) {
+    element.hide();
+
+    $this.trigger('_after_each');
+
+  } else {
+
+    $this.opts.highlight ? element.removeHighlight().highlight(q).show() : $(this).show();
+
+    // If this part of the accordian is not open yet, open it
+    // Make sure they have something in the search bar
+    if (depth > 0 && q != "") {
+
+      label = element.parent().parent().find("input").first();
+
+      // If the parent isn't visible for this child, make it visible
+      if (!element.parent().is(':visible')) {
+        label.prop('checked', true);
+        label.change();
+      }
+    }
+
+    // We don't want to prune out course listings and descriptions
+    if (depth < 3) {
+      // Check whether any of the children have a match, if so, remove the ones that don't
+      if (element.find("ul").first().text().toLowerCase().removeAccents($this.opts.ignore_accents).indexOf(q) > -1) {
+        element.find("ul").first().children("li").each(function() {
+          recursiveRemove(q, $this, $(this), depth+1);
+        });
+      }
+    }
+
+    $this.trigger('_after_each');
+  }
+}
+
+
 ;(function($, window, undefined) {
   "use strict";
 
@@ -79,29 +124,8 @@
           var q = $this.val().toLowerCase();
 
           $list.children($this.opts.ignore.trim() ? ":not(" + $this.opts.ignore + ")" : '').removeClass('selected').each(function() {
-
-            var data = (
-                        $this.opts.attribute != 'text'
-                          ? ($(this).attr($this.opts.attribute) || '')
-                          : $(this).text()
-                        ).toLowerCase();
-
-            var treaty = data.removeAccents($this.opts.ignore_accents).indexOf(q) == -1 || q === ($this.opts.hidden_mode ? '' : false)
-
-            if (treaty) {
-
-              $(this).hide();
-
-              $this.trigger('_after_each');
-
-            } else {
-
-              $this.opts.highlight ? $(this).removeHighlight().highlight(q).show() : $(this).show();
-
-              $this.trigger('_after_each');
-
-            }
-
+            // Calls the modified recursiveRemove function with a depth of 0
+            recursiveRemove(q, $this, $(this), 0);
           });
 
           // No results message
