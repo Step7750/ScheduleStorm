@@ -118,14 +118,23 @@ function recursiveRemove(q, $this, element, depth) {
       if ($this.opts.hidden_mode) $list.children().hide();
 
       $this.keyup(function(e) {
+        var q = $this.val().toLowerCase();
 
+        
+        
         if (e.keyCode != 38 && e.keyCode != 40 && e.keyCode != 13 && ( e.keyCode != 8 ? $this.val().length >= $this.opts.min_chars : true ) ) {
-
-          var q = $this.val().toLowerCase();
 
           $list.children($this.opts.ignore.trim() ? ":not(" + $this.opts.ignore + ")" : '').removeClass('selected').each(function() {
             // Calls the modified recursiveRemove function with a depth of 0
             recursiveRemove(q, $this, $(this), 0);
+
+            if (q == "") {
+              // We want to collapse the root nodes first (for a cleaner animation)
+              if ($(this).find("input").prop('checked')) {
+                $(this).find("input").prop('checked', false);
+                $(this).find("input").change();
+              }
+            }
           });
 
           // No results message
@@ -162,9 +171,23 @@ function recursiveRemove(q, $this, element, depth) {
             });
           }
 
+
+          if (q == "") {
+            // Modifies HideSeek to uncheck every input in the list if there is no search query
+            $list.find('input[type="checkbox"]').each(function () {
+              if ($(this).prop('checked')) {
+                $(this).prop('checked', false);
+                $(this).change();
+              }
+            })
+          }
+
           $this.trigger('_after');
+          
 
         };
+        
+
 
         // Navigation
         function current(element) {
