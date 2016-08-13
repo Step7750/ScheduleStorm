@@ -1,0 +1,19 @@
+{
+    "Universities": {
+        "UCalgary": {
+            "fullname": "University of Calgary",
+            "username": "",
+            "password": "",
+            "ucid": "",
+            "scrapeinterval": 3600,
+            "enabled": true,
+            "scrape": true,
+            "rmpid": 1416,
+            "_comment": "UCalgary does not support multi-threading (on the same account), incorrect data will be retrieved"
+        },
+        "UAlberta": {
+            "enabled": false
+        }
+    },
+    "rmpinterval": 21600
+}
