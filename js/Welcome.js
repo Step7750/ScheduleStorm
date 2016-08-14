@@ -40,7 +40,7 @@ class Welcome {
             button.click(function() {
 
                 thisobj.uni = $(this).attr("value");
-                $("#MyUniversity").hide().html(thisobj.uni + " <span class='caret'></span>").fadeIn('slow');
+                $("#MyUniversity").hide().html($(this).text() + " <span class='caret'></span>").fadeIn('slow');
 
                 $("#uniModalList").slideUp(function () {
                     thisobj.displayTerms(thisobj.uni);
