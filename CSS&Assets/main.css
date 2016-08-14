@@ -325,12 +325,19 @@ p {
 }
 
 .table>tbody>tr>td>button.btn {
-    padding: 0; !important;
+    padding: 0 !important;
     border-color: #ffffff;
     color: red;
     font-size: 20px;
 }
 
+.has-children>label>button.btn{
+    padding: 0 !important;
+    float: right;
+    color: #0275d8;
+    font-size: 27px;
+    border-color: #ffffff;
+}
 td{
     font-size: 17px;
 }
