@@ -14,6 +14,10 @@ import pymongo
 import json
 from bson import json_util
 import time
+import logging
+
+
+log = logging.getLogger("UCalgary")
 
 # Only for testing purposes in order to debug HTTPS network traffic
 requests.packages.urllib3.disable_warnings()
@@ -54,7 +58,7 @@ class UCalgary(threading.Thread):
             self.subject = subject
 
         def run(self):
-            print("Getting course descriptions for " + self.subject)
+            log.info("Getting course descriptions for " + self.subject)
 
             obtained = False
             while not obtained:
@@ -64,7 +68,8 @@ class UCalgary(threading.Thread):
                 try:
                     coursedescs = requests.get(self.mainpage + "course-desc-main.html")
                 except Exception as e:
-                    print('There was an error while obtaining course descriptions for', self.subject, " | ", e)
+                    log.critical('There was an error while obtaining course descriptions for ' +
+                                 self.subject + " | " + str(e))
 
 
                 if coursedescs and coursedescs.status_code == requests.codes.ok \
@@ -83,13 +88,11 @@ class UCalgary(threading.Thread):
 
                         # We found the subject, get it's descriptions
                         if suffix == self.subject:
-                            print("Found the course description url for", self.subject)
+                            log.debug("Found the course description url for " + self.subject)
 
                             # Get the full name of the subject (CPSC = Computer Science)
-                            self.fullname = link.text.split(" ")
+                            self.fullname = link.text.strip().split(" ")
                             self.fullname = " ".join(self.fullname[0:len(self.fullname)-1])
-
-                            # TODO Get the faculty that this subject is in
 
                             # Get the course descriptions
                             self.getCoursePage(link["href"])
@@ -122,7 +125,6 @@ class UCalgary(threading.Thread):
                     instructioninfo = ""
                     notes = ""
 
-                    #print(header)
                     for child in header.findAll(recursive=False):
                         if index == 0:
                             instructioninfo = child.text
@@ -141,7 +143,7 @@ class UCalgary(threading.Thread):
                     }
 
                     # Update the subject data in the DB
-                    result = self.db.UCalgarySubjects.update(
+                    self.db.UCalgarySubjects.update(
                         {"subject": subjectdict["subject"]},
                         {
                             "$set": subjectdict,
@@ -150,14 +152,14 @@ class UCalgary(threading.Thread):
                         upsert=True
                     )
 
-                    print("Updated DB subject for " + self.subject)
+                    log.debug("Updated DB subject for " + self.subject)
 
                     # Iterate the course divs on the page
                     for course in soup.findAll("table", {"bordercolor": "#000000", "bgcolor": "white", "align": "center", "width": "100%"}):
                         self.parseCourse(course)
 
                 else:
-                    print("Failed to obtain course descriptions for " + self.subject + ", trying again in 10s")
+                    log.error("Failed to obtain course descriptions for " + self.subject + ", trying again in 10s")
                     time.sleep(10)
 
         def parseCourse(self, course):
@@ -239,7 +241,7 @@ class UCalgary(threading.Thread):
         :return: **boolean** Defines whether we successfully logged in or not
         """
 
-        print("Logging into MyUofC")
+        log.info("Logging into MyUofC")
 
         payload = {"username": self.settings["username"],
                    "password": self.settings["password"],
@@ -262,12 +264,12 @@ class UCalgary(threading.Thread):
 
             if "My class schedule" in r.text:
                 # We probably logged in, it's hard to tell without HTTP status codes
-                print("Successfully logged into MyUofC")
+                log.info("Successfully logged into MyUofC")
                 return True
             else:
                 return False
         else:
-            print("Invalid Username or Password to MyUofC")
+            log.error("Invalid Username or Password to MyUofC")
             return False
 
     def getHiddenInputPayload(self, text):
@@ -384,7 +386,7 @@ class UCalgary(threading.Thread):
         :param termid: **string/int** Term ID to get courses for
         :return:
         """
-        print("Getting courses for", termid)
+        log.info("Getting courses for " + str(termid))
 
         # Set the current term
         r = self.loginSession.get("https://csprd.ucalgary.ca/psc/csprd/EMPLOYEE/CAMPUS/c/"
@@ -416,7 +418,7 @@ class UCalgary(threading.Thread):
                 # Don't want to include the first whitespace option
                 subjectlist.append(subject.text)
 
-        #print(subjectlist)
+        log.debug(str(subjectlist))
 
         # Get the most recent payload
         payload = self.getHiddenInputPayload(subjectlistpage.text)
@@ -430,10 +432,10 @@ class UCalgary(threading.Thread):
                     self.getSubjectCourses(subject, termid, payload)
                     gotData = True
                 except requests.exceptions.Timeout:
-                    print("Request timed out for " + subject)
+                    log.error("Request timed out for " + subject)
                     gotData = False
 
-        print("Finished parsing the term courses for", termid)
+        log.info("Finished parsing the term courses for " + str(termid))
 
     def getSubjectCourses(self, subject, termid, payload):
         """
@@ -487,7 +489,7 @@ class UCalgary(threading.Thread):
         payload["SSR_CLSRCH_WRK_INSTRUCTION_MODE$13"] = ""
         payload["SSR_CLSRCH_WRK_CAMPUS$14"] = ""
 
-        print("Retrieving data for " + subjectid)
+        log.info("Retrieving data for " + subjectid)
 
         #Make the following an empty string if you want other locations like Qatar, Red Deer
         # Make it "MAIN" for only the u of c campus
@@ -511,12 +513,11 @@ class UCalgary(threading.Thread):
 
 
 
-        if "Your search will exceed the maximum limit of 250 sections" in courselist.text:
-            print("======== MyUofC TOO MANY COURSES FOR " + subjectid + " ==========")
+        if "Your search will exceed the maximum limit" in courselist.text:
             # This should not happen, if means we couldn't retrieve these courses
+            log.error("Too many courses for " + subjectid)
         elif "The search returns no results that match the criteria specified" in courselist.text:
-            print("======== MyUofC NO COURSES FOR " + subjectid + " ==========")
-
+            log.error("No courses for " + subjectid)
         else:
             # We probably have the data we want
             self.parseRawCourseList(courselist.text, subjectid, termid)
@@ -539,12 +540,12 @@ class UCalgary(threading.Thread):
         for course in soup.findAll("div", {"id": re.compile('win0divSSR_CLSRSLT_WRK_GROUPBOX2\$\d*')}):
             coursename = course.find("div", {"id": re.compile('win0divSSR_CLSRSLT_WRK_GROUPBOX2GP\$\d*')}).text.strip()
 
-            subid = coursename.split("  ")[0] # Subject ID
+            subid = coursename.split("  ")[0]  # Subject ID
 
             if subid != subjectid:
                 # We didn't receive the data we want, this shouldn't be happening
-                print("ALERT!!!!!  ", subid, "!=", subjectid)
-                print(coursename)
+                log.error("Incorrect subject data returned for " + subjectid + " while parsing " + str(termid) + ": " +
+                    subid)
 
             splitname = coursename.split(" - ")
             coursenum = splitname[0].split("  ")[1]  # Course number
@@ -674,6 +675,115 @@ class UCalgary(threading.Thread):
 
         return responsedict
 
+    def retrieveCourseDesc(self, courses):
+        """
+        Given a course list from an API handler, retrieves course descriptions and sorts by faculty
+
+        Pure Function
+
+        :param courses: **dict** List of courses from API handler
+        :return: **dict** Faculty sorted dict with course descriptions
+        """
+        facultydict = {}
+
+        # Get the descriptions for each subject
+        for subject in courses:
+            result = self.db.UCalgarySubjects.find_one({"subject": subject})
+
+            if result:
+                del result["_id"]
+                del result["subject"]
+                del result["lastModified"]
+
+                if "faculty" not in result:
+                    result["faculty"] = "Other"
+
+                if result["faculty"] not in facultydict:
+                    facultydict[result["faculty"]] = {}
+
+                facultydict[result["faculty"]][subject] = courses[subject]
+
+                facultydict[result["faculty"]][subject]["description"] = result
+
+        return facultydict
+
+    def matchRMPNames(self, distinctteachers):
+        """
+        Given a list of teachers to match RMP data to, this function obtains all RMP data and tries to match the names
+        with the distinctteachers list and returns the matches
+
+        We first check whether the constructed name is simply the same in RMP
+        If not, we check whether the first and last words in a name in RMP is the same
+        If not, we check whether any first and last words in the teachers name has a result in RMP that starts
+            with the first and last words
+        If not, we give up and don't process the words
+
+        Most teachers should have a valid match using this method, many simply don't have a profile on RMP
+        Around 80%+ of valid teachers on RMP should get a match
+
+        False positives are possible, but highly unlikely given that it requires the first and last name of the
+        wrong person to start the same way
+
+        :param distinctteachers: **list** Distinct list of all teachers to find an RMP match for
+        :return: **dict** Matched teachers and their RMP ratings
+        """
+        # Get the RMP data for all teachers at UCalgary
+        rmp = self.db.RateMyProfessors.find({"school": self.settings["rmpid"]})
+
+        returnobj = {}
+
+        # We want to construct the names of each teacher and invert the results for easier parsing
+        # and better time complexity
+        rmpinverted = {}
+
+        for teacher in rmp:
+            # Construct the name
+            fullname = ""
+            if "firstname" in teacher:
+                fullname += teacher["firstname"]
+            if "middlename" in teacher:
+                fullname += " " + teacher["middlename"]
+            if "lastname" in teacher:
+                fullname += " " + teacher["lastname"]
+
+            # remove unnecessary fields
+            del teacher["_id"]
+            del teacher["lastModified"]
+            del teacher["school"]
+
+            rmpinverted[fullname] = teacher
+
+        # Iterate through each distinct teacher
+        for teacher in distinctteachers:
+            if teacher in rmpinverted:
+                # We found an instant match, add it to the return dict
+                returnobj[teacher] = rmpinverted[teacher]
+            else:
+                # Find the first and last words of the name
+                teacherNameSplit = teacher.split(" ")
+                lastword = teacherNameSplit[-1]
+                firstword = teacherNameSplit[0]
+
+                # Check to see if the first and last words find a match (without a middle name)
+                namewithoutmiddle = firstword + " " + lastword
+
+                if namewithoutmiddle in rmpinverted:
+                    # Found the match! Add an alias field
+                    returnobj[teacher] = rmpinverted[namewithoutmiddle]
+                else:
+                    # Find a teacher in RMP that had the first and last words of their name starting the
+                    # respective words in the original teacher's name
+                    for teacher2 in rmpinverted:
+                        splitname = teacher2.split(" ")
+                        first = splitname[0]
+                        last = splitname[-1]
+
+                        if lastword.startswith(last) and firstword.startswith(first):
+                            returnobj[teacher] = rmpinverted[teacher2]
+                            break
+
+        return returnobj
+
     def getSubjectListAll(self, term):
         """
         API Handler
@@ -691,6 +801,7 @@ class UCalgary(threading.Thread):
         # Parse each class and get their descriptions
         for classv in classes:
             del classv["_id"]
+
             if classv["subject"] not in responsedict:
                 responsedict[classv["subject"]] = {}
 
@@ -721,9 +832,8 @@ class UCalgary(threading.Thread):
                             result = cleanresult
                         else:
                             pass
-                            #print(subj, coursen, cleancoursen)
 
-
+                    # Remove unneeded fields
                     del result["_id"]
                     del result["subject"]
                     del result["coursenum"]
@@ -732,100 +842,32 @@ class UCalgary(threading.Thread):
                     responsedict[subj][coursen]["description"] = result
                 else:
                     responsedict[subj][coursen]["description"] = False
-                    #print(subj, coursen)
 
+            # Remove unneeded fields
             del classv["subject"]
             del classv["coursenum"]
             del classv["lastModified"]
+
+            # Add this class to the course list
             responsedict[subj][coursen]["classes"].append(classv)
 
-            # Find distinct teachers
+            # Find distinct teachers and append them to distinctteachers
             for teacher in classv["teachers"]:
                 if teacher not in distinctteachers and teacher != "Staff":
                     distinctteachers.append(teacher)
 
 
-        # Get the descriptions for each subject
-        for subject in responsedict:
-            result = self.db.UCalgarySubjects.find_one({"subject": subject})
+        # Add the faculty sorting and course descriptions
+        responsedict = self.retrieveCourseDesc(responsedict)
 
-            if result:
-                del result["_id"]
-                del result["subject"]
-                del result["lastModified"]
-                responsedict[subject]["description"] = result
-
-
-        # Get the RMP data for all teachers at UCalgary
-        rmp = self.db.RateMyProfessors.find({"school": self.settings["rmpid"]})
-
-        rmpobj = []
-
-        rmpinverted = {}
-
-        matchlastnum = 0
-
-        for teacher in rmp:
-            fullname = ""
-
-            if "firstname" in teacher:
-                fullname += teacher["firstname"]
-
-            if "middlename" in teacher:
-                fullname += " " + teacher["middlename"]
-
-            if "lastname" in teacher:
-                fullname += " " + teacher["lastname"]
-
-            del teacher["_id"]
-            del teacher["lastModified"]
-
-            rmpinverted[fullname] = teacher
-
-        for teacher in distinctteachers:
-            if teacher in rmpinverted:
-                rmpobj.append(rmpinverted[teacher])
-            else:
-                teachsplit = teacher.split(" ")
-                lastname = teachsplit[-1]
-                firstname = teachsplit[0]
-
-                namewithoutmiddle = firstname + " " + lastname
-
-                if namewithoutmiddle in rmpinverted:
-                    rmpinverted[namewithoutmiddle]["alias"] = teacher
-                    rmpobj.append(rmpinverted[namewithoutmiddle])
-                else:
-                    matchlast = []
-                    for teacher2 in rmpinverted:
-                        splitname = teacher2.split(" ")
-                        first = splitname[0]
-                        last = splitname[-1]
-
-                        if lastname.startswith(last) and firstname.startswith(first):
-                            rmpinverted[teacher2]["alias"] = teacher
-                            rmpobj.append(rmpinverted[teacher2])
-                            break
-                        elif lastname.startswith(last):
-
-                            # Their first name might have a special
-                            matchlast.append(teacher2)
-
-                    if len(matchlast) > 0:
-                        pass
-                        #print(teacher, "  | Matching last names  ", matchlast)
-                    else:
-                        matchlastnum += 1
-
-        print("Length of matched teachers", len(rmpobj))
-        print("Number of distinct teachers", len(distinctteachers))
-        print("Number of teachers without a last name match", matchlastnum)
+        # Match RMP data
+        rmpobj = self.matchRMPNames(distinctteachers)
 
         # Send over a list of all the professors with a RMP rating in the list
-        return {"classes": responsedict, "armp": rmpobj}
+        return {"classes": responsedict, "rmp": rmpobj}
 
         # If we don't want PPrint
-        #return json.dumps({"classes": responsedict, "rmp": {}}, default=json_util.default)
+        #return json.dumps({"classes": responsedict, "rmp": rmpobj}, default=json_util.default)
 
     def getCourseDescriptions(self):
         """
@@ -870,16 +912,69 @@ class UCalgary(threading.Thread):
             responsedict[subject["subject"]] = subject
         return responsedict
 
+    def updateFaculties(self):
+        # Get the list
+        log.info("Getting faculty list")
+
+        # Get faculty list
+        r = requests.get("http://www.ucalgary.ca/pubs/calendar/current/course-by-faculty.html")
+
+        if r.status_code == requests.codes.ok:
+            # Make BS obj
+            soup = BeautifulSoup(r.text)
+
+            # Iterate through each faculty
+            for faculty in soup.findAll("span", {"id": re.compile('ctl00_ctl00_pageContent_ctl\d*_ctl\d*_cnTitle')}):
+                log.debug(faculty.text)
+
+                # Get the faculty body
+                body = faculty.parent.find("span", {"id": re.compile('ctl00_ctl00_pageContent_ctl\d*_ctl\d*_cnBody')})
+
+                # Replace <br> with newlines
+                for br in body.find_all("br"):
+                    br.replace_with("\n")
+
+                # Obtain each subject
+                subjects = body.find("p").text.split("\n")
+
+                for subject in subjects:
+                    # Strip the subject name
+                    subject = subject.strip()
+                    if len(subject) > 1 and " " in subject:
+                        subjectcode = subject.strip().split(" ")[-1]  # 3 or 4 letter subject code
+
+                        # Make sure the code length is proper
+                        if len(subjectcode) > 1:
+                            subjectdict = {
+                                "subject": subjectcode,
+                                "faculty": faculty.text.strip()
+                            }
+
+                            # upsert into the DB
+                            self.db.UCalgarySubjects.update(
+                                {"subject": subjectdict["subject"]},
+                                {
+                                    "$set": subjectdict,
+                                    "$currentDate": {"lastModified": True}
+                                },
+                                upsert=True
+                            )
+
+        log.info("Updated faculty list")
+
     def run(self):
         """
         Scraping thread that obtains updated course info
 
         :return:
         """
-        print("Hey jude")
+
         if self.settings["scrape"]:
             while True:
                 try:
+                    # Update the faculties
+                    self.updateFaculties()
+
                     # Login to U of C
                     if self.login():
                         # Get the terms
@@ -888,10 +983,13 @@ class UCalgary(threading.Thread):
                         if self.terms:
                             # For each term, get the courses
                             for term in self.terms:
-                                print("Obtaining", term, "course data with an id of", self.termNameToID(term))
+                                log.info("Obtaining " + str(term) + " course data with an id of "
+                                         + str(self.termNameToID(term)))
                                 self.getTermCourses(self.termNameToID(term))
                 except Exception as e:
-                    print("There was an critical exception in UCalgary  | ", e)
+                    log.critical("There was an critical exception in UCalgary  | " + str(e))
 
                 # Sleep for the specified interval
                 time.sleep(self.settings["scrapeinterval"])
+        else:
+            log.info("Scraping is disabled")

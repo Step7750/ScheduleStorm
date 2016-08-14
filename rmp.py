@@ -10,6 +10,9 @@ import threading
 import requests
 import pymongo
 import time
+import logging
+
+log = logging.getLogger("RMP")
 
 class RateMyProfessors(threading.Thread):
     def __init__(self, rmpids, interval):
@@ -38,7 +41,7 @@ class RateMyProfessors(threading.Thread):
         :return: **dict** Teacher ratings for schoolid
         """
 
-        print("Obtaining RMP data for", schoolid)
+        log.info("Obtaining RMP data for " + str(schoolid))
 
         apiurl = "http://search.mtvnservices.com/typeahead/suggest/" \
               "?q=*%3A*+AND+schoolid_s%3A" + str(schoolid) + \
@@ -61,7 +64,7 @@ class RateMyProfessors(threading.Thread):
             try:
                 r = requests.get(apiurl)
             except Exception as e:
-                print("There was an exception while retrieving RMP data for", schoolid, " | ", e)
+                log.critical("There was an exception while retrieving RMP data for " + str(schoolid) + " | " + str(e))
 
             if r and r.status_code == requests.codes.ok:
                 # We got the data we wanted
@@ -129,7 +132,7 @@ class RateMyProfessors(threading.Thread):
                             upsert=True
                         )
 
-        print("Finished adding data to DB for", schoolid)
+        log.info("Finished adding data to DB for " + str(schoolid))
 
     def run(self):
         if self.interval and self.interval > 0:
@@ -143,6 +146,7 @@ class RateMyProfessors(threading.Thread):
                         if rmpdata:
                             self.upsertTeachers(rmpdata, id)
                     except Exception as e:
-                        print("There was an error while obtaining and parsing RMP data for", id, " | ", e)
+                        log.critical("There was an error while obtaining and parsing RMP data for"
+                                     + str(id) + " | " + str(e))
 
                 time.sleep(self.interval)

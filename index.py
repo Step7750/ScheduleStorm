@@ -27,6 +27,12 @@ uniThreads = {}
 app.config['CACHE_TYPE'] = 'simple'  # Cache to app memory
 app.cache = Cache(app)
 
+# Logging
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+log = logging.getLogger("main")
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("werkzeug").setLevel(logging.WARNING)
+
 def loadSettings():
     with open("settings.json") as settingFile:
         return json.load(settingFile)
@@ -94,7 +100,7 @@ if __name__ == '__main__':
     unimemebers = inspect.getmembers(uni)
     rmpids = []
 
-    print("Instantiating University Threads")
+    log.info("Instantiating University Threads")
 
     # Foreach university in settings
     for university in settings["Universities"]:
@@ -125,21 +131,21 @@ if __name__ == '__main__':
                             # Found the class, it must be the same name as the key for this Uni (ex. UCalgary)
                             uniThreads[university] = uniclass[1](unisettings)
 
-                            print("Instantiated " + university + "'s thread")
+                            log.info("Instantiated " + university + "'s thread")
                             foundClass = True
 
             if not foundClass:
-                print("We couldn't find the class to instantiate for", university)
+                log.error("We couldn't find the class to instantiate for", university)
 
-    print("Starting University Threads")
+    log.info("Starting University Threads")
     # Start each Uni thread
     for uniThread in uniThreads:
-        print("Starting " + uniThread + "'s thread")
+        log.info("Starting " + uniThread + "'s thread")
         uniThreads[uniThread].start()
 
     # Start up the RateMyProfessors scraper if there is at least one rmp id
     if len(rmpids) > 0 and "rmpinterval" in settings:
-        print("Starting RMP scraper")
+        log.info("Starting RMP scraper")
         rmpthread = RateMyProfessors(rmpids, settings["rmpinterval"])
         rmpthread.start()
 
