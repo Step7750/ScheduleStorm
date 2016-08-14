@@ -21,7 +21,7 @@ body, html{
     overflow-x: hidden;
     overflow-y: scroll;
     max-width: 1280px;
-    height: 356px;
+    height: 500px;
     border-radius: 8px;
 }
 
@@ -220,7 +220,7 @@ tbody tr td {
 }
 
 #courseSelector{
-    height: 630px;
+    height: 770px;
         overflow: auto;
 }
 
@@ -320,6 +320,10 @@ p {
 
 td{
     font-size: 17px;
+}
+
+.form-control{
+    display: inline;
 }
 
 @media (max-width: 767px) {
