@@ -71,6 +71,8 @@ class Welcome {
 
                 thisobj.term = $(this).attr("value");
 
+                window.classList = new ClassList(thisobj.uni, thisobj.term);
+
                 $("#welcomeModal").modal('hide');
             });
             list.append(button);
