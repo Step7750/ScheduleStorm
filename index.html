@@ -9,14 +9,61 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <link rel="stylesheet" href="multi-level-accordion-menu/css/reset.css"> <!-- CSS reset -->
 	    <link rel="stylesheet" href="multi-level-accordion-menu/css/style.css"> <!-- Resource style -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.1.3/css/bootstrap-slider.min.css"><!-- Bootstrap Slider-->
         <link rel="stylesheet" href="CSS&Assets/main.css">
 
          <!-- MODERNIZR -->
+        <script src="Javascript.js"></script>
 	    <script src="multi-level-accordion-menu/js/modernizr.js"></script> <!-- Modernizr -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.1.3/bootstrap-slider.min.js"></script><!-- Bootstrap Slider-->
+        <script>
+            $('document').ready(function(){
+                if(localStorage.getItem("University") === null){
+                    $("#myModal").modal()
+                }
+                else{
+                    document.getElementById('MyUniversity').innerHTML = localStorage.getItem('University') + " <span class='caret'></span>"
+                }
+            });
+        </script>
     </head>
     <body style="font-family: 'Roboto', sans-serif">
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" style="font-size: 35px; font-weight: 300; text-align: center">Welcome to Schedule Storm</h4>
+                    </div>
+                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
+                        <p style="padding-bottom: 20px; padding-left: 2px; ">Please choose your default University (you may change this at any time from the drop down in the top right corner):</p>
+                        <ul style="padding-left: 15px">
+                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">Acadia University</a></li>
+                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">Mount Royal University</a></li>
+                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">University of Alberta</a></li>
+                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">University of Calgary</a></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body">
+                        <p style="padding-bottom: 20px; padding-left: 2px">Please choose your term:</p>
+                        <ul style="padding-left: 15px">
+                            <li class="dropdown-items"><a href="">Fall</a></li>
+                            <li class="dropdown-items"><a href="">Winter</a></li>
+                            <li class="dropdown-items"><a href="">Spring</a></li>
+                            <li class="dropdown-items"><a href="">Summer</a></li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
@@ -32,18 +79,40 @@
                 </div>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">University of Alberta <span class="caret"></span></a>
+                            <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li class="dropdown-items"><a href="#">University of Calgary</a></li>
-                                <li class="dropdown-items"><a href="#">Mount Royal University</a></li>
-                                <li class="dropdown-items"><a href="#">Acadia University</a></li>
+                                <li class="dropdown-items"><a onclick="MyUniversity(this)">Acadia University</a></li>
+                                <li class="dropdown-items"><a onclick="MyUniversity(this)">Mount Royal University</a></li>
+                                <li class="dropdown-items"><a onclick="MyUniversity(this)">University of Alberta</a></li>
+                                <li class="dropdown-items"><a onclick="MyUniversity(this)">University of Calgary</a></li>
                             </ul>
                         </li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
-
+        <div class="row">
+            <div class="col-xs-6" style="padding: 15px; width: 98.3%;margin-bottom: 10px">
+                <h2 style="text-align: center; font-size: 30px; border-bottom: 1px solid #c0c0c0">Preference</h2>
+                <div style="padding-top: 20px; padding-left: 20%">
+                    <div class="col-xs-4" style="width: 400px">
+                        <span>Rate My Professor Range:</span>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Min" style="width: 140px">
+                            <input type="text" class="form-control" placeholder="Max" style="width: 140px">
+                        </div><!-- /input-group -->
+                    </div>
+                    <div class="col-xs-3">
+                        <span style="margin-bottom: 20px">Morning Classes?</span>
+                        <input id="morning" type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" >
+                    </div>
+                    <div class="col-xs-3" style="width: 400px">
+                        <span style="margin-bottom: 20px">Marathon Classes?</span>
+                        <input id="marathon" type="text" data-slider-min="-10" data-slider-max="10" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" >
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-xs-6" style="padding: 15px">
                 <div class="input-group">
@@ -128,19 +197,74 @@
                 <p id="CourseList-title">My Courses</p>
                 <div class="row" id="courseList">
                     <div class="col-xs-6 courseColor">
-                        <p class="course">CMPUT 272 LEC (62763) - CSC B 10 - Lorna Stewart <span style="font-weight: 500; margin-left: 40px">RMP: 3.9 TR</span></p>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>CMPUT 272</td>
+                                    <td>LEC (62763)</td>
+                                    <td>CSC B 10</td>
+                                    <td>Lorna Stewart</td>
+                                    <td>RMP: 3.9</td>
+                                    <td>TR</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div><!-- /.col-xs-6 -->
                     <div class="col-xs-6 courseColor">
-                        <p class="course">EAS 100 LEC (54165) - Frederick Clark <span style="font-weight: 500; margin-left: 68px">RMP: N/A MWF</span></p>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>EAS 100</td>
+                                    <td>LEC (54165)</td>
+                                    <td>CSC B 10</td>
+                                    <td>Frederick Clark</td>
+                                    <td>RMP: N/A</td>
+                                    <td>MWF</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div><!-- /.col-xs-6 -->
                     <div class="col-xs-6 courseColor">
-                        <p class="course">MATH 125 LEC (58027) - Manish Patnaik <span style="font-weight: 500; margin-left: 39px">RMP: 4.0 TR</span></p>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>MATH 125</td>
+                                    <td>LEC (58027)</td>
+                                    <td>CSC B 10</td>
+                                    <td>Manish Patnaik</td>
+                                    <td>RMP: 4.0</td>
+                                    <td>TR</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div><!-- /.col-xs-6 -->
                     <div class="col-xs-6 courseColor">
-                        <p class="course">PHIL 120 LEC (51841) - Hillier Samuel <span style="font-weight: 500; margin-left: 72px">RMP: 3.8 MWF</span></p>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>PHIL 120</td>
+                                    <td>LEC (51841)</td>
+                                    <td>CSC B 10</td>
+                                    <td>Hillier Samuel</td>
+                                    <td>RMP: 3.8</td>
+                                    <td>MWF</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div><!-- /.col-xs-6 -->
                     <div class="col-xs-6 courseColor">
-                        <p class="course">PHYS 124 LEC (52493) - Jan Jung <span style="font-weight: 500; margin-left: 112px">RMP: 3.3 MWF</span></p>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>PHYS 124</td>
+                                    <td>LEC (52493)</td>
+                                    <td>CSC B 10</td>
+                                    <td>Jan Jung</td>
+                                    <td>RMP: 3.3</td>
+                                    <td>MWF</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div><!-- /.col-xs-6 -->
                 </div>
             </div><!-- /.col-xs-5 -->
@@ -148,7 +272,6 @@
             <div id="schedule">
                 <div class="calendar">
                     <div class="outer">
-
                         <table>
                             <thead>
                                 <tr>
@@ -390,14 +513,27 @@
             </div>
         </div>
 
-        <script src="multi-level-accordion-menu/js/jquery-2.1.4.js"></script>
         <script src="multi-level-accordion-menu/js/main.js"></script>
         <script type="text/javascript" src="HideSeek-master/jquery.hideseek.js"></script>
         <script>
             $('#search-headers').hideseek({
                 highlight: true,
                 min_chars: 1
-              });
+            });
+
+            $(document).ready(function() {
+                $('#morning').slider({
+                    formatter: function (value) {
+                        return 'Current value: ' + value;
+                    }
+                });
+
+                $('#marathon').slider({
+                    formatter: function (value) {
+                        return 'Current value: ' + value;
+                    }
+                });
+            });
         </script>
     </body>
 </html>

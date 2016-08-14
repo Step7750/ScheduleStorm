@@ -21,7 +21,7 @@ body, html{
     overflow-x: hidden;
     overflow-y: scroll;
     max-width: 1280px;
-    height: 500px;
+    height: 356px;
     border-radius: 8px;
 }
 
@@ -207,7 +207,8 @@ tbody tr td {
     background-color: #ffffff;
     width: 97%;
     border-radius: 5px !important;
-    margin-top: 10px
+    margin-top: 10px;
+    height: 40px;
 }
 
 .course{
@@ -219,7 +220,7 @@ tbody tr td {
 }
 
 #courseSelector{
-    height: 771px;
+    height: 630px;
         overflow: auto;
 }
 
@@ -307,6 +308,18 @@ p {
 }
 .navbar-default .navbar-link:hover {
     color: #000000;
+}
+
+.table>tbody>tr>td{
+    border-top: none;
+}
+
+.table>tbody>tr>td{
+    border-right: none;
+}
+
+td{
+    font-size: 17px;
 }
 
 @media (max-width: 767px) {
