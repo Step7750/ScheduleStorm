@@ -208,7 +208,7 @@ tbody tr td {
     width: 97%;
     border-radius: 5px !important;
     margin-top: 10px;
-    height: 40px;
+    height: 43px;
 }
 
 .course{
@@ -316,6 +316,19 @@ p {
 
 .table>tbody>tr>td{
     border-right: none;
+    padding: 0;
+    padding-top: 10px;
+}
+
+.table>tbody>tr>td:last-child{
+    width: 35px;
+}
+
+.table>tbody>tr>td>button.btn {
+    padding: 0; !important;
+    border-color: #ffffff;
+    color: red;
+    font-size: 20px;
 }
 
 td{
