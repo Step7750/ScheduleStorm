@@ -86,3 +86,4 @@ class Welcome {
         return '<button type="button" class="btn btn-default" value="' + value +'">' + text + '</button>'
     }
 }
+
