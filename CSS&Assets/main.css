@@ -21,7 +21,7 @@ body, html{
     overflow-x: hidden;
     overflow-y: scroll;
     max-width: 1280px;
-    height: 500px;
+    height: 51vh;
     border-radius: 8px;
 }
 
@@ -220,7 +220,7 @@ tbody tr td {
 }
 
 #courseSelector{
-    height: 770px;
+    height: 80vh;
         overflow: auto;
 }
 
@@ -341,5 +341,21 @@ td{
     .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
         color: #000000;
         background-color: #0275d8;
+    }
+}
+
+@media (max-width: 1440px) {
+    td{
+        font-size: 13px;
+    }
+
+    .courseColor{
+        height: 52px;
+    }
+}
+
+@media (max-width: 1024px){
+    #schedule{
+        margin-left: 51.5%;
     }
 }
