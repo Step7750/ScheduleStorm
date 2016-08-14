@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="CSS&Assets/main.css">
 
          <!-- MODERNIZR -->
-        <script src="Javascript.js"></script>
+        <script src="js/Welcome.js"></script>
 	    <script src="multi-level-accordion-menu/js/modernizr.js"></script> <!-- Modernizr -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -21,7 +21,7 @@
         <script>
             $('document').ready(function(){
                 if(localStorage.getItem("University") === null){
-                    $("#myModal").modal()
+                    welcomeobj = new Welcome();
                 }
                 else{
                     document.getElementById('MyUniversity').innerHTML = localStorage.getItem('University') + " <span class='caret'></span>"
@@ -31,7 +31,7 @@
     </head>
     <body style="font-family: 'Roboto', sans-serif">
         <!-- Modal -->
-        <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal fade" id="welcomeModal" role="dialog">
             <div class="modal-dialog modal-lg">
 
                 <!-- Modal content-->
@@ -39,26 +39,11 @@
                     <div class="modal-header">
                         <h4 class="modal-title" style="font-size: 35px; font-weight: 300; text-align: center">Welcome to Schedule Storm</h4>
                     </div>
-                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
-                        <p style="padding-bottom: 20px; padding-left: 2px; ">Please choose your default University (you may change this at any time from the drop down in the top right corner):</p>
-                        <ul style="padding-left: 15px">
-                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">Acadia University</a></li>
-                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">Mount Royal University</a></li>
-                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">University of Alberta</a></li>
-                            <li style="cursor: pointer" class="dropdown-items"><a onclick="MyUniversity(this)">University of Calgary</a></li>
-                        </ul>
-                    </div>
-                    <div class="modal-body">
-                        <p style="padding-bottom: 20px; padding-left: 2px">Please choose your term:</p>
-                        <ul style="padding-left: 15px">
-                            <li class="dropdown-items"><a href="">Fall</a></li>
-                            <li class="dropdown-items"><a href="">Winter</a></li>
-                            <li class="dropdown-items"><a href="">Spring</a></li>
-                            <li class="dropdown-items"><a href="">Summer</a></li>
-                        </ul>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5; padding-bottom: 30px;">
+                        <center id="uniModalList">
+                            <p id="wantedData" style="padding-bottom: 20px;"></p>
+                            <div class="btn-group-vertical btn-group-lg" role="group" id="dataList"></div>
+                        </center>
                     </div>
                 </div>
             </div>
