@@ -71,37 +71,7 @@ class Welcome {
 
                 thisobj.term = $(this).attr("value");
 
-                $("#uniModalList").slideUp(function () {
-                    thisobj.displayLocations();
-                });
-            });
-            list.append(button);
-        }
-
-        $("#uniModalList").slideDown();
-    }
-
-    /*
-        Displays the locations to the user
-    */
-    displayLocations() {
-        var thisobj = this; // Keep the reference
-
-        var list = $("#uniModalList").find("#dataList");
-        list.empty();
-        var wantedText = $("#uniModalList").find("#wantedData");
-
-        wantedText.text("Please choose your campus location:");
-
-        for (var location in this.unis[this.uni]["locations"]) {
-            var val = this.unis[this.uni]["locations"][location]
-            var button = $(this.createButton(val, val));
-
-            button.click(function() {
-
-              thisobj.location = $(this).attr("value");
-
-              $("#welcomeModal").modal('hide');
+                $("#welcomeModal").modal('hide');
             });
             list.append(button);
         }
