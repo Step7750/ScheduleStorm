@@ -1,0 +1,141 @@
+/*
+    Adaptation of https://codyhouse.co/gem/css-multi-level-accordion-menu without CSS transformations
+*/
+
+/* -------------------------------- 
+
+Primary style
+
+-------------------------------- */
+
+h1 {
+    text-align: center;
+    width: 90%;
+    margin: 2em auto 0;
+    font-size: 2.4rem;
+    font-weight: bold;
+}
+@media only screen and (min-width: 600px) {
+    h1 {
+        font-size: 3.2rem;
+    }
+}
+
+input {
+    font-size: 1.6rem;
+}
+
+/* -------------------------------- 
+
+Main Components 
+
+-------------------------------- */
+.cd-accordion-menu {
+    margin-top: 1em;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.cd-accordion-menu ul {
+    /* by default hide all sub menus */
+    display: none;
+}
+
+.cd-accordion-menu label, .cd-accordion-menu a {
+    position: relative;
+    display: block;
+    padding: 18px 18px 18px 64px;
+    background: #ffffff;
+    box-shadow: inset 0 -1px #555960;
+    color: black;
+    font-size: 1.4rem;
+}
+
+.accordiondesc {
+    position: relative;
+    display: block;
+    padding: 18px 18px 18px 90px;
+    background: #ffffff;
+    box-shadow: inset 0 -1px #555960;
+    color: black;
+    font-size: 1.2rem;
+}
+
+.cd-accordion-menu label {
+    cursor: pointer;
+}
+
+.cd-accordion-menu label, .cd-accordion-menu a {
+    padding: 16px 16px 16px 30px;
+}
+
+.cd-accordion-menu ul label,
+.cd-accordion-menu ul a {
+    padding-left: 50px;
+}
+
+.cd-accordion-menu ul ul label,
+.cd-accordion-menu ul ul a {
+    padding-left: 70px;
+}
+
+.cd-accordion-menu ul ul ul label,
+.cd-accordion-menu ul ul ul a {
+    padding-left: 90px;
+}
+
+
+
+
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section, main {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}

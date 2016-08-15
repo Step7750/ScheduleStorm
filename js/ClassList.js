@@ -20,36 +20,69 @@ class ClassList {
             $("#courseSelector").empty();
 
             $.getJSON(self.baseURL + "unis/" + self.uni + "/" + self.term + "/all", function(data) {
-                self.populateClasses(data["classes"], $("#courseSelector"), 0);
-                $("#courseSelector").slideDown();
+                
+                self.classdata = data["classes"];
+                self.rmpdata = data["rmp"];
+                self.populateClassList(data["classes"], $("#courseSelector"), "");
 
-                self.bindSearch();
+                //self.bindSearch();
             });
         });
     }
 
     /*
-        Recursively populates the class list
+        Populates the classlist on demand given the hierarchy
     */
-    populateClasses(data, element, depth) {
+    populateClassList(data, element, path) {
         var self = this;
-        if (depth < 3 && data != undefined && data["classes"] == undefined) {
-            for (var val in data) {
-                if (val != "description") {
-                    // Check whether there is a name for this
-                    var name = val;
-                    if (data[val]["description"] != undefined  && data[val]["description"]["name"] != undefined) {
-                        name += " - " + data[val]["description"]["name"];
-                    }
-                    var thiselement = $(self.generateAccordionHTML(name));
-                    element.append(thiselement);
 
-                    //console.log(val);
+        // Slide up the element
+        element.slideUp();
 
-                    self.populateClasses(data[val], thiselement.find("ul").first(), depth+1);
+        for (var val in data) {
+
+            // Generate this new element, give it the path
+            var thispath = path + "\\" + val;
+            var thiselement = $(self.generateAccordionHTML(val, thispath));
+
+            thiselement.find("label").click(function () {
+                // Onclick handler
+
+                // do we need to close the element?
+                if ($(this).attr("accordopen") == "true") {
+                    // Close the element
+                    $(this).attr("accordopen", "false");
+                    $(this).parent().find("ul").slideUp(function () {
+                        $(this).empty();
+                    })
+
                 }
-            }
+                else {
+                    // Open accordion
+                    var thispath = $(this).attr("path").split("\\");
+                    $(this).attr("accordopen", "true");
+
+                    // Element to populate
+                    var element = $(this).parent().find("ul");
+
+                    // want to find the data to populate
+                    var thisdata = self.classdata;
+                    for (var key in thispath) {
+                        if (key > 0) {
+                            thisdata = thisdata[thispath[key]];
+                        }
+                    }
+                    
+                    // Populate the element
+                    self.populateClassList(thisdata, element, $(this).attr("path"));
+                }
+                
+
+            });
+            element.append(thiselement);
         }
+
+        element.slideDown();
     }
 
 
@@ -59,6 +92,7 @@ class ClassList {
             min_chars: 3
         });
 
+        /*
         var accordionsMenu = $('.cd-accordion-menu');
 
         if( accordionsMenu.length > 0 ) {
@@ -71,13 +105,13 @@ class ClassList {
                     ( checkbox.prop('checked') ) ? checkbox.siblings('ul').attr('style', 'display:none;').slideDown(300) : checkbox.siblings('ul').attr('style', 'display:block;').slideUp(300);
                 });
             });
-        }
+        }*/
     }
+
     /*
         Generates the general accordian structure HTML given a value
     */
-    generateAccordionHTML(value) {
-        return '<li class="has-children"><input type="checkbox" name ="' + value 
-        + '" id="' + value + '"><label for="' + value + '">' + value + '</label><ul></ul></li>';
+    generateAccordionHTML(value, path) {
+        return '<li class="has-children"><label path="' + path +'" accordopen="false">' + value + '</label><ul></ul></li>';
     }
 }
