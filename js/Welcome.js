@@ -2,6 +2,7 @@ class Welcome {
 
     constructor() {
         this.baseURL = "http://api.schedulestorm.com:5000/v1/";
+
         // We want to get the list of Unis
         this.getUnis();
     }
@@ -10,15 +11,27 @@ class Welcome {
         Obtains the University list from the API server 
     */
     getUnis() {
+        // empty the parent
+        $("#uniModalList").find("#dataList").empty();
+
         var thisobj = this;
+
+        $("#welcomeModal").modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        // Add the loading animation
+        var loading = new Loading($("#uniModalList").find("#dataList"), "Loading University Data...");
+
         $.getJSON(this.baseURL + "unis", function(data) {
-            $("#welcomeModal").modal({
-                backdrop: 'static',
-                keyboard: false
+            // remove the loading animation
+            loading.remove(function () {
+                $("#uniModalList").find("#dataList").hide();
+                window.unis = data;
+                thisobj.unis = data;
+                thisobj.populateUnis(data); 
             });
-            window.unis = data;
-            thisobj.unis = data;
-            thisobj.populateUnis(data);
         });
     }
 
@@ -29,7 +42,6 @@ class Welcome {
         var thisobj = this;
 
         var list = $("#uniModalList").find("#dataList");
-        list.empty();
         var wantedText = $("#uniModalList").find("#wantedData");
 
         wantedText.text("Please choose your University:");
@@ -49,7 +61,8 @@ class Welcome {
 
             list.append(button);
         }
-        
+
+        list.slideDown();
     }
 
     /*

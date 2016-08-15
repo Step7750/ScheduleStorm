@@ -16,16 +16,19 @@ class ClassList {
     getClasses() {
         var self = this;
 
-        $("#courseSelector").slideUp(function () {
-            $("#courseSelector").empty();
+        $("#classdata").fadeOut(function () {
+            // Add loading animation
+            var loading = new Loading($("#courseSelector"), "Loading Course Data...");
 
+            // Get the class data
             $.getJSON(self.baseURL + "unis/" + self.uni + "/" + self.term + "/all", function(data) {
-                
                 self.classdata = data["classes"];
                 self.rmpdata = data["rmp"];
-                self.populateClassList(data["classes"], $("#courseSelector"), "");
-
-                //self.bindSearch();
+                
+                loading.remove(function () {
+                    // Remove the loading animation and populate the list
+                    self.populateClassList(data["classes"], $("#courseSelector").find("#classdata"), "");
+                });
             });
         });
     }
@@ -37,52 +40,54 @@ class ClassList {
         var self = this;
 
         // Slide up the element
-        element.slideUp();
+        element.slideUp(function () {
+            for (var val in data) {
 
-        for (var val in data) {
+                // Generate this new element, give it the path
+                var thispath = path + "\\" + val;
+                var thiselement = $(self.generateAccordionHTML(val, thispath));
 
-            // Generate this new element, give it the path
-            var thispath = path + "\\" + val;
-            var thiselement = $(self.generateAccordionHTML(val, thispath));
+                thiselement.find("label").click(function () {
+                    // Onclick handler
 
-            thiselement.find("label").click(function () {
-                // Onclick handler
+                    // do we need to close the element?
+                    if ($(this).attr("accordopen") == "true") {
+                        // Close the element
+                        $(this).attr("accordopen", "false");
+                        $(this).parent().find("ul").slideUp(function () {
+                            $(this).empty();
+                        })
 
-                // do we need to close the element?
-                if ($(this).attr("accordopen") == "true") {
-                    // Close the element
-                    $(this).attr("accordopen", "false");
-                    $(this).parent().find("ul").slideUp(function () {
-                        $(this).empty();
-                    })
+                    }
+                    else {
+                        // Open accordion
+                        var thispath = $(this).attr("path").split("\\");
+                        $(this).attr("accordopen", "true");
 
-                }
-                else {
-                    // Open accordion
-                    var thispath = $(this).attr("path").split("\\");
-                    $(this).attr("accordopen", "true");
+                        // Element to populate
+                        var element = $(this).parent().find("ul");
 
-                    // Element to populate
-                    var element = $(this).parent().find("ul");
-
-                    // want to find the data to populate
-                    var thisdata = self.classdata;
-                    for (var key in thispath) {
-                        if (key > 0) {
-                            thisdata = thisdata[thispath[key]];
+                        // want to find the data to populate
+                        var thisdata = self.classdata;
+                        for (var key in thispath) {
+                            if (key > 0) {
+                                thisdata = thisdata[thispath[key]];
+                            }
                         }
+                        
+                        // Populate the element
+                        self.populateClassList(thisdata, element, $(this).attr("path"));
                     }
                     
-                    // Populate the element
-                    self.populateClassList(thisdata, element, $(this).attr("path"));
-                }
-                
 
-            });
-            element.append(thiselement);
-        }
+                });
+                element.append(thiselement);
+            }
 
-        element.slideDown();
+            element.slideDown();
+
+
+        });
     }
 
 
