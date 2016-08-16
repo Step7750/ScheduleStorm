@@ -102,6 +102,92 @@ class ClassList {
         element.slideDown();
     }
 
+
+    /*
+        Populates a list of given clases
+    */
+    generateClasses(data, element) {
+        var html = "<div class='accordiontableparent'><table class='table accordiontable'><tbody>";
+        for (var index = 0; index < data["classes"].length; index++) {
+            html += "<tr>";
+            var thisclass = data["classes"][index];
+
+            var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
+            
+            html += "<td style='width: 15%;'>" + id + "</td>";
+
+            var teachers = "";
+            for (var teacher in thisclass["teachers"]) {
+                if (teacher > 0) {
+                    teachers += "<br>";
+                }
+                teacher = thisclass["teachers"][teacher];
+
+                // want to find RMP rating
+                var rating = "";
+                if (this.rmpdata[teacher] != undefined) {
+                    rating = this.rmpdata[teacher]["rating"];
+                }
+
+                if (teacher != "Staff") {
+                    teacher = ClassList.abbreviateName(teacher);
+                }
+
+                teachers += teacher;
+
+                if (rating != "") {
+                    teachers += " (" + rating + ")";
+                }
+            }
+
+            html += "<td style='width: 20%;'>" + teachers + "</td>";
+
+            html += "<td>" + thisclass["rooms"].join("<br>") + "</td>";
+
+            html += "<td style='width: 30%;'>" + thisclass["times"].join("<br>") + "</td>";
+
+            html += "<td style='width: 15%;'>" + thisclass["location"] + "</td>";
+
+            html += "<td>" + thisclass["status"] + "</td>";
+
+            html += "<td>" + '<button class="btn btn-default">×</button>' + "</td>";
+
+            html += "</tr>"
+        }
+
+        html += "</tbody></table></div>";
+
+        element.append(html);
+    }
+
+    /*
+        Abbreviates a given name
+    */
+    static abbreviateName(name) {
+        // We abbreviate everything except the last name
+        var fragments = name.split(" ");
+        var abbreviated = "";
+
+        for (var fragment in fragments) {
+            // Only add spaces in between words
+            if (fragment > 0) {
+                abbreviated += " ";
+            }
+
+            if (fragment == (fragments.length-1)) {
+                // keep the full name
+                abbreviated += fragments[fragment];
+            }
+            else if (fragment == 0) {
+                var word = fragments[fragment];
+
+                abbreviated += word.charAt(0).toUpperCase() + ".";
+            }
+        }
+
+        return abbreviated;
+    }
+
     /*
         Populates a class
     */
@@ -125,6 +211,8 @@ class ClassList {
                 this.generateClassDetails(element, path);
             }
 
+            // Populate the class list
+            this.generateClasses(data, element);
         }
         console.log(data);
     }
