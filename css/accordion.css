@@ -64,12 +64,16 @@ Main Components
     font-size: 1.2rem;
 }
 
+.accordiondetail {
+    padding: 12px 18px 12px 110px;
+}
+
 .cd-accordion-menu label {
     cursor: pointer;
 }
 
 .cd-accordion-menu label, .cd-accordion-menu a {
-    padding: 16px 16px 16px 30px;
+    padding: 14px 14px 14px 30px;
 }
 
 .cd-accordion-menu ul label,
@@ -85,6 +89,11 @@ Main Components
 .cd-accordion-menu ul ul ul label,
 .cd-accordion-menu ul ul ul a {
     padding-left: 90px;
+}
+
+.cd-accordion-menu ul ul ul ul label,
+.cd-accordion-menu ul ul ul ul a {
+    padding-left: 110px;
 }
 
 

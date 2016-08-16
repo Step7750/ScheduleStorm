@@ -2,7 +2,7 @@ class ClassList {
     constructor(uni, term) {
 
         this.baseURL = "http://api.schedulestorm.com:5000/v1/";
-
+        this.detailKeys = ["prereq", "coreq", "antireq", "notes"];
         this.uni = uni;
         this.term = term;
         this.location = location;
@@ -52,36 +52,83 @@ class ClassList {
         }
 
         if (desc["hours"] != undefined) {
-
             html += desc["hours"] + "<br>";
         }
-
-        if (desc["prereq"] != undefined) {
-            html += "<br>Prereq: " + desc["prereq"] + "<br>";
-        }
-
-        if (desc["coreq"] != undefined) {
-            html += "<br>Coreq: " + desc["coreq"] + "<br>";
-        }
-
-        if (desc["antireq"] != undefined) {
-            html += "<br>Antireq: " + desc["antireq"] + "<br>";
-        }
-
-        if (desc["notes"] != undefined && desc["notes"] != "") {
-            html += "<br>Notes: " + desc["notes"];
-        } 
-
 
         return html;
     }
 
-    populateClass(data, element) {
+    /*
+        Generates class details button
+    */
+    generateClassDetails(element, path) {
+        var self = this;
+
+        var button = $(this.generateAccordionHTML("Details", path + "\\description"));
+
+        button.find("label").click(function () {
+            self.bindButton(self.classdata, this, "detail");
+        });
+
+        element.append(button);
+    }
+
+    /*
+        Populates class details
+    */
+    populateClassDetails(data, element) {
+        console.log(data);
+        var html = '<div class="accordiondesc accordiondetail">';
+
+        var detailIndex = 0;
+        for (var detail in this.detailKeys) {
+            var detail = this.detailKeys[detail];
+
+            if (data[detail] != undefined) {
+                // Capitalize the first letter of the key
+                var capitalDetail = detail.charAt(0).toUpperCase() + detail.slice(1);
+
+                // Proper spacing
+                if (detailIndex > 0) {
+                    html += "<br><br>"
+                }
+                html += capitalDetail + ": " + data[detail];
+
+                detailIndex += 1;
+            }
+        }
+        element.append(html);
+
+        element.slideDown();
+    }
+
+    /*
+        Populates a class
+    */
+    populateClass(data, element, path) {
         if (data["description"] != undefined) {
             element.append(this.generateClassDesc(data["description"]));
+
+            // Does this class have more info we can put in a details button?
+            var foundDetails = false;
+            for (var detail in this.detailKeys) {
+                detail = this.detailKeys[detail];
+
+                if (data["description"][detail] != undefined) {
+                    foundDetails = true;
+                    break;
+                }
+            }
+
+            if (foundDetails === true) {
+                // We have data to make a dropdown for
+                this.generateClassDetails(element, path);
+            }
+
         }
         console.log(data);
     }
+
     /*
         Populates the classlist on demand given the hierarchy
     */
@@ -93,7 +140,7 @@ class ClassList {
             for (var val in data) {
                 if (val == "classes") {
                     // This is a class, process it differently
-                    self.populateClass(data, element)
+                    self.populateClass(data, element, path)
                 }
                 else if (val != "description") {
                     // Generate this new element, give it the path
@@ -110,38 +157,7 @@ class ClassList {
                     var thiselement = $(self.generateAccordionHTML(name, thispath));
 
                     thiselement.find("label").click(function () {
-                        // Onclick handler
-
-                        // do we need to close the element?
-                        if ($(this).attr("accordopen") == "true") {
-                            // Close the element
-                            $(this).attr("accordopen", "false");
-                            $(this).parent().find("ul").slideUp(function () {
-                                $(this).empty();
-                            })
-
-                        }
-                        else {
-                            // Open accordion
-                            var thispath = $(this).attr("path").split("\\");
-                            $(this).attr("accordopen", "true");
-
-                            // Element to populate
-                            var element = $(this).parent().find("ul");
-
-                            // want to find the data to populate
-                            var thisdata = self.classdata;
-                            for (var key in thispath) {
-                                if (key > 0) {
-                                    thisdata = thisdata[thispath[key]];
-                                }
-                            }
-                            
-                            // Populate the element
-                            self.populateClassList(thisdata, element, $(this).attr("path"));
-                        }
-                        
-
+                        self.bindButton(self.classdata, this, "class");
                     });
                     element.append(thiselement);
                 }
@@ -153,27 +169,60 @@ class ClassList {
         });
     }
 
+    /*
+        Binds an accordion button
+    */
+    bindButton(classdata, button, type) {
+        //console.log(classdata);
+        console.log(button);
 
+        var self = this;
+        // Onclick handler
+
+        // do we need to close the element?
+        if ($(button).attr("accordopen") == "true") {
+            // Close the element
+            $(button).attr("accordopen", "false");
+
+            $(button).parent().find("ul").slideUp(function () {
+                $(this).empty();
+            });
+
+        }
+        else {
+            // Open accordion
+            var thispath = $(button).attr("path").split("\\");
+            $(button).attr("accordopen", "true");
+
+            // Element to populate
+            var element = $(button).parent().find("ul");
+
+            // want to find the data to populate
+            var thisdata = classdata;
+            for (var key in thispath) {
+                if (key > 0) {
+                    thisdata = thisdata[thispath[key]];
+                }
+            }
+            
+            // Populate the element
+            if (type == "class") {
+                self.populateClassList(thisdata, element, $(button).attr("path"));
+            }
+            else if (type == "detail") {
+                self.populateClassDetails(thisdata, element);
+            }
+        }
+    }
+
+    /*
+        Binds search
+    */
     bindSearch() {
         $('#search-headers').hideseek({
             highlight: true,
             min_chars: 3
         });
-
-        /*
-        var accordionsMenu = $('.cd-accordion-menu');
-
-        if( accordionsMenu.length > 0 ) {
-
-            accordionsMenu.each(function(){
-                var accordion = $(this);
-                //detect change in the input[type="checkbox"] value
-                accordion.on('change', 'input[type="checkbox"]', function(){
-                    var checkbox = $(this);
-                    ( checkbox.prop('checked') ) ? checkbox.siblings('ul').attr('style', 'display:none;').slideDown(300) : checkbox.siblings('ul').attr('style', 'display:block;').slideUp(300);
-                });
-            });
-        }*/
     }
 
     /*
