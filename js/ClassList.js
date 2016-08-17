@@ -6,6 +6,7 @@ class ClassList {
         this.uni = uni;
         this.term = term;
         this.location = location;
+        //this.searchFound = [];
 
         this.getClasses();
     }
@@ -28,6 +29,7 @@ class ClassList {
                 loading.remove(function () {
                     // Remove the loading animation and populate the list
                     self.populateClassList(data["classes"], $("#courseSelector").find("#classdata"), "");
+                    self.bindSearch();
                 });
             });
         });
@@ -77,7 +79,6 @@ class ClassList {
         Populates class details
     */
     populateClassDetails(data, element) {
-        console.log(data);
         var html = '<div class="accordiondesc accordiondetail">';
 
         var detailIndex = 0;
@@ -214,7 +215,6 @@ class ClassList {
             // Populate the class list
             this.generateClasses(data, element);
         }
-        console.log(data);
     }
 
     /*
@@ -228,7 +228,7 @@ class ClassList {
             for (var val in data) {
                 if (val == "classes") {
                     // This is a class, process it differently
-                    self.populateClass(data, element, path)
+                    self.populateClass(data, element, path);
                 }
                 else if (val != "description") {
                     // Generate this new element, give it the path
@@ -252,8 +252,6 @@ class ClassList {
             }
 
             element.slideDown();
-
-
         });
     }
 
@@ -262,7 +260,7 @@ class ClassList {
     */
     bindButton(classdata, button, type) {
         //console.log(classdata);
-        console.log(button);
+        //console.log(button);
 
         var self = this;
         // Onclick handler
@@ -307,10 +305,72 @@ class ClassList {
         Binds search
     */
     bindSearch() {
-        $('#search-headers').hideseek({
-            highlight: true,
-            min_chars: 3
-        });
+        // Custom search
+        var self = this;
+
+        $("#searchcourses").keyup(function (e) {
+            if (e.keyCode == 13) {
+                // they pressed enter
+                console.log($("#searchcourses").val());
+                self.findText(self.classdata, $("#searchcourses").val().toLowerCase(), "");
+                console.log("Done");
+            }
+        })
+    }
+
+    findTextInClasses(thiscourse, text) {
+
+        for (var key in thiscourse) {
+            var thisclass = thiscourse[key];
+
+            for (var prop in thisclass) {
+                //console.log(thisclass[prop]);
+
+                // Check if an array
+                if (thisclass[prop].constructor === Array) {
+                    for (var newprop in thisclass[prop]) {
+                        if (thisclass[prop][newprop].toString().toLowerCase().indexOf(text) > -1) {
+                            return true;
+                        }
+                    }
+                }
+                else if (thisclass[prop].toString().toLowerCase().indexOf(text) > -1) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    findText(data, text, path) {
+        if (data["classes"] != undefined) {
+            // we are parsing a class
+            //console.log("memes");
+            if (this.findTextInClasses(data["classes"], text)) {
+                console.log("Found text in class " + path);
+            }
+        }
+        else {
+            for (var key in data) {
+                if (key != "description") {
+                    var thispath = path + "\\" + key;
+                    if (key.toLowerCase().indexOf(text) > -1) {
+                        console.log(key + " with a path of " + thispath);
+                    }
+                    else {
+                        // check if it has a description, if so, check that
+                        if (data[key]["description"] != undefined) {
+                            if (data[key]["description"]["name"].toLowerCase().indexOf(text) > -1) {
+                                console.log(key + " desc with a path of " + thispath);
+                            }
+                        }
+                    }
+                    var thisdata = data[key];
+                    this.findText(thisdata, text, thispath);
+                }
+            }
+        }
     }
 
     /*
