@@ -6,7 +6,7 @@ class ClassList {
         this.uni = uni;
         this.term = term;
         this.location = location;
-        //this.searchFound = [];
+        this.searchFound = {};
 
         this.getClasses();
     }
@@ -232,7 +232,13 @@ class ClassList {
                 }
                 else if (val != "description") {
                     // Generate this new element, give it the path
-                    var thispath = path + "\\" + val;
+                    var thispath = "";
+                    if (data[val]["path"] != undefined) {
+                        thispath = data[val]["path"];
+                    }
+                    else {
+                        thispath = path + "\\" + val;
+                    }
 
                     var name = val;
 
@@ -309,22 +315,47 @@ class ClassList {
         var self = this;
 
         $("#searchcourses").keyup(function (e) {
+
+            var searchval = $("#searchcourses").val();
             if (e.keyCode == 13) {
                 // they pressed enter
-                console.log($("#searchcourses").val());
-                self.findText(self.classdata, $("#searchcourses").val().toLowerCase(), "");
-                console.log("Done");
+                self.searchFound = {};
+                $("#courseSelector").find("#classdata").slideUp(function () {
+                    $("#courseSelector").find("#classdata").empty();
+
+
+                    if (searchval == "" || searchval == " ") {
+                        // Just populate the faculties
+                        self.populateClassList(self.classdata, $("#courseSelector").find("#classdata"), "");
+                    }
+                    else {
+                        // find and populate the results
+                        self.findText(self.classdata, searchval.toLowerCase(), "", "", 0);
+
+                        if (Object.keys(self.searchFound).length) {
+                            // We found results
+                            self.populateClassList(self.searchFound, $("#courseSelector").find("#classdata"), "");
+                        }
+                        else {
+                            $("#courseSelector").find("#classdata").text("We couldn't find anything :(").slideDown();
+                        }
+                    }
+                });
+
             }
         })
     }
 
-    findTextInClasses(thiscourse, text) {
+    /*
+        Returns a boolean as to whether the given class contains the specified text
+    */
+    findTextInClasses(data, text) {
 
-        for (var key in thiscourse) {
-            var thisclass = thiscourse[key];
+        // Check each class for matches
+        for (var key in data["classes"]) {
+            var thisclass = data["classes"][key];
 
             for (var prop in thisclass) {
-                //console.log(thisclass[prop]);
 
                 // Check if an array
                 if (thisclass[prop].constructor === Array) {
@@ -340,34 +371,77 @@ class ClassList {
             }
         }
 
+        // Check the description attributes
+        for (var key in data["description"]) {
+            var thisdesc = data["description"][key];
+
+            if (thisdesc.toString().toLowerCase().indexOf(text) > -1) {
+                return true;
+            }
+        }
+
+        // Didn't find a match
         return false;
     }
 
-    findText(data, text, path) {
+    /*
+        Populates the global searchFound obj with courses that match the specified text (recursive)
+    */
+    findText(data, text, path, prevkey, depth) {
+        
         if (data["classes"] != undefined) {
             // we are parsing a class
-            //console.log("memes");
-            if (this.findTextInClasses(data["classes"], text)) {
-                console.log("Found text in class " + path);
+
+            if (this.findTextInClasses(data, text)) {
+                // This text is in the class, add it
+
+                data = jQuery.extend({}, data);
+                data["path"] = path;
+                var splitpath = path.split("\\");
+
+                // We want to add the subject of the course since that should be unique (CPSC 231 is unique, 231 is not)
+                this.searchFound[splitpath[splitpath.length-2] + " " + prevkey] = data;
             }
         }
         else {
             for (var key in data) {
                 if (key != "description") {
+
                     var thispath = path + "\\" + key;
-                    if (key.toLowerCase().indexOf(text) > -1) {
-                        console.log(key + " with a path of " + thispath);
+
+                    var searchkey = key;
+
+                    // Add the subject to a course num if we can (231 = CPSC 231)
+                    if (depth == 2) {
+                        splitpath = thispath.split("\\");
+                        searchkey = splitpath[splitpath.length-2] + " " + searchkey;
+                    }
+
+                    // Find the text
+                    if (searchkey.toLowerCase().indexOf(text) > -1) {
+                        // We found it in the key, add it
+                        thisdata = jQuery.extend({}, data[key]);
+                        thisdata["path"] = thispath;
+
+                        this.searchFound[searchkey] = thisdata;
                     }
                     else {
                         // check if it has a description, if so, check that
-                        if (data[key]["description"] != undefined) {
+                        if (data[key]["description"] != undefined && data[key]["description"]["name"] != undefined) {
                             if (data[key]["description"]["name"].toLowerCase().indexOf(text) > -1) {
-                                console.log(key + " desc with a path of " + thispath);
+                                // We found the text in the description, add it to the found list
+                                thisdata = jQuery.extend({}, data[key]);
+                                thisdata["path"] = thispath;
+
+                                this.searchFound[searchkey] = thisdata;
                             }
                         }
                     }
+
                     var thisdata = data[key];
-                    this.findText(thisdata, text, thispath);
+                    
+                    // Recursively look at the children
+                    this.findText(thisdata, text, thispath, key, depth+1);
                 }
             }
         }
