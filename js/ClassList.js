@@ -6,7 +6,7 @@ class ClassList {
         this.uni = uni;
         this.term = term;
         this.location = location;
-        this.searchFound = {};
+        this.searchFound = []; // Array that sorts search results by order of importance
 
         this.getClasses();
     }
@@ -28,7 +28,7 @@ class ClassList {
 
                 loading.remove(function () {
                     // Remove the loading animation and populate the list
-                    self.populateClassList(data["classes"], $("#courseSelector").find("#classdata"), "");
+                    self.populateClassList([data["classes"]], $("#courseSelector").find("#classdata"), "");
                     self.bindSearch();
                 });
             });
@@ -225,35 +225,42 @@ class ClassList {
 
         // Slide up the element
         element.slideUp(function () {
-            for (var val in data) {
-                if (val == "classes") {
-                    // This is a class, process it differently
-                    self.populateClass(data, element, path);
-                }
-                else if (val != "description") {
-                    // Generate this new element, give it the path
-                    var thispath = "";
-                    if (data[val]["path"] != undefined) {
-                        thispath = data[val]["path"];
-                    }
-                    else {
-                        thispath = path + "\\" + val;
-                    }
+            for (var arrayelement in data) {
+                // this array is sorted my order of importance of populating the elements
+                var thisdata = data[arrayelement];
 
-                    var name = val;
+                if (thisdata != undefined) {
+                    for (var val in thisdata) {
+                        if (val == "classes") {
+                            // This is a class, process it differently
+                            self.populateClass(thisdata, element, path);
+                        }
+                        else if (val != "description") {
+                            // Generate this new element, give it the path
+                            var thispath = "";
+                            if (thisdata[val]["path"] != undefined) {
+                                thispath = thisdata[val]["path"];
+                            }
+                            else {
+                                thispath = path + "\\" + val;
+                            }
 
-                    if (data[val]["description"] != undefined) {
-                        if (data[val]["description"]["name"] != undefined) {
-                            name += " - " + data[val]["description"]["name"]
+                            var name = val;
+
+                            if (thisdata[val]["description"] != undefined) {
+                                if (thisdata[val]["description"]["name"] != undefined) {
+                                    name += " - " + thisdata[val]["description"]["name"]
+                                }
+                            }
+
+                            var thiselement = $(self.generateAccordionHTML(name, thispath));
+
+                            thiselement.find("label").click(function () {
+                                self.bindButton(self.classdata, this, "class");
+                            });
+                            element.append(thiselement);
                         }
                     }
-
-                    var thiselement = $(self.generateAccordionHTML(name, thispath));
-
-                    thiselement.find("label").click(function () {
-                        self.bindButton(self.classdata, this, "class");
-                    });
-                    element.append(thiselement);
                 }
             }
 
@@ -299,7 +306,7 @@ class ClassList {
             
             // Populate the element
             if (type == "class") {
-                self.populateClassList(thisdata, element, $(button).attr("path"));
+                self.populateClassList([thisdata], element, $(button).attr("path"));
             }
             else if (type == "detail") {
                 self.populateClassDetails(thisdata, element);
@@ -319,20 +326,20 @@ class ClassList {
             var searchval = $("#searchcourses").val();
             if (e.keyCode == 13) {
                 // they pressed enter
-                self.searchFound = {};
+                self.searchFound = [];
                 $("#courseSelector").find("#classdata").slideUp(function () {
                     $("#courseSelector").find("#classdata").empty();
 
 
                     if (searchval == "" || searchval == " ") {
                         // Just populate the faculties
-                        self.populateClassList(self.classdata, $("#courseSelector").find("#classdata"), "");
+                        self.populateClassList([self.classdata], $("#courseSelector").find("#classdata"), "");
                     }
                     else {
                         // find and populate the results
                         self.findText(self.classdata, searchval.toLowerCase(), "", "", 0);
 
-                        if (Object.keys(self.searchFound).length) {
+                        if (self.searchFound.length) {
                             // We found results
                             self.populateClassList(self.searchFound, $("#courseSelector").find("#classdata"), "");
                         }
@@ -385,22 +392,31 @@ class ClassList {
     }
 
     /*
+        Properly adds a search result to the global dict
+    */
+    addSearchData(data, key, depth, path) {
+        data = jQuery.extend({}, data);
+        data["path"] = path;
+
+        if (this.searchFound[depth] == undefined) {
+            this.searchFound[depth] = {};
+        }
+
+        this.searchFound[depth][key] = data;
+    }
+
+    /*
         Populates the global searchFound obj with courses that match the specified text (recursive)
     */
     findText(data, text, path, prevkey, depth) {
-        
         if (data["classes"] != undefined) {
             // we are parsing a class
 
             if (this.findTextInClasses(data, text)) {
-                // This text is in the class, add it
-
-                data = jQuery.extend({}, data);
-                data["path"] = path;
                 var splitpath = path.split("\\");
+                var key = splitpath[splitpath.length-2] + " " + prevkey;
 
-                // We want to add the subject of the course since that should be unique (CPSC 231 is unique, 231 is not)
-                this.searchFound[splitpath[splitpath.length-2] + " " + prevkey] = data;
+                this.addSearchData(data, key, depth, path);
             }
         }
         else {
@@ -420,20 +436,14 @@ class ClassList {
                     // Find the text
                     if (searchkey.toLowerCase().indexOf(text) > -1) {
                         // We found it in the key, add it
-                        thisdata = jQuery.extend({}, data[key]);
-                        thisdata["path"] = thispath;
-
-                        this.searchFound[searchkey] = thisdata;
+                        this.addSearchData(data[key], searchkey, depth, thispath);
                     }
                     else {
                         // check if it has a description, if so, check that
                         if (data[key]["description"] != undefined && data[key]["description"]["name"] != undefined) {
                             if (data[key]["description"]["name"].toLowerCase().indexOf(text) > -1) {
                                 // We found the text in the description, add it to the found list
-                                thisdata = jQuery.extend({}, data[key]);
-                                thisdata["path"] = thispath;
-
-                                this.searchFound[searchkey] = thisdata;
+                                this.addSearchData(data[key], searchkey, depth, thispath);
                             }
                         }
                     }
