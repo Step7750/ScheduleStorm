@@ -5,12 +5,45 @@ class ClassList {
         this.detailKeys = ["prereq", "coreq", "antireq", "notes"];
         this.uni = uni;
         this.term = term;
+        window.term = term;
+        window.uni = uni;
         this.location = location;
         this.searchFound = []; // Array that sorts search results by order of importance
 
         $("#searchcourses").unbind(); // unbind search if there is a bind
 
+        this.createTermDropdown();
         this.getClasses();
+    }
+
+
+    /*
+        Populates the term selector dropdown beside the search bar
+    */
+    createTermDropdown() {
+        var self = this;
+
+        $("#termselectdropdown").empty();
+
+        // set our current term
+        $("#termselect").html(window.unis[this.uni]["terms"][this.term] + ' <img src="assets/arrow.png">');
+
+        // populate the terms
+        for (var term in window.unis[this.uni]["terms"]) {
+            var html = $('<li><a term="' + term + '">' + window.unis[this.uni]["terms"][term] + '</a></li>');
+
+            html.click(function () {
+                // check if they changed terms
+                var newterm = $(this).find("a").attr("term");
+                if (newterm != self.term) {
+                    // This is a new term, reinstantiate the object so we can show the new results
+                    window.classList = new ClassList(self.uni, newterm);
+                }
+            })
+
+            $("#termselectdropdown").append(html);
+        }
+
     }
 
     /*
@@ -21,6 +54,10 @@ class ClassList {
 
         $("#classdata").fadeOut(function () {
             $("#classdata").empty();
+
+            // Remove any current loading animations for courses
+            $("#courseSelector").find("#loading").remove();
+
             // Add loading animation
             var loading = new Loading($("#courseSelector"), "Loading Course Data...");
 
@@ -28,12 +65,19 @@ class ClassList {
             $.getJSON(self.baseURL + "unis/" + self.uni + "/" + self.term + "/all", function(data) {
                 self.classdata = data["classes"];
                 self.rmpdata = data["rmp"];
-
+                
                 loading.remove(function () {
-                    // Remove the loading animation and populate the list
-                    self.populateClassList([data["classes"]], $("#classdata"), "");
-                    self.bindSearch();
+                    // We want to make sure the user hasn't chosen a new term while this one was loading
+                    if (self.uni == window.uni && self.term == window.term) {
+                        // In case the user spammed different terms while loading
+                        $("#classdata").empty();
+
+                        // Remove the loading animation and populate the list
+                        self.populateClassList([data["classes"]], $("#classdata"), "");
+                        self.bindSearch();
+                    }
                 });
+                
             });
         });
     }

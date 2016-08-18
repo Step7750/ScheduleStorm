@@ -12,6 +12,10 @@ body, html{
   cursor: pointer;
 }
 
+.dropdown-menu {
+  cursor: pointer;
+}
+
 .calendar {
     margin: 0 auto;
     max-width: 1280px;
