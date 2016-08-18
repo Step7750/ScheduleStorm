@@ -7,6 +7,11 @@ class ClassList {
         this.term = term;
         window.term = term;
         window.uni = uni;
+
+        // we want to save the term and uni in localstorage
+        localStorage.setItem('uni', uni);
+        localStorage.setItem('term', term);
+
         this.location = location;
         this.searchFound = []; // Array that sorts search results by order of importance
 

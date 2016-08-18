@@ -30,10 +30,29 @@ class Welcome {
                 // Populate the dropdown in the top right
                 thisobj.populateUniDropdown(data);
 
-                $("#uniModalList").find("#dataList").hide();
                 window.unis = data;
                 thisobj.unis = data;
-                thisobj.populateUnis(data);
+
+                // Check to see if they have already selected a Uni and Term in localstorage
+                if (localStorage.getItem("uni") != undefined && localStorage.getItem("term") != undefined) {
+                    // Hide the modal
+                    $("#welcomeModal").modal('hide');
+
+                    // Set this uni
+                    thisobj.uni = localStorage.getItem("uni");
+
+                    // Populate the top right dropdown
+                    $("#MyUniversity").hide().html(thisobj.unis[thisobj.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
+
+                    // Load up the classes
+                    window.classList = new ClassList(localStorage.getItem("uni"), localStorage.getItem("term"));
+                }
+                else {
+                    $("#uniModalList").find("#dataList").hide();
+
+                    // New user with nothing selected, show them welcome prompts
+                    thisobj.populateUnis(data);
+                }
             });
         });
     }
