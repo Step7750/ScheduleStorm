@@ -27,6 +27,8 @@ class Welcome {
         $.getJSON(this.baseURL + "unis", function(data) {
             // remove the loading animation
             loading.remove(function () {
+                // Populate the dropdown in the top right
+                thisobj.populateUniDropdown(data);
 
                 $("#uniModalList").find("#dataList").hide();
                 window.unis = data;
@@ -65,6 +67,7 @@ class Welcome {
                     backdrop: 'static',
                     keyboard: false
                 });
+
                 // Let the user choose what term they want
                 self.displayTerms(self.uni);
             })
