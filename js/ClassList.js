@@ -8,6 +8,8 @@ class ClassList {
         this.location = location;
         this.searchFound = []; // Array that sorts search results by order of importance
 
+        $("#searchcourses").unbind(); // unbind search if there is a bind
+
         this.getClasses();
     }
 
@@ -18,6 +20,7 @@ class ClassList {
         var self = this;
 
         $("#classdata").fadeOut(function () {
+            $("#classdata").empty();
             // Add loading animation
             var loading = new Loading($("#courseSelector"), "Loading Course Data...");
 
@@ -28,7 +31,7 @@ class ClassList {
 
                 loading.remove(function () {
                     // Remove the loading animation and populate the list
-                    self.populateClassList([data["classes"]], $("#courseSelector").find("#classdata"), "");
+                    self.populateClassList([data["classes"]], $("#classdata"), "");
                     self.bindSearch();
                 });
             });
@@ -327,13 +330,13 @@ class ClassList {
             if (e.keyCode == 13) {
                 // they pressed enter
                 self.searchFound = [];
-                $("#courseSelector").find("#classdata").slideUp(function () {
-                    $("#courseSelector").find("#classdata").empty();
+                $("#classdata").slideUp(function () {
+                    $("#classdata").empty();
 
 
                     if (searchval == "" || searchval == " ") {
                         // Just populate the faculties
-                        self.populateClassList([self.classdata], $("#courseSelector").find("#classdata"), "");
+                        self.populateClassList([self.classdata], $("#classdata"), "");
                     }
                     else {
                         // find and populate the results
@@ -341,10 +344,10 @@ class ClassList {
 
                         if (self.searchFound.length) {
                             // We found results
-                            self.populateClassList(self.searchFound, $("#courseSelector").find("#classdata"), "");
+                            self.populateClassList(self.searchFound, $("#classdata"), "");
                         }
                         else {
-                            $("#courseSelector").find("#classdata").text("We couldn't find anything :(").slideDown();
+                            $("#classdata").text("We couldn't find anything :(").slideDown();
                         }
                     }
                 });

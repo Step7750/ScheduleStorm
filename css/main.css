@@ -8,6 +8,10 @@ body, html{
     position:relative;
 }
 
+.dropdown-items {
+  cursor: pointer;
+}
+
 .calendar {
     margin: 0 auto;
     max-width: 1280px;
@@ -319,6 +323,8 @@ p {
     padding: 0;
     padding-top: 10px;
 }
+
+
 
 .table>tbody>tr>td:last-child{
     width: 35px;

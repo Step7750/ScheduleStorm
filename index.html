@@ -36,12 +36,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.1.3/bootstrap-slider.min.js"></script>
         <script>
             $('document').ready(function(){
-                if(localStorage.getItem("University") === null){
-                    welcomeobj = new Welcome();
-                }
-                else{
-                    document.getElementById('MyUniversity').innerHTML = localStorage.getItem('University') + " <span class='caret'></span>"
-                }
+                welcomeobj = new Welcome();
             });
         </script>
     </head>
@@ -112,13 +107,8 @@
                 </div>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
-                            <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-items"><a onclick="MyUniversity(this)">Acadia University</a></li>
-                                <li class="dropdown-items"><a onclick="MyUniversity(this)">Mount Royal University</a></li>
-                                <li class="dropdown-items"><a onclick="MyUniversity(this)">University of Alberta</a></li>
-                                <li class="dropdown-items"><a onclick="MyUniversity(this)">University of Calgary</a></li>
-                            </ul>
+                            <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
+                            <ul class="dropdown-menu"></ul>
                         </li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
@@ -145,7 +135,7 @@
 
             <div class="col-xs-5">
                 <span id="CourseList-title">My Courses</span>
-                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences"><span class="glyphicon glyphicon-cog"></span>Preferences</button>
+                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
                 <div class="row" id="courseList">
                     <div class="col-xs-6 courseColor">
                         <table class="table">

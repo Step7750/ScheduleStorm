@@ -27,12 +27,51 @@ class Welcome {
         $.getJSON(this.baseURL + "unis", function(data) {
             // remove the loading animation
             loading.remove(function () {
+
                 $("#uniModalList").find("#dataList").hide();
                 window.unis = data;
                 thisobj.unis = data;
-                thisobj.populateUnis(data); 
+                thisobj.populateUnis(data);
             });
         });
+    }
+
+    /*
+        Populates the top right university dropdown (when the modal isn't showing) and handles the click events
+    */
+    populateUniDropdown(data) {
+        var self = this;
+
+        // Get the dropdown element
+        var dropdown  = $("#MyUniversity").parent().find('.dropdown-menu');
+
+        for (var uni in data) {
+            // Add this Uni to the dropdown
+
+            var uniobj = data[uni];
+            var html = $('<li class="dropdown-items"><a uni="' + uni +'">' + uniobj["name"] +'</a></li>');
+
+            // Bind an onclick event to it
+            html.click(function () {
+
+                // Get the selected uni code (UCalgary, etc...)
+                self.uni = $(this).find("a").attr("uni");
+
+                // Change the text of the element
+                $("#MyUniversity").hide().html(self.unis[self.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
+
+                // Make sure the modal is active
+                $("#welcomeModal").modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                // Let the user choose what term they want
+                self.displayTerms(self.uni);
+            })
+
+            // Append it
+            dropdown.append(html);
+        }
     }
 
     /*
