@@ -334,20 +334,31 @@ p {
     width: 35px;
 }
 
-.table>tbody>tr>td>button.btn {
+.courseColor>table>tbody>tr>td>button.btn {
     padding: 0 !important;
     border-color: #ffffff;
     color: red;
     font-size: 20px;
 }
 
-.has-children>label>button.btn{
+.accordiontable>tbody>tr>td>button{
     padding: 0 !important;
     float: right;
     color: #0275d8;
     font-size: 27px;
     border-color: #ffffff;
 }
+
+.accordiontable>tbody>tr>td>button:hover{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #0256ac;
+}
+
+.btn-primary{
+    background-color: #0275d8;
+}
+
 td{
     font-size: 17px;
 }

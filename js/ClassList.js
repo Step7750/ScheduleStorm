@@ -203,7 +203,7 @@ class ClassList {
 
             html += "<td>" + thisclass["status"] + "</td>";
 
-            html += "<td>" + '<button class="btn btn-default">×</button>' + "</td>";
+            html += "<td>" + '<button class="btn btn-default">&plus;</button>' + "</td>";
 
             html += "</tr>"
         }
