@@ -401,7 +401,21 @@ p {
 .nav-pills>li>a.MyCourses{
     font-size: 29px;
     font-weight: 500;
+    cursor: pointer;
     padding: 3px; !important;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;
+}
+
+.largecaret {
+    border-width: 8px;
 }
 
 .btn-primary{

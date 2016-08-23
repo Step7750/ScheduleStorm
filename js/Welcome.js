@@ -46,6 +46,7 @@ class Welcome {
 
                     // Load up the classes
                     window.classList = new ClassList(localStorage.getItem("uni"), localStorage.getItem("term"));
+                    window.mycourses = new MyCourses(localStorage.getItem("uni"), localStorage.getItem("term"));
                 }
                 else {
                     $("#uniModalList").find("#dataList").hide();
@@ -146,6 +147,7 @@ class Welcome {
                 thisobj.term = $(this).attr("value");
 
                 window.classList = new ClassList(thisobj.uni, thisobj.term);
+                window.mycourses = new MyCourses(thisobj.uni, thisobj.term);
 
                 $("#welcomeModal").modal('hide');
             });
