@@ -48,12 +48,28 @@ class MyCourses {
 
         var text = this.numConvert[type] + " of";
 
-        var html = $('<li class="dropdown" groupid="' + id +'"><a class="dropdown-toggle" data-toggle="dropdown" style="cursor: pointer;">' + text + '<span class="caret"></span></a><ul class="dropdown-menu" style="min-width: 90px;"></ul></li>')
+        var html = $('<li class="dropdown" groupid="' + id +'"><a style="cursor: pointer;" id="grouptext">' + text + '<span class="caret largecaret"></span></a><ul class="dropdown-menu" style="min-width: 90px;"></ul></li>')
         
+
+        html.find("span").click(function(){
+            // bind bootstrap dropdown toggle
+            $(this).parent().parent().find(".dropdown-menu").toggle();
+        });
+
+        html.find("#grouptext").click(function(){
+            // set this group as active
+            // find this id
+            var groupid = $(this).parent().attr("groupid");
+            self.setGroupActive(groupid);
+        });
+
         html.find('.dropdown-menu').append(this.generatePillDropdown());
 
         // Bind the dropdown click handler
         html.find('li').click(function (event) {
+            // toggle dropdown
+            $(this).parent().toggle();
+
             // find the group type
             var grouptype = $(this).attr("grouptype");
             // find the group id
@@ -69,7 +85,12 @@ class MyCourses {
         this.courses[id]["type"] = type;
 
         // Change the HTML
-        $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
+        $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret largecaret"></span>');
+
+        $('li[groupid="' + id + '"]').find("a:first").find("span").click(function(){
+            // bind bootstrap dropdown toggle
+            $(this).parent().parent().find(".dropdown-menu").toggle();
+        });
     }
 
     setGroupActive(id) {
