@@ -244,7 +244,7 @@ p {
     margin: 0 !important;
 }
 
-.nav>li>a{
+.navbar-nav>li>a{
     padding: 20px 45px;
 }
 
