@@ -339,6 +339,21 @@ p {
     border-color: #ffffff;
     color: red;
     font-size: 20px;
+    background-color: #ffffff;
+}
+
+.courseColor>table>tbody>tr>td>button.btn:hover {
+    padding: 0 !important;
+    border-color: #ffffff;
+    color: #a90000;
+    font-size: 20px;
+    background-color: #ffffff;
+}
+
+.courseColor>table>tbody>tr>td>button.btn:focus {
+    padding: 0 !important;
+    font-size: 20px;
+    outline: none;
 }
 
 .accordiontable>tbody>tr>td>button{
@@ -353,6 +368,13 @@ p {
     background-color: #ffffff;
     border-color: #ffffff;
     color: #0256ac;
+}
+
+.accordiontable>tbody>tr>td>button:focus{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #0256ac;
+    outline: none;
 }
 
 .btn-primary{
