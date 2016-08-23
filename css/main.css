@@ -394,9 +394,14 @@ p {
 
 .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
     background-color: #0275d8;
+    cursor: default;
 }
 
 .nav-pills>li>a:hover{
+    background-color: #c5c4c4;
+}
+
+.nav-pills>li>a.MyCourses:hover{
     background-color: #eae9e9;
 }
 
