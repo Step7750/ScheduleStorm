@@ -376,6 +376,28 @@ p {
     outline: none;
 }
 
+.addCourseButton {
+  padding: 0 !important;
+  float: right;
+  color: #0275d8;
+  font-size: 35px;
+  margin-top: -7px;
+  border-color: #ffffff;
+}
+
+.addCourseButton:hover{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #0256ac;
+}
+
+.addCourseButton:focus{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #0256ac;
+    outline: none;
+}
+
 .nav-pills>li>a.MyCourses{
     font-size: 29px;
     font-weight: 500;

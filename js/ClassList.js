@@ -298,7 +298,7 @@ class ClassList {
                             }
 
                             var name = val;
-
+                            
                             if (thisdata[val]["description"] != undefined) {
                                 if (thisdata[val]["description"]["name"] != undefined) {
                                     name += " - " + thisdata[val]["description"]["name"]
@@ -307,7 +307,20 @@ class ClassList {
 
                             var thiselement = $(self.generateAccordionHTML(name, thispath));
 
-                            thiselement.find("label").click(function () {
+                            if (thisdata[val]["classes"] != undefined) {
+                                // this is a label for a course, allow the user to add the general course
+                                var addbutton = $('<div class="addCourseButton">+</div>');
+
+                                addbutton.click(function (event) {
+                                    event.stopPropagation();
+                                    console.log("User wants to add a course");
+                                });
+
+                                thiselement.find("label").append(addbutton)
+                            }
+
+                            thiselement.find("label").click(function (event) {
+                                event.stopPropagation();
                                 self.bindButton(self.classdata, this, "class");
                             });
                             element.append(thiselement);
