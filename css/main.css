@@ -377,8 +377,22 @@ p {
     outline: none;
 }
 
+.nav-pills>li>a.MyCourses{
+    font-size: 29px;
+    font-weight: 500;
+    padding: 3px; !important;
+}
+
 .btn-primary{
     background-color: #0275d8;
+}
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    background-color: #0275d8;
+}
+
+.nav-pills>li>a:hover{
+    background-color: #eae9e9;
 }
 
 td{
