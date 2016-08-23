@@ -387,6 +387,11 @@ p {
     background-color: #0275d8;
 }
 
+.btn-primary:focus{
+    background-color: #0275d8;
+    outline: none;
+}
+
 .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
     background-color: #0275d8;
 }
