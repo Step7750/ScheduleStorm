@@ -41,7 +41,7 @@ class MyCourses {
     addGroup(type) {
         // make sure we have 4 total groups or less
         if (this.courses.length <= 3) {
-            var thisgroup = {"type": type, "courses": []};
+            var thisgroup = {"type": type, "courses": {}};
             var id = this.courses.length;
             this.courses[id] = thisgroup;
 
@@ -140,8 +140,21 @@ class MyCourses {
         for (var course in self.courses[self.activeGroup]["courses"]) {
             course = self.courses[self.activeGroup]["courses"][course];
 
-            if (course["classid"] == undefined) {
-                self.displayCourse(course, course["path"]);
+            for (var type in course["types"]) {
+                if (course["types"][type] == true) {
+                    // this is a general course
+                    self.displayCourse(course["obj"], course["obj"]["path"], type);
+                }
+                else if (course["types"][type] != false) {
+                    // we have to find the class obj
+                    for (var classv in course["obj"]["classes"]) {
+                        if (course["obj"]["classes"][classv]["id"] == course["types"][type]) {
+                            // found the obj, draw the class
+                            self.displayCourse(course["obj"]["classes"][classv], course["obj"]["path"], type, course["types"][type]);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -164,45 +177,95 @@ class MyCourses {
         Adds the specified course to the current active group and populates the HTML
     */
     addCourse(course, path, classid) {
-        // Adds the given course to the current active group
-        // If classid is undefined, this is a general course, not a class
         var self = this;
 
+        // We want a separate copy of the obj to work on
         course = jQuery.extend({}, course);
-        
+
+        // add the path to the obj
         course["path"] = path;
-        if (classid != undefined) {
-            course["classid"] = classid;
+
+        var subject = path.split("\\");
+
+        var coursenum = subject[subject.length-1] // 203
+        var subject = subject[subject.length-2]; // CPSC
+
+        var coursecode = subject + " " + coursenum; // CPSC 203
+
+
+        // Add the key if it isn't there
+        if (self.courses[self.activeGroup]["courses"][coursecode] == undefined) {
+            self.courses[self.activeGroup]["courses"][coursecode] = {};
+            self.courses[self.activeGroup]["courses"][coursecode]["types"] = {};
         }
-        self.courses[self.activeGroup]["courses"].push(course);
 
-        self.displayCourse(course, path, classid);
+        var thiscourse = self.courses[self.activeGroup]["courses"][coursecode];
 
+        // set the course obj
+        thiscourse["obj"] = course;
+
+        if (classid == undefined) {
+            // they just added a general course
+
+            // figure out what labs, tutorials, etc.. there are
+            for (var classv in course["classes"]) {
+                if (course["classes"][classv]["type"] != undefined) {
+                    var thistype = course["classes"][classv]["type"];
+
+                    if (thiscourse["types"][thistype] == undefined) {
+                        thiscourse["types"][thistype] = true;
+                        // add the HTML
+                        self.displayCourse(course, path, thistype);
+                    }
+                }
+            }
+
+        }
+        else {
+            var classtype = true;
+
+            // figure out the class type
+            for (var classv in course["classes"]) {
+                if (course["classes"][classv]["id"] == classid) {
+                    classtype = course["classes"][classv]["type"];
+                    break;
+                }
+            }
+
+            if (thiscourse["types"][classtype] != classid) {
+                // draw it
+                self.displayCourse(course, path, classtype, classid);
+            }
+
+            thiscourse["types"][classtype] = classid;
+        }
     }
 
     /*
         Appends the given course to the current courselist HTML
     */
-    displayCourse(course, path, classid) {
+    displayCourse(course, path, type, classid) {
         var html = "";
         if (classid == undefined) {
-            html = this.generateCourseHTML(course, path);
+            html = this.generateCourseHTML(course, path, type);
         }
         else {
             console.log("Class");
+            html = this.generateClassHTML(course, path, classid);
         }
 
-        $("#courseList").append(html);
+        $("#courseList").prepend(html);
 
     }
 
     /*
         Generates the course HTML
     */
-    generateCourseHTML(course, path) {
+    generateCourseHTML(course, path, type) {
         var subject = path.split("\\");
         var coursenum = subject[subject.length-1]
         var subject = subject[subject.length-2];
+
         var html = '<div class="col-xs-6 courseColor"><table class="table"><tbody><tr>';
         html += '<td>' + subject + ' ' + coursenum;
 
@@ -210,28 +273,70 @@ class MyCourses {
             html += ' - ' + course["description"]["name"];
         }
 
-        if (course["classes"] != undefined) {
-            // Show the user which types of classes we'll need to fill in (lab, lec, tut, etc...)
-            var foundTypes = [];
-
-            for (var classv in course["classes"]) {
-                if (course["classes"][classv]["type"] != undefined) {
-                    if ($.inArray(course["classes"][classv]["type"], foundTypes) == -1) {
-                        // add it
-                        foundTypes.push(course["classes"][classv]["type"]);
-                    }
-                }
-            }
-
-            if (foundTypes.length > 0) {
-                html += " -";
-                for (var type in foundTypes) {
-                    html += " " + foundTypes[type];
-                }
-            }
+        if (type != undefined) {
+            html += ' - ' + type;
         }
 
         html += '</td>';
+
+        html += '<td>' + this.generateRemoveButton() + '</td>'
+
+        html += '</tr></tbody></table></div>';
+
+        return html
+    }
+
+
+    /*
+        Generates the class HTML
+    */
+    generateClassHTML(course, path, id) {
+        // find the class
+        for (var classv in course["classes"]) {
+            if (course["classes"][classv]["id"] == id) {
+                course = course["classes"][classv];
+                break
+            }
+        }
+
+        var subject = path.split("\\");
+        var coursenum = subject[subject.length-1]
+        var subject = subject[subject.length-2];
+
+        var html = '<div class="col-xs-6 courseColor"><table class="table"><tbody><tr>';
+        html += '<td>' + subject + ' ' + coursenum + '</td>';
+
+        html += '<td>' + course["type"] + "-" + course["group"] + " (" + id + ")" + '</td>';
+
+        var teachers = "";
+        for (var teacher in course["teachers"]) {
+            if (teacher > 0) {
+                teachers += "<br>";
+            }
+            teacher = course["teachers"][teacher];
+
+            // want to find RMP rating
+            var rating = "";
+            if (window.classList.rmpdata[teacher] != undefined) {
+                rating = window.classList.rmpdata[teacher]["rating"];
+            }
+
+            if (teacher != "Staff") {
+                teacher = ClassList.abbreviateName(teacher);
+            }
+
+            teachers += teacher;
+
+            if (rating != "") {
+                teachers += " (" + rating + ")";
+            }
+        }
+
+        html += "<td style='width: 20%;'>" + teachers + "</td>";
+
+        html += '<td style="width: 30%;">' + course["times"].join("<br>") + "</td>";
+
+        html += '<td>' + course["rooms"].join("<br>") + "</td>";
 
         html += '<td>' + this.generateRemoveButton() + '</td>'
 

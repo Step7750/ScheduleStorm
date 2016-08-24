@@ -159,7 +159,9 @@ class ClassList {
     /*
         Populates a list of given clases
     */
-    generateClasses(data, element) {
+    generateClasses(data, element, path) {
+        var self = this;
+
         var html = "<div class='accordiontableparent'><table class='table accordiontable'><tbody>";
         for (var index = 0; index < data["classes"].length; index++) {
             html += "<tr>";
@@ -203,13 +205,35 @@ class ClassList {
 
             html += "<td>" + thisclass["status"] + "</td>";
 
-            html += "<td>" + '<button class="btn btn-default">&plus;</button>' + "</td>";
+            html += "<td>" + '<button class="btn btn-default" classid="' + thisclass["id"] + '" path="' + path + '">&plus;</button>' + "</td>";
 
-            html += "</tr>"
+            html += "</tr>";
         }
 
         html += "</tbody></table></div>";
 
+        html = $(html);
+
+        html.find("button").click(function () {
+            console.log($(this).attr('classid'));
+            console.log($(this).attr('path'));
+            // addCourse(course, path, classid)
+
+            // get the path for this course
+            var path = $(this).attr('path');
+            var splitpath = path.split("\\");
+
+            var coursedata = self.classdata;
+
+            // get the data for this course
+            for (var apath in splitpath) {
+                if (splitpath[apath] != "") {
+                    coursedata = coursedata[splitpath[apath]];
+                }
+            }
+
+            window.mycourses.addCourse(coursedata, $(this).attr('path'), $(this).attr('classid'));
+        })
         element.append(html);
     }
 
@@ -265,7 +289,7 @@ class ClassList {
             }
 
             // Populate the class list
-            this.generateClasses(data, element);
+            this.generateClasses(data, element, path);
         }
     }
 
@@ -320,7 +344,7 @@ class ClassList {
 
 
                                     var coursedata = self.classdata;
-                                    
+
                                     // get the data for this course
                                     for (var apath in splitpath) {
                                         if (splitpath[apath] != "") {
