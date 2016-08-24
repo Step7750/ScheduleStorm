@@ -48,33 +48,45 @@ class MyCourses {
 
         var text = this.numConvert[type] + " of";
 
-        var html = $('<li class="dropdown" groupid="' + id +'"><a style="cursor: pointer;" id="grouptext">' + text + '<span class="caret largecaret"></span></a><ul class="dropdown-menu" style="min-width: 90px;"></ul></li>')
+        var html = $('<li class="dropdown" groupid="' + id +'"><a style="cursor: pointer;" id="grouptext" data-toggle="dropdown" class="dropdown-toggle" href="#">' + text + '<span class="caret"></span></a><ul class="dropdown-menu" aria-labelledby="grouptext" style="min-width: 90px;"></ul></li>')
         
+        html.find("a:first").click(function(e){
+            // If a pill is already selected, open the dropdown
+            // If not, set the pill as active
 
-        html.find("span").click(function(){
-            // bind bootstrap dropdown toggle
-            $(this).parent().parent().find(".dropdown-menu").toggle();
-        });
-
-        html.find("#grouptext").click(function(){
-            // set this group as active
-            // find this id
+            // check if this group is already active
             var groupid = $(this).parent().attr("groupid");
-            self.setGroupActive(groupid);
+
+            // Check if we need to set this as active
+            if (groupid != self.activeGroup) {
+                // we don't want the dropdown to open for this item
+                e.stopPropagation();
+
+                // check if the dropdown for the old active pill is open
+                // if so, close it
+                var isopen = $('li[groupid="' + self.activeGroup + '"]').hasClass("open");
+
+                if (isopen == true) {
+                    // close it
+                    $('li[groupid="' + self.activeGroup + '"]').find('.dropdown-menu').dropdown('toggle');
+                }
+
+                // set this group as active
+                self.setGroupActive(groupid);
+            }
         });
 
+        // Populate the dropdown
         html.find('.dropdown-menu').append(this.generatePillDropdown());
 
         // Bind the dropdown click handler
         html.find('li').click(function (event) {
-            // toggle dropdown
-            $(this).parent().toggle();
-
             // find the group type
             var grouptype = $(this).attr("grouptype");
             // find the group id
             var groupid = $(this).parent().parent().attr("groupid");
 
+            // Change the group type
             self.changeGroupType(groupid, grouptype);
         });
 
@@ -85,12 +97,7 @@ class MyCourses {
         this.courses[id]["type"] = type;
 
         // Change the HTML
-        $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret largecaret"></span>');
-
-        $('li[groupid="' + id + '"]').find("a:first").find("span").click(function(){
-            // bind bootstrap dropdown toggle
-            $(this).parent().parent().find(".dropdown-menu").toggle();
-        });
+        $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
     }
 
     setGroupActive(id) {
@@ -98,6 +105,7 @@ class MyCourses {
         if (this.activeGroup != undefined) {
             $('li[groupid="' + this.activeGroup + '"]').removeClass("active");
         }
+        
         this.activeGroup = id;
         $('li[groupid="' + id + '"]').addClass("active");
     }
