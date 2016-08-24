@@ -313,7 +313,23 @@ class ClassList {
 
                                 addbutton.click(function (event) {
                                     event.stopPropagation();
-                                    console.log("User wants to add a course");
+
+                                    // get the path for this course
+                                    var path = $(this).parent().attr("path");
+                                    var splitpath = path.split("\\");
+
+
+                                    var coursedata = self.classdata;
+                                    
+                                    // get the data for this course
+                                    for (var apath in splitpath) {
+                                        if (splitpath[apath] != "") {
+                                            coursedata = coursedata[splitpath[apath]];
+                                        }
+                                    }
+
+                                    // Add the course to the current active group
+                                    window.mycourses.addCourse(coursedata, path);
                                 });
 
                                 thiselement.find("label").append(addbutton)

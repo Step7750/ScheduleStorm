@@ -15,6 +15,9 @@ class MyCourses {
         this.setupPills();
     }
 
+    /*
+        Sets up the initial group pills and creates the "All of" initial pill
+    */
     setupPills() {
         var self = this;
 
@@ -32,6 +35,9 @@ class MyCourses {
         this.setGroupActive(0);
     }
 
+    /*
+        Adds a new course group of the specified type (0 for All, 1 for one, etc..)
+    */
     addGroup(type) {
         // make sure we have 4 total groups or less
         if (this.courses.length <= 3) {
@@ -43,6 +49,9 @@ class MyCourses {
         }
     }
 
+    /*
+        Generates, binds, and appends the given pill with the speicifed id and type
+    */
     generatePill(id, type) {
         var self = this;
 
@@ -93,6 +102,9 @@ class MyCourses {
         $("#addGroupbtn").before(html);
     }
 
+    /*
+        Changes the type of a group type and updates the element
+    */
     changeGroupType(id, type) {
         this.courses[id]["type"] = type;
 
@@ -100,6 +112,9 @@ class MyCourses {
         $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
     }
 
+    /*
+        Sets the specified group to active
+    */
     setGroupActive(id) {
         // remove old active class
         if (this.activeGroup != undefined) {
@@ -108,8 +123,33 @@ class MyCourses {
         
         this.activeGroup = id;
         $('li[groupid="' + id + '"]').addClass("active");
+
+        // now display all the courses in the group
+        this.displayGroup(this.activeGroup);
     }
 
+    /*
+        Populates the courses in the specified group
+    */
+    displayGroup(group) {
+        var self = this;
+
+        // empty out any current courses
+        $("#courseList").empty();
+
+        for (var course in self.courses[self.activeGroup]["courses"]) {
+            course = self.courses[self.activeGroup]["courses"][course];
+
+            if (course["classid"] == undefined) {
+                self.displayCourse(course, course["path"]);
+            }
+        }
+
+    }
+
+    /*
+        Generates the dropdown HTML for a group pill
+    */
     generatePillDropdown() {
         var html = '';
 
@@ -118,6 +158,93 @@ class MyCourses {
         }
 
         return html;
+    }
+
+    /*
+        Adds the specified course to the current active group and populates the HTML
+    */
+    addCourse(course, path, classid) {
+        // Adds the given course to the current active group
+        // If classid is undefined, this is a general course, not a class
+        var self = this;
+
+        course = jQuery.extend({}, course);
+        
+        course["path"] = path;
+        if (classid != undefined) {
+            course["classid"] = classid;
+        }
+        self.courses[self.activeGroup]["courses"].push(course);
+
+        self.displayCourse(course, path, classid);
+
+    }
+
+    /*
+        Appends the given course to the current courselist HTML
+    */
+    displayCourse(course, path, classid) {
+        var html = "";
+        if (classid == undefined) {
+            html = this.generateCourseHTML(course, path);
+        }
+        else {
+            console.log("Class");
+        }
+
+        $("#courseList").append(html);
+
+    }
+
+    /*
+        Generates the course HTML
+    */
+    generateCourseHTML(course, path) {
+        var subject = path.split("\\");
+        var coursenum = subject[subject.length-1]
+        var subject = subject[subject.length-2];
+        var html = '<div class="col-xs-6 courseColor"><table class="table"><tbody><tr>';
+        html += '<td>' + subject + ' ' + coursenum;
+
+        if (course["description"] != undefined && course["description"]["name"] != undefined) {
+            html += ' - ' + course["description"]["name"];
+        }
+
+        if (course["classes"] != undefined) {
+            // Show the user which types of classes we'll need to fill in (lab, lec, tut, etc...)
+            var foundTypes = [];
+
+            for (var classv in course["classes"]) {
+                if (course["classes"][classv]["type"] != undefined) {
+                    if ($.inArray(course["classes"][classv]["type"], foundTypes) == -1) {
+                        // add it
+                        foundTypes.push(course["classes"][classv]["type"]);
+                    }
+                }
+            }
+
+            if (foundTypes.length > 0) {
+                html += " -";
+                for (var type in foundTypes) {
+                    html += " " + foundTypes[type];
+                }
+            }
+        }
+
+        html += '</td>';
+
+        html += '<td>' + this.generateRemoveButton() + '</td>'
+
+        html += '</tr></tbody></table></div>';
+
+        return html
+    }
+
+    /*
+        Generates the course remove button HTML
+    */
+    generateRemoveButton() {
+        return '<button class="btn btn-default">&times;</button>';
     }
 
 }
