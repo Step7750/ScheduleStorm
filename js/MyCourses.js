@@ -266,7 +266,7 @@ class MyCourses {
         var coursenum = subject[subject.length-1]
         var subject = subject[subject.length-2];
 
-        var html = '<div class="col-xs-6 courseColor"><table class="table"><tbody><tr>';
+        var html = '<div class="courseColor"><table class="table"><tbody><tr>';
         html += '<td>' + subject + ' ' + coursenum;
 
         if (course["description"] != undefined && course["description"]["name"] != undefined) {
@@ -303,7 +303,7 @@ class MyCourses {
         var coursenum = subject[subject.length-1]
         var subject = subject[subject.length-2];
 
-        var html = '<div class="col-xs-6 courseColor"><table class="table"><tbody><tr>';
+        var html = '<div class="courseColor"><table class="table"><tbody><tr>';
         html += '<td>' + subject + ' ' + coursenum + '</td>';
 
         html += '<td>' + course["type"] + "-" + course["group"] + " (" + id + ")" + '</td>';
