@@ -81,11 +81,11 @@ table {
   font-size: 0.875rem;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.5);
-  padding: 0.25rem 0;
+  padding: 0rem 0;
   text-align: center;
   border: 0;
   position: relative;
-  top: -12px;
+  top: -6px;
   border-bottom: 1px solid transparent;
 }
 
@@ -125,7 +125,7 @@ tr td {
 tbody tr td {
   position: relative;
   vertical-align: top;
-  height: 40px;
+  height: 20px;
   padding: 0.25rem 0.25rem 0 0.25rem;
   width: auto;
 
@@ -169,7 +169,7 @@ tbody tr td {
 }
 
 .event.double {
-    height: 200%;
+    height: 550%;
 }
 
 
