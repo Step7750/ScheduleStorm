@@ -398,6 +398,34 @@ p {
     outline: none;
 }
 
+
+/*
+  Remove button
+*/
+
+.removeBtn {
+  padding: 0 !important;
+  float: right;
+  color: #f33d3a;
+  font-size: 35px;
+  margin-top: -7px;
+  border-color: #ffffff;
+}
+
+.removeBtn:hover{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #a01715;
+}
+
+.removeBtn:focus{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #a01715;
+    outline: none;
+}
+
+
 .nav-pills>li>a.MyCourses{
     font-size: 29px;
     font-weight: 500;

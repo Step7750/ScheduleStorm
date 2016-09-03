@@ -228,7 +228,7 @@ class MyCourses {
             // check to see if any other groups have this course, is so, delete the course from them
             self.deleteCourseFromNonSafe(coursecode, self.activeGroup);
 
-            self.displayCourse(course, path);
+            self.displayCourse(course, path, undefined, true);
         }
 
         var thiscourse = self.courses[self.activeGroup]["courses"][coursecode];
@@ -249,6 +249,7 @@ class MyCourses {
 
             thiscourse["types"][classtype] = classid;
 
+            // Update the accordion if its open
             self.updateAccordion(coursecode);
         }
     }
@@ -274,9 +275,20 @@ class MyCourses {
     }
 
     /*
+        Removes a course from the UI and courses obj
+    */
+    removeCourse(course, group) {
+        var label = $('label[path="' + course + '"]');
+        delete this.courses[group]["courses"][course];
+        label.parent().slideUp(function () {
+            $(this).empty();
+        })
+    }
+
+    /*
         Appends the given course to the current courselist HTML
     */
-    displayCourse(course, path, classid) {
+    displayCourse(course, path, classid, animated) {
         var self = this;
 
         var html = "";
@@ -287,9 +299,21 @@ class MyCourses {
                 event.stopPropagation();
                 self.bindButton(this, "course");
             });
+
+            // bind remove button
+            html.find(".removeBtn").click(function (event) {
+                event.stopPropagation();
+
+                self.removeCourse($(this).parent().attr("path"), self.activeGroup);
+            })
         }
 
-        $("#courseList").prepend(html);
+        if (animated) {
+            html.hide().prependTo("#courseList").slideDown();
+        }
+        else {
+            $("#courseList").prepend(html);
+        }
     }
 
     /*
@@ -401,6 +425,6 @@ class MyCourses {
         Generates the general accordian structure HTML given a value
     */
     generateAccordionHTML(value, path) {
-        return '<li class="has-children"><label path="' + path +'" accordopen="false">' + value + '</label><ul></ul></li>';
+        return '<li class="has-children"><label path="' + path +'" accordopen="false">' + value + '<div class="removeBtn">×</div></label><ul></ul></li>';
     }
 }
