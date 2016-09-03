@@ -376,6 +376,27 @@ p {
     outline: none;
 }
 
+#removeClassBtn {
+    padding: 0 !important;
+    float: right;
+    color: #f33d3a;
+    font-size: 27px;
+    border-color: #ffffff;
+}
+
+#removeClassBtn:hover{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #a01715;
+}
+
+#removeClassBtn:focus{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #a01715;
+    outline: none;
+}
+
 .addCourseButton {
   padding: 0 !important;
   float: right;

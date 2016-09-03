@@ -295,6 +295,22 @@ class MyCourses {
     }
 
     /*
+        Returns a boolean as to whether a specified course is in any selected group
+    */
+    hasCourse(course) {
+        for (var group in this.courses) {
+            var thisgroup = this.courses[group];
+
+            if (thisgroup["courses"][course] != undefined) {
+                return true;
+            }
+        }
+
+        // We didn't find a result
+        return false;
+    }
+
+    /*
         Appends the given course to the current courselist HTML
     */
     displayCourse(course, path, classid, animated) {
@@ -374,7 +390,7 @@ class MyCourses {
                 var thistype = thiscourse["types"][type];
                 if (thistype == true) {
                     // They don't have a specific selection, we'll have to generate it
-                    var html = '<div class="accordiondesc" style="padding-left: 50px;">' + self.typeExpand(type) + '</div>';
+                    var html = '<div class="accordiondesc" style="padding-left: 50px;" type="' + type + '">' + self.typeExpand(type) + '</div>';
                     element.append(html);
                 }
                 else if (thistype != false) {
@@ -395,9 +411,29 @@ class MyCourses {
                     if (data["classes"].length > 0) {
                         // generate the table
                         var html = window.classList.generateClasses(data, element, false, false);
+
+                        // add the remove button
+                        var removebtn = $('<td><button class="btn btn-default" id="removeClassBtn" type="' + type +'" code="' + coursecode + '">×</button></td>');
+
+                        // bind class removing button
+                        removebtn.find("button").click(function (event) {
+                            event.stopPropagation();
+                            var type = $(this).attr("type");
+                            var coursecode = $(this).attr("code");
+                            
+                            // set to generic class
+                            self.courses[self.activeGroup]["courses"][coursecode]["types"][type] = true;
+
+                            // update UI
+                            self.updateAccordion(coursecode);
+                        })
+
+                        html.find("tr:first").append(removebtn);
+                        // <div class="removeBtn">×</div>
+
                         // edit the css
                         html.css("padding-left", "50px");
-                        html.css("padding-right", "40px");
+                        html.css("padding-right", "15px");
                     }
                 }
             }
