@@ -277,12 +277,21 @@ class MyCourses {
     /*
         Removes a course from the UI and courses obj
     */
-    removeCourse(course, group) {
-        var label = $('label[path="' + course + '"]');
-        delete this.courses[group]["courses"][course];
-        label.parent().slideUp(function () {
-            $(this).empty();
-        })
+    removeCourse(course) {
+        for (var group in this.courses) {
+            var thisgroup = this.courses[group];
+
+            if (thisgroup["courses"][course] != undefined) {
+                delete thisgroup["courses"][course];
+
+                // check if its the active group
+                // if so, removing the UI element
+                var label = $('label[path="' + course + '"]');
+                label.parent().slideUp(function () {
+                    $(this).empty();
+                });
+            }
+        }
     }
 
     /*
@@ -304,7 +313,7 @@ class MyCourses {
             html.find(".removeBtn").click(function (event) {
                 event.stopPropagation();
 
-                self.removeCourse($(this).parent().attr("path"), self.activeGroup);
+                self.removeCourse($(this).parent().attr("path"));
             })
         }
 
