@@ -254,7 +254,7 @@ p {
 
 #courseList {
     height: 215px;
-        overflow: auto;
+    overflow: auto;
 }
 
 .navbar-default {

@@ -159,7 +159,7 @@ class ClassList {
     /*
         Populates a list of given clases
     */
-    generateClasses(data, element, path) {
+    generateClasses(data, element, path, addButton) {
         var self = this;
 
         var html = "<div class='accordiontableparent'><table class='table accordiontable'><tbody>";
@@ -205,7 +205,9 @@ class ClassList {
 
             html += "<td>" + thisclass["status"] + "</td>";
 
-            html += "<td>" + '<button class="btn btn-default" classid="' + thisclass["id"] + '" path="' + path + '">&plus;</button>' + "</td>";
+            if (addButton) {
+                html += "<td>" + '<button class="btn btn-default" classid="' + thisclass["id"] + '" path="' + path + '">&plus;</button>' + "</td>";
+            }
 
             html += "</tr>";
         }
@@ -214,27 +216,28 @@ class ClassList {
 
         html = $(html);
 
-        html.find("button").click(function () {
-            console.log($(this).attr('classid'));
-            console.log($(this).attr('path'));
-            // addCourse(course, path, classid)
+        if (addButton) {
+            html.find("button").click(function () {
+                // get the path for this course
+                var path = $(this).attr('path');
+                var splitpath = path.split("\\");
 
-            // get the path for this course
-            var path = $(this).attr('path');
-            var splitpath = path.split("\\");
+                var coursedata = self.classdata;
 
-            var coursedata = self.classdata;
-
-            // get the data for this course
-            for (var apath in splitpath) {
-                if (splitpath[apath] != "") {
-                    coursedata = coursedata[splitpath[apath]];
+                // get the data for this course
+                for (var apath in splitpath) {
+                    if (splitpath[apath] != "") {
+                        coursedata = coursedata[splitpath[apath]];
+                    }
                 }
-            }
 
-            window.mycourses.addCourse(coursedata, $(this).attr('path'), $(this).attr('classid'));
-        })
+                window.mycourses.addCourse(coursedata, $(this).attr('path'), $(this).attr('classid'));
+            });
+        }
+
         element.append(html);
+
+        return html;
     }
 
     /*
@@ -289,7 +292,7 @@ class ClassList {
             }
 
             // Populate the class list
-            this.generateClasses(data, element, path);
+            this.generateClasses(data, element, path, true);
         }
     }
 

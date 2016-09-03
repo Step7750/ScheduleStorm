@@ -104,7 +104,7 @@
 
                 </div>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown">
+                        <li class="dropdown noselect">
                             <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
                             <ul class="dropdown-menu"></ul>
                         </li>
@@ -130,17 +130,13 @@
             <div class="col-xs-5" style="padding-top: 10px;">
                 <span id="CourseList-title" style="float: left; margin-top: 5px;">My Courses</span>
                 <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences" style="float: right;"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
-                <ul class="nav nav-pills noselect" style="float: left; margin-left: 20px;" id="coursegroups">
-                <!--
-                  <li role="presentation" class="active"><a href="#">All of</a></li>
-                  <li role="presentation"><a href="#">One of</a></li>
-                  <li role="presentation"><a href="#">Two of</a></li>
-                  <li role="presentation"><a href="#" class="MyCourses">&plus;</a></li>
-                  -->
+                <ul class="nav nav-pills noselect" style="float: left; margin-left: 20px;" id="coursegroups"></ul>
+
+                <!-- Dynamically populated myclasses list -->
+                <ul class="cd-accordion-menu animated headers-list" style="clear:both; padding-top: 10px;" id="courseList">
+                    <div id='myClasses'></div>
                 </ul>
 
-                <!-- Dynamically populated course list -->
-                <div class="row" id="courseList" style="clear:both;"></div>
             </div><!-- /.col-xs-5 -->
 
             <div id="schedule">
