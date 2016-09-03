@@ -248,6 +248,28 @@ class MyCourses {
             }
 
             thiscourse["types"][classtype] = classid;
+
+            self.updateAccordion(coursecode);
+        }
+    }
+
+    /*
+        Updates the data in the given open accordion
+    */
+    updateAccordion(course) {
+        var self = this;
+
+        // get the label
+        var label = $('label[path="' + course + '"]');
+
+        // Check if its open
+        if (label.attr("accordopen") == "true") {
+            // update it
+            label.attr("accordopen", "false");
+            label.parent().find("ul:first").slideUp(function () {
+                $(this).empty();
+                self.bindButton(label, "course");
+            });
         }
     }
 
