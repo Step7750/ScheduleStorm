@@ -25,9 +25,7 @@ body, html{
     border-radius: 8px;
 }
 .wrap {
-
     overflow-x: hidden;
-    overflow-y: scroll;
     max-width: 1280px;
     height: 51vh;
     border-radius: 8px;
