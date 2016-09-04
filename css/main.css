@@ -154,6 +154,9 @@ tbody tr td {
   text-align: left;
   font-size: 0.875rem;
   z-index: 2;
+  top: 2px;
+  left: 2px;
+  right: 2px;
   padding: 0.5rem;
   overflow-x: hidden;
   transition: all 0.2s;

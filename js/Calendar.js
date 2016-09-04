@@ -9,7 +9,7 @@ class Calendar {
 
         this.resizeCalendar(0, 4, 9, 18);
 
-        this.addEvent("10:30", "12:45", [1, 3], "This is a generated event from 10:30 to 12:45");
+        this.addEvent("10:30", "12:50", [1, 3], "This is a generated event from 10:30 to 12:50");
     }
 
     /*
@@ -52,13 +52,13 @@ class Calendar {
         var totalmin = totalendmin - totalstartmin;
 
         // Calculate the height of the box
+        var totalheight = 0;
 
-        // First 15 min is 200%
-        var totalheight = 200;
-        totalmin -= 15;
+        // Every 15min is 20px
+        totalheight += (totalmin/15)*20;
 
-        // Every subsequent 15min is 125%
-        totalheight += (totalmin/15)*125;
+        // remove padding
+        totalheight -= 4;
 
         // draw the boxes
 
@@ -73,7 +73,7 @@ class Calendar {
             tdelement.empty();
 
             // create the element and append it
-            var html = '<div class="event" style="height: ' + totalheight + '%;">';
+            var html = '<div class="event" style="height: ' + totalheight + 'px;">';
 
             html += text;
 
