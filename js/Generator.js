@@ -38,8 +38,9 @@ class Generator {
 		}
 	}
 
-	static convertTo24hour(time) {
+	static convertToTotalMinutes(time) {
 		// Format XX:XXPM or AM
+		// Converts to total minutes since 12:00AM on that day 
 		var type = time.slice(-2);
 
 		var hours = parseInt(time.split(":")[0]);
@@ -48,12 +49,12 @@ class Generator {
 			hours += 12;
 		}
 
-		var seconds = time.split(":")[1];
-		seconds = seconds.substr(0, seconds.length-2);
-		seconds = parseInt(seconds);
-		return hours + ":" + seconds;
-	}
+		var minutes = time.split(":")[1];
+		minutes = minutes.substr(0, minutes.length-2);
+		minutes = parseInt(minutes);
 
+		return hours * 60 + minutes;
+	}
 
 	static convertTime(time) {
 		// first index are the days (integer with Monday being 0)
@@ -72,8 +73,8 @@ class Generator {
 
 		// get the days
 		var timesplit = time.split(" - ");
-		var endtime = Generator.convertTo24hour(timesplit[1]);
-		var starttime = Generator.convertTo24hour(timesplit[0].split(" ")[1]);
+		var endtime = Generator.convertToTotalMinutes(timesplit[1]);
+		var starttime = Generator.convertToTotalMinutes(timesplit[0].split(" ")[1]);
 
 		var days = timesplit[0].split(" ")[0];
 
@@ -94,7 +95,7 @@ class Generator {
 
 		return newtime;
 	}
-	
+
 
 	/*
 		Pushes every combination given the type of groups
