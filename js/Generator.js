@@ -37,7 +37,7 @@ class Generator {
 			}
 		}
 	}
-
+	
 	static convertToTotalMinutes(time) {
 		// Format XX:XXPM or AM
 		// Converts to total minutes since 12:00AM on that day 
@@ -54,6 +54,23 @@ class Generator {
 		minutes = parseInt(minutes);
 
 		return hours * 60 + minutes;
+	}
+	
+	static isConflicting(time1, time2) {
+		// time1 and time2 are arrays with the first index being the total minutes 
+		// since 12:00AM that day of the starttime and the second being the endtime
+		// ex. [570, 645] and [590, 740]
+		// We check whether the end time of time2 is greater than the start time of time1
+		// and whether the end time of time1 is greater than the start time of time2
+		// if so, there is a conflict
+
+		if (time1[1] > time2[0] && time2[1] > time1[0]) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
 	}
 
 	static convertTime(time) {
