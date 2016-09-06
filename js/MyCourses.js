@@ -297,6 +297,8 @@ class MyCourses {
                 });
             }
         }
+
+        this.generator = new Generator(this.courses);
     }
 
     /*

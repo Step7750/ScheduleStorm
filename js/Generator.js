@@ -1,7 +1,7 @@
 class Generator {
     constructor(classes) {
         // chosen classes
-        this.classes = classes.slice();
+        this.classes = jQuery.extend(true, {}, classes);
 
 
         this.convertTimes();
@@ -70,7 +70,6 @@ class Generator {
         else {
             return false;
         }
-
     }
 
     static convertTime(time) {
@@ -78,6 +77,7 @@ class Generator {
         // second index is the array with time
         var newtime = [];
 
+        // Map the days
         var map = {
             "Mo": 0,
             "Tu": 1,
@@ -88,11 +88,11 @@ class Generator {
             "Su": 6
         }
 
-        // get the days
         var timesplit = time.split(" - ");
         var endtime = Generator.convertToTotalMinutes(timesplit[1]);
         var starttime = Generator.convertToTotalMinutes(timesplit[0].split(" ")[1]);
 
+        // get the days
         var days = timesplit[0].split(" ")[0];
 
         var dayarray = [];
@@ -105,10 +105,6 @@ class Generator {
 
         newtime.push(dayarray);
         newtime.push([starttime, endtime]);
-
-
-        console.log(time);
-        console.log(newtime);
 
         return newtime;
     }
@@ -148,24 +144,131 @@ class Generator {
     }
 
     iterateCombos() {
+        // reset possible schedules
+        this.possibleschedules = [];
+
         if (this.combinations.length > 0) {
             // there must be more than 0 combos for a schedule
             for (var combos in this.combinations[0]) {
                 // these are the first combos
                 var thisschedule = [];
 
-                // lets get the possible schedules
+                // create a copy to work with
+                var combocopy = JSON.parse(JSON.stringify(this.combinations[0][combos]));
+                this.generateSchedules(thisschedule, combocopy);
+
 
                 if (this.combinations.length > 1) {
-                    // we have to add the other groups
-
+                    // TODO: We have to add the other groups
+                    
                 }
             }
         }
     }
 
     generateSchedules(schedule, queue) {
-        var thisschedule = 1;
+        var timeconflict = false;
+
+        if (queue.length == 0) {
+            // we found a successful schedule, push it
+            console.log(schedule);
+            this.possibleschedules.push(schedule);
+
+            // TODO: Add scoring method
+        }
+        else {
+            if (schedule.length > 1) {
+                // TODO: REFACTOR NEEDED
+
+                // Check whether the most recent index has a time conflict with any of the others
+                for (var x = 0; x < schedule.length-1; x++) {
+                    var thistimes = schedule[x]["times"];
+
+                    for (var time in thistimes) {
+                        var thistime = thistimes[time];
+                        // compare to last
+                        for (var othertime in schedule[schedule.length-1]["times"]) {
+                            var othertime = schedule[schedule.length-1]["times"][othertime];
+
+                            // check if any of the days between them are the same
+                            for (var day in thistime[0]) {
+                                var day = thistime[0][day];
+                                if ($.inArray(day, othertime[0]) > -1) {
+                                    // same day, check for time conflict
+                                    if (Generator.isConflicting(thistime[1], othertime[1])) {
+                                        timeconflict = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (timeconflict == false) {
+                // we can continue
+
+                if (Object.keys(queue[0]["types"]).length > 0) {
+                    // find an open type
+                    var foundType = false;
+                    for (var type in queue[0]["types"]) {
+                        if (queue[0]["types"][type] == true) {
+                            // they chose a general class to fulfill
+                            foundType = type;
+                            break;
+                        }
+                        else if (queue[0]["types"][type] != false) {
+                            // they chose a specific class to fulfill
+                            // add the specific class
+
+                            // find the class
+                            for (var classv in queue[0]["obj"]["classes"]) {
+                                var thisclass = queue[0]["obj"]["classes"][classv];
+
+                                if (thisclass["id"] == queue[0]["types"][type]) {
+                                    // we found the class obj, add it to the schedule
+                                    schedule.push(thisclass);
+
+                                    // remove the type from the queue
+                                    delete queue[0]["types"][type];
+
+                                    // recursively call the generator
+                                    this.generateSchedules(JSON.parse(JSON.stringify(schedule)), JSON.parse(JSON.stringify(queue)));
+
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+
+                    if (foundType != false) {
+                        // remove the type
+                        delete queue[0]["types"][foundType];
+
+                        // we need to iterate through the classes, find which ones match this type
+                        for (var classv in queue[0]["obj"]["classes"]) {
+                            var thisclass = queue[0]["obj"]["classes"][classv];
+
+                            if (thisclass["type"] == foundType) {
+                                // TODO: Make sure it's on the same group
+                                var thisschedule = JSON.parse(JSON.stringify(schedule));
+                                thisschedule.push(thisclass);
+
+                                this.generateSchedules(thisschedule, JSON.parse(JSON.stringify(queue)));
+                            }
+                        }
+                    }
+                }
+                else {
+                    // we've already found all the types for this class, move on to the next
+                    // remove this course
+                    queue.shift();
+
+                    this.generateSchedules(schedule, queue);
+                }
+            }
+        }
     }
 
     static k_combinations(set, k) {
