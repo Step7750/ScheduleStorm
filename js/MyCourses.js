@@ -2,6 +2,7 @@ class MyCourses {
     constructor(uni, term) {
         // TODO: Add saving courses, currently uni and term are redundant
         this.courses = [];
+        this.generator = false;
         this.numConvert = {
             0: "All",
             1: "One",
@@ -110,6 +111,8 @@ class MyCourses {
 
         // Change the HTML
         $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
+
+        this.generator = new Generator(this.courses);
     }
 
     /*
@@ -252,6 +255,8 @@ class MyCourses {
             // Update the accordion if its open
             self.updateAccordion(coursecode);
         }
+
+        this.generator = new Generator(this.courses);
     }
 
     /*
