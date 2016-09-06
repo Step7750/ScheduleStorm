@@ -1,7 +1,10 @@
 class Generator {
 	constructor(classes) {
 		// chosen classes
-		this.classes = classes;
+		this.classes = classes.slice();
+
+
+		this.convertTimes();
 
 		this.findCombinations();
 
@@ -12,6 +15,86 @@ class Generator {
 		this.iterateCombos();
 		
 	}
+
+	convertTimes() {
+		for (var group in this.classes) {
+			var thisgroup = this.classes[group];
+			var thiscourses = thisgroup["courses"];
+			for (var course in thiscourses) {
+				var thiscourse  = thiscourses[course];
+
+				// convert the times of each class
+				var classobj = thiscourse["obj"]["classes"];
+
+				for (var classv in classobj) {
+					var thisclass = classobj[classv];
+
+					// convert time
+					for (var time in thisclass["times"]) {
+						thisclass["times"][time] = Generator.convertTime(thisclass["times"][time]);
+					}
+				}
+			}
+		}
+	}
+
+	static convertTo24hour(time) {
+		// Format XX:XXPM or AM
+		var type = time.slice(-2);
+
+		var hours = parseInt(time.split(":")[0]);
+
+		if (type == "PM") {
+			hours += 12;
+		}
+
+		var seconds = time.split(":")[1];
+		seconds = seconds.substr(0, seconds.length-2);
+		seconds = parseInt(seconds);
+		return hours + ":" + seconds;
+	}
+
+
+	static convertTime(time) {
+		// first index are the days (integer with Monday being 0)
+		// second index is the array with time
+		var newtime = [];
+
+		var map = {
+			"Mo": 0,
+			"Tu": 1,
+			"We": 2,
+			"Th": 3,
+			"Fr": 4,
+			"Sa": 5,
+			"Su": 6
+		}
+
+		// get the days
+		var timesplit = time.split(" - ");
+		var endtime = Generator.convertTo24hour(timesplit[1]);
+		var starttime = Generator.convertTo24hour(timesplit[0].split(" ")[1]);
+
+		var days = timesplit[0].split(" ")[0];
+
+		var dayarray = [];
+
+		for (var day in map) {
+			if (days.indexOf(day) > -1) {
+				dayarray.push(map[day]);
+			}
+		}
+
+		newtime.push(dayarray);
+		newtime.push([starttime, endtime]);
+
+
+		console.log(time);
+		console.log(newtime);
+
+		return newtime;
+	}
+	
 
 	/*
 		Pushes every combination given the type of groups
@@ -57,12 +140,15 @@ class Generator {
 
 				if (this.combinations.length > 1) {
 					// we have to add the other groups
+
 				}
 			}
 		}
 	}
 
-	generateSchedules(schedule, queue)
+	generateSchedules(schedule, queue) {
+		var thisschedule = 1;
+	}
 
 	static k_combinations(set, k) {
 		/**
