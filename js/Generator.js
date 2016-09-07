@@ -107,20 +107,28 @@ class Generator {
             "Sa": 5,
             "Su": 6
         }
+        
+        if (time.indexOf(" - ") > -1) {
+            var timesplit = time.split(" - ");
+            var endtime = Generator.convertToTotalMinutes(timesplit[1]);
+            var starttime = Generator.convertToTotalMinutes(timesplit[0].split(" ")[1]);
 
-        var timesplit = time.split(" - ");
-        var endtime = Generator.convertToTotalMinutes(timesplit[1]);
-        var starttime = Generator.convertToTotalMinutes(timesplit[0].split(" ")[1]);
+            // get the days
+            var days = timesplit[0].split(" ")[0];
 
-        // get the days
-        var days = timesplit[0].split(" ")[0];
+            var dayarray = [];
 
-        var dayarray = [];
-
-        for (var day in map) {
-            if (days.indexOf(day) > -1) {
-                dayarray.push(map[day]);
+            for (var day in map) {
+                if (days.indexOf(day) > -1) {
+                    dayarray.push(map[day]);
+                }
             }
+        }
+        else {
+            // We don't know how to process this time
+            // This can happen with courses like web based courses with a time of "TBA"
+            newtime.push([-1]);
+            newtime.push([0, 0]);
         }
 
         newtime.push(dayarray);
