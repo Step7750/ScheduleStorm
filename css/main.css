@@ -27,7 +27,7 @@ body, html{
 .wrap {
     overflow-x: hidden;
     max-width: 1280px;
-    height: 51vh;
+    height: 49vh;
     border-radius: 8px;
 }
 
@@ -235,6 +235,7 @@ tbody tr td {
 #schedule{
     width: 47.7%;
     padding: 15px;
+    padding-top: 5px;
     margin-left: 50.8%;
     margin-top: 18em;
     background: #eae9e9;
