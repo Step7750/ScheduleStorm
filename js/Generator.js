@@ -5,6 +5,7 @@ class Generator {
 
 
         this.convertTimes();
+        this.addCourseInfo();
 
         this.findCombinations();
 
@@ -14,6 +15,25 @@ class Generator {
         
         this.iterateCombos();
         
+    }
+
+    addCourseInfo() {
+        for (var group in this.classes) {
+            var thisgroup = this.classes[group];
+            var thiscourses = thisgroup["courses"];
+            for (var course in thiscourses) {
+                var thiscourse  = thiscourses[course];
+
+                // convert the times of each class
+                var classobj = thiscourse["obj"]["classes"];
+
+                for (var classv in classobj) {
+                    var thisclass = classobj[classv];
+
+                    thisclass["name"] = course;
+                }
+            }
+        }
     }
 
     convertTimes() {
@@ -222,6 +242,20 @@ class Generator {
                 }
             }
 
+            if (schedule.length > 1) {
+                // if there are group numbers, make sure all classes are in the same group
+                // Some Unis require your tutorials to match the specific lecture etc...
+                // we only need to look at the most recent and second most recent groups
+                // since classes that belong to the same course are appended consecutively
+                if (schedule[schedule.length-1]["name"] == schedule[schedule.length-2]["name"]) {
+                    // make sure they have the same group number
+                    if (schedule[schedule.length-1]["group"] != schedule[schedule.length-2]["group"]) {
+                        // we have a conflict
+                        timeconflict = true;
+                    }
+                }
+            }
+
             if (timeconflict == false) {
                 // we can continue
 
@@ -255,6 +289,7 @@ class Generator {
                                     break;
                                 }
                             }
+
                             break;
                         }
                     }
@@ -268,7 +303,7 @@ class Generator {
                             var thisclass = queue[0]["obj"]["classes"][classv];
 
                             if (thisclass["type"] == foundType) {
-                                // TODO: Make sure it's on the same group
+                                // Create a copy of the schedule and push this class
                                 var thisschedule = JSON.parse(JSON.stringify(schedule));
                                 thisschedule.push(thisclass);
 
