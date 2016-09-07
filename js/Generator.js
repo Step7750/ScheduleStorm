@@ -150,18 +150,36 @@ class Generator {
         if (this.combinations.length > 0) {
             // there must be more than 0 combos for a schedule
             for (var combos in this.combinations[0]) {
-                // these are the first combos
-                var thisschedule = [];
-
                 // create a copy to work with
                 var combocopy = JSON.parse(JSON.stringify(this.combinations[0][combos]));
-                this.generateSchedules(thisschedule, combocopy);
+                this.generateSchedules([], combocopy);
 
+                this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
 
                 if (this.combinations.length > 1) {
-                    // TODO: We have to add the other groups
-                    
+                    console.log("Processing further groups");
+                    this.possibleschedules = [];
+                    // We have to add the other groups
+                    for (var group = 1; group < this.combinations.length; group++) {
+                        for (var newcombo in this.combinations[group])  {
+
+                            // for every previous schedule
+                            // TODO: If this starts to become slow, we might want to apply some heuristics
+                            for (var possibleschedule in this.possibleschedulescopy) {
+                                var combocopy = JSON.parse(JSON.stringify(this.combinations[group][newcombo]));
+                                this.generateSchedules(this.possibleschedulescopy[possibleschedule], combocopy);
+                            }
+                        }
+
+                        if (group < (this.combinations.length-1)) {
+                            // clear the schedules (we don't want partially working schedules)
+                            this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
+                            this.possibleschedules = [];
+                        }
+                    }
                 }
+
+                console.log(this.possibleschedules);
             }
         }
     }
@@ -171,7 +189,6 @@ class Generator {
 
         if (queue.length == 0) {
             // we found a successful schedule, push it
-            console.log(schedule);
             this.possibleschedules.push(schedule);
 
             // TODO: Add scoring method
