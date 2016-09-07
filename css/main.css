@@ -498,6 +498,15 @@ td{
     display: inline;
 }
 
+@media (min-width: 1120px){
+
+    .modal-lg {
+        width: 1120px;
+    }
+
+}
+
+
 @media (max-width: 767px) {
     .navbar-default .navbar-nav .open .dropdown-menu > li > a {
         color: #fbfeff;
