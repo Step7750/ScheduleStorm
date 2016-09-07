@@ -92,7 +92,7 @@ class Calendar {
         // all parameters are inclusive
 
         // build header
-        var header = '<table><thead><tr><th class="headcol"><span style="font-size: 23px; color: #0275d8">&#9664; &#9654;</span></th>';
+        var header = '<table><thead><tr><div align="center" style="background-color: #fff; padding-top: 10px"><span style="font-size: 20px; color: #0275d8; padding-left:40px;">&#9664;</span> <span style="font-size: 16px">1/20</span> <span style="font-size: 20px; color: #0275d8">&#9654;</span></div><th class="headcol"></th>';
 
         for (var x = startDay; x <= endDay; x++) {
             header += "<th>" + this.weekdays[x] + "</th>";

@@ -498,6 +498,11 @@ td{
     display: inline;
 }
 
+
+.headcol{
+    width: 45px;
+}
+
 @media (min-width: 1120px){
 
     .modal-lg {
