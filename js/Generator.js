@@ -65,7 +65,7 @@ class Generator {
 
         var hours = parseInt(time.split(":")[0]);
 
-        if (type == "PM") {
+        if (type == "PM" && hours < 12) {
             hours += 12;
         }
 
@@ -74,6 +74,13 @@ class Generator {
         minutes = parseInt(minutes);
 
         return hours * 60 + minutes;
+    }
+
+    static totalMinutesToTime(time) {
+        var minutes = time % 60;
+        var hours = Math.floor(time/60);
+
+        return hours + ":" + minutes;
     }
     
     static isConflicting(time1, time2) {
@@ -219,8 +226,14 @@ class Generator {
         // update the total
         if (schedules.length == 0) window.calendar.setCurrentIndex(0);
         else if (schedules.length > 0) window.calendar.setCurrentIndex(1);
-        
+
         window.calendar.setTotalGenerated(schedules.length);
+        window.calendar.clearEvents();
+
+        if (schedules.length > 0) {
+            // populate the first one
+            window.calendar.displaySchedule(schedules[0]);
+        }
     }
 
     generateSchedules(schedule, queue) {

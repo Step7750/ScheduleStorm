@@ -9,7 +9,7 @@ class Calendar {
 
         this.resizeCalendar(0, 4, 9, 18);
 
-        this.addEvent("10:30", "12:50", [1, 3], "This is a generated event from 10:30 to 12:50");
+        //this.addEvent("10:30", "12:50", [1, 3], "This is a generated event from 10:30 to 12:50");
     }
 
     /*
@@ -27,8 +27,25 @@ class Calendar {
 
         // Clear all the current events on the calendar
         self.clearEvents();
+        
+        console.log("This schedule");
+        console.log(schedule);
 
+        for (var classv in schedule) {
+            var thisclass = schedule[classv];
 
+            var text = thisclass["name"] + " - " + thisclass["type"] + " - " + thisclass["id"];
+
+            // for every time
+            for (var time in thisclass["times"]) {
+                var thistime = thisclass["times"][time];
+
+                // make sure there isn't a -1 in the days
+                if (thistime[0].indexOf(-1) == -1) {
+                    this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text);
+                }                
+            }
+        }
     }
 
     /*
