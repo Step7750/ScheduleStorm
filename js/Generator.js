@@ -206,10 +206,21 @@ class Generator {
                         }
                     }
                 }
-
-                console.log(this.possibleschedules);
             }
         }
+
+        this.processSchedules(this.possibleschedules);
+    }
+
+    /*
+        Processes a list of successful schedules and populates the calendar
+    */
+    processSchedules(schedules) {
+        // update the total
+        if (schedules.length == 0) window.calendar.setCurrentIndex(0);
+        else if (schedules.length > 0) window.calendar.setCurrentIndex(1);
+        
+        window.calendar.setTotalGenerated(schedules.length);
     }
 
     generateSchedules(schedule, queue) {

@@ -20,6 +20,67 @@ class Calendar {
     }
 
     /*
+        Displays the given schedule
+    */
+    displaySchedule(schedule) {
+        var self = this;
+
+        // Clear all the current events on the calendar
+        self.clearEvents();
+
+
+    }
+
+    /*
+        Sets the current generated index
+    */
+    setCurrentIndex(index) {
+        var self = this;
+
+        if (index > self.totalGenerated) {
+            // go down to the start at 0
+            index = 0;
+        }
+        if (index < 0) {
+            // go to the max index
+            index = self.totalGenerated;
+        }
+
+        self.curIndex = index;
+
+        // show it on the UI
+        self.updateIndexUI(self.curIndex);
+    }
+
+    updateIndexUI(index) {
+        $("#curGenIndex").text(index);
+    }
+
+    updateTotalUI(total) {
+        $("#totalGen").text(total);
+    }
+
+    /*
+        Sets the total amount of generated schedules for the UI
+    */
+    setTotalGenerated(total) {
+        var self = this;
+
+        self.totalGenerated = total;
+
+        self.updateTotalUI(self.totalGenerated);
+    }
+
+    /*
+        Visually clears all of the events on the calendar
+    */
+    clearEvents() {
+        $("#schedule").find(".event").each(function() {
+            $(this).remove();
+        });
+    }
+
+    /*
         Add an event with start and end time (24 hours)
 
         Days is an array containing the integers that represent the days that this event is on
