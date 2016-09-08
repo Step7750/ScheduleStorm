@@ -540,6 +540,21 @@ td{
     .courseColor{
         height: 52px;
     }
+
+    #courseSelector{
+        height: 77vh;
+    }
+
+    thead th{
+        font-size: 0.8rem;
+        padding-left: 0;
+    }
+}
+
+@media (max-height: 800px) {
+    .wrap {
+        height: 40vh;
+    }
 }
 
 @media (max-width: 1024px){
