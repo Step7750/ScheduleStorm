@@ -224,15 +224,29 @@ class Generator {
     */
     processSchedules(schedules) {
         // update the total
-        if (schedules.length == 0) window.calendar.setCurrentIndex(0);
-        else if (schedules.length > 0) window.calendar.setCurrentIndex(1);
-
         window.calendar.setTotalGenerated(schedules.length);
+
+        // update current
+        if (schedules.length == 0) window.calendar.setCurrentIndex(-1);
+        else if (schedules.length > 0) window.calendar.setCurrentIndex(0);
+
         window.calendar.clearEvents();
 
         if (schedules.length > 0) {
             // populate the first one
             window.calendar.displaySchedule(schedules[0]);
+        }
+    }
+
+    /*
+        Returns the schedule at the specified index
+    */
+    getSchedule(index) {
+        if ((this.possibleschedules.length-1) >= index) {
+            return this.possibleschedules[index];
+        }
+        else {
+            return false;
         }
     }
 

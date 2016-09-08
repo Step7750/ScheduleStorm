@@ -5,12 +5,11 @@ class Calendar {
 
         console.log("Setting up calendar");
 
-        //<td><div class="event double">12:00–1:00 Meeting</div></td>
-
         this.resizeCalendar(0, 4, 9, 18);
 
-        //this.addEvent("10:30", "12:50", [1, 3], "This is a generated event from 10:30 to 12:50");
+        this.bindNextPrev();
     }
+
 
     /*
         Empties out the calendar
@@ -27,7 +26,7 @@ class Calendar {
 
         // Clear all the current events on the calendar
         self.clearEvents();
-        
+
         console.log("This schedule");
         console.log(schedule);
 
@@ -54,25 +53,31 @@ class Calendar {
     setCurrentIndex(index) {
         var self = this;
 
-        if (index > self.totalGenerated) {
+        if (index > (self.totalGenerated-1)) {
             // go down to the start at 0
             index = 0;
         }
         if (index < 0) {
             // go to the max index
-            index = self.totalGenerated;
+            index = self.totalGenerated-1;
         }
 
         self.curIndex = index;
 
         // show it on the UI
-        self.updateIndexUI(self.curIndex);
+        self.updateIndexUI(self.curIndex+1);
     }
 
+    /*
+        Updates the UI with the passed in current schedule index
+    */
     updateIndexUI(index) {
         $("#curGenIndex").text(index);
     }
 
+    /*
+        Updates the UI with the passed in total generated schedules
+    */
     updateTotalUI(total) {
         $("#totalGen").text(total);
     }
@@ -88,6 +93,44 @@ class Calendar {
         self.updateTotalUI(self.totalGenerated);
     }
 
+    /*
+        Binds the buttons that let you go through each generated schedule
+    */
+    bindNextPrev() {
+        var self = this;
+        // unbind any current binds
+        $("#prevSchedule").unbind();
+        $("#nextSchedule").unbind();
+
+        $("#prevSchedule").click(function () {
+            if (self.totalGenerated > 0) {
+                self.setCurrentIndex(self.curIndex-1);
+
+                // get the schedule
+                var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
+
+                if (newschedules != false) {
+                    // we got the schedule, now populate it
+                    self.displaySchedule(newschedules);
+                }
+            }
+        });
+
+        $("#nextSchedule").click(function () {
+            if (self.totalGenerated > 0) {
+                self.setCurrentIndex(self.curIndex+1);
+
+                // get the schedule
+                var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
+
+                if (newschedules != false) {
+                    // we got the schedule, now populate it
+                    self.displaySchedule(newschedules);
+                }
+            }
+        });
+    }
+    
     /*
         Visually clears all of the events on the calendar
     */
