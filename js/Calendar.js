@@ -5,9 +5,11 @@ class Calendar {
 
         console.log("Setting up calendar");
 
-        this.resizeCalendar(0, 4, 9, 18);
+        this.resizeCalendarNoScroll(0, 4, 9, 17);
 
         this.bindNextPrev();
+
+        //this.addEvent("9:45", "11:00", [1, 3], "9:10-11:00");
     }
 
 
@@ -130,7 +132,7 @@ class Calendar {
             }
         });
     }
-    
+
     /*
         Visually clears all of the events on the calendar
     */
@@ -146,25 +148,17 @@ class Calendar {
         Days is an array containing the integers that represent the days that this event is on
     */
     addEvent(starttime, endtime, days, text) {
+
+        var rowheight = $("#schedule").find("td:first").height() + 1;
+
         var starthour = parseInt(starttime.split(":")[0]);
         var startmin = parseInt(starttime.split(":")[1]);
 
         var endhour = parseInt(endtime.split(":")[0]);
         var endmin = parseInt(endtime.split(":")[1]);
 
-        // find closest 15min for the start time
-        if (startmin % 15 > 7) {
-            startmin = (Math.floor(startmin/15) + 1) * 15;
-        }
-        else {
-            // round down
-            startmin = Math.floor(startmin/15) * 15;
-        }
-
-        if (startmin == 60) {
-            starthour += 1;
-            startmin = 0;
-        }
+        // round down to closest 30min or hour
+        var roundedstartmin = Math.floor(startmin/30) * 30;
 
         // figure out how many minutes are in between the two times
         var totalstartmin = starthour*60 + startmin;
@@ -175,26 +169,25 @@ class Calendar {
         // Calculate the height of the box
         var totalheight = 0;
 
-        // Every 15min is 20px
-        totalheight += (totalmin/15)*20;
+        // Every 30min is rowheight
+        totalheight += (totalmin/30)*rowheight;
 
-        // remove padding
-        totalheight -= 4;
+        // calculate how far from the top the element is
+        var topoffset = ((startmin % 30)/30) * rowheight;
 
-        // draw the boxes
-
+        // draw the events
         for (var day in days) {
             day = days[day];
 
             // find the parent
-            var tdelement = $("#schedule").find("#" + starthour + "-" + startmin);
+            var tdelement = $("#schedule").find("#" + starthour + "-" + roundedstartmin);
             tdelement = tdelement.find("td:eq(" + (day+1) + ")")
 
             // empty it
             tdelement.empty();
 
             // create the element and append it
-            var html = '<div class="event" style="height: ' + totalheight + 'px;">';
+            var html = '<div class="event" style="height: ' + totalheight + 'px; top: ' + topoffset + 'px;">';
 
             html += text;
 
@@ -263,6 +256,81 @@ class Calendar {
             table += "</tr>";
 
             min += 15;
+        }
+
+        table += '</tbody></table></div>';
+
+        $("#schedule").find(".outer:first").append(table);
+    }
+
+    /*
+        Resizes the calendar to the specified constraints
+    */
+    resizeCalendarNoScroll(startDay, endDay, startHour, endHour) {
+
+        // If the difference between the start and end hours is less than 6, extend the end hour
+        // This is to make sure the appearance of the calendar doesn't look weird and
+        // that every row is 20px high
+        
+        if ((endHour - startHour) < 6) {
+            endHour += 6 - (endHour - startHour);
+        }
+
+        var windowheight = $(window).height();
+        var calendarheight = windowheight * 0.49;
+
+
+        this.emptyCalendar();
+
+        // all parameters are inclusive
+
+        // build header
+        var header = '<table><thead><tr><th class="headcol"></th>';
+        
+        for (var x = startDay; x <= endDay; x++) {
+            header += "<th>" + this.weekdays[x] + "</th>";
+        }
+
+        header += '</tr></thead></table>';
+
+        // append the header
+        $("#schedule").find(".outer:first").append(header);
+        
+
+        var table = '<div class="wrap"><table class="offset"><tbody>';
+
+        // we start 30 min earlier than the specified start hour
+        var min = 30;
+        var hour = startHour-1; // 24 hour
+
+        while (hour < endHour) {
+
+            if (min >= 60) {
+                min = 0;
+                hour += 1;
+            }
+
+            // find 12 hour equivalent
+            var hours12 = ((hour + 11) % 12 + 1);
+
+            var hourtext = "";
+            if (min == 0) {
+                // we want to ensure 2 0's
+                hourtext += hours12 + ":00";
+            }
+
+            // generate the text
+            table += "<tr id='" + hour + "-" + min + "'><td class='headcol'>" + hourtext + "</td>";
+
+            var iteratelength = endDay - startDay + 1;
+
+            for (var x = 0; x < iteratelength; x++) {
+                table += "<td></td>";
+            }
+
+            table += "</tr>";
+
+            min += 30;
         }
 
         table += '</tbody></table></div>';

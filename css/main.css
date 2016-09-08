@@ -29,6 +29,7 @@ body, html{
     max-width: 1280px;
     height: 49vh;
     border-radius: 8px;
+    background-color: white;
 }
 
 thead {
