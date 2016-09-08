@@ -549,11 +549,19 @@ td{
         font-size: 0.8rem;
         padding-left: 0;
     }
+
+    #courseList-title {
+        font-size: 20px;
+    }
 }
 
 @media (max-height: 800px) {
     .wrap {
         height: 40vh;
+    }
+
+    .courseList {
+        height: 24vh;
     }
 }
 
