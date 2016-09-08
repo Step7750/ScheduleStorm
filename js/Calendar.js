@@ -32,6 +32,8 @@ class Calendar {
         console.log("This schedule");
         console.log(schedule);
 
+        self.setScheduleConstraints(schedule);
+
         for (var classv in schedule) {
             var thisclass = schedule[classv];
 
@@ -47,6 +49,52 @@ class Calendar {
                 }                
             }
         }
+    }
+
+    /*
+        Sets the time constraints of the calendar given a schedule
+    */
+    setScheduleConstraints(schedule) {
+        var maxDay = 4; // we always want to show Mon-Fri unless there are Sat or Sun classes
+        var minDay = 0;
+        var minHour = 24;
+        var maxHour = 0;
+
+        for (var classv in schedule) {
+            var thisclass = schedule[classv];
+
+            // for every time
+            for (var time in thisclass["times"]) {
+                var thistime = thisclass["times"][time];
+
+                // make sure there isn't a -1 in the days
+                if (thistime[0].indexOf(-1) == -1) {
+                    // check whether the date changes constraints
+                    var thisMaxDay = Math.max.apply(null, thistime[0]);
+
+                    if (thisMaxDay > maxDay) {
+                        maxDay = thisMaxDay;
+                    }
+
+                    // check whether these times change the constraints
+                    var startTime = Generator.totalMinutesToTime(thistime[1][0]);
+                    var startHour = parseInt(startTime.split(":")[0])
+
+                    if (startHour < minHour) {
+                        minHour = startHour;
+                    }
+
+                    var endTime = Generator.totalMinutesToTime(thistime[1][1]);
+                    var endHour = parseInt(endTime.split(":")[0]) + 1;
+
+                    if (endHour > maxHour) {
+                        maxHour = endHour;
+                    }
+                }                
+            }
+        }
+
+        this.resizeCalendarNoScroll(minDay, maxDay, minHour, maxHour);
     }
 
     /*
