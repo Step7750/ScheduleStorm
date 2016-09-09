@@ -228,11 +228,6 @@ tbody tr td {
     padding-bottom: 10px;
 }
 
-#courseSelector{
-    height: 80vh;
-        overflow: auto;
-}
-
 #schedule{
     padding-top: 5px;
     margin-top: 15px;
@@ -463,6 +458,16 @@ p {
     user-select: none;
 }
 
+#MyCourses{
+    height: 31%;
+}
+
+#courseSelector{
+    height: 96%;
+        overflow: auto;
+    padding: 15px;
+}
+
 .largecaret {
     border-width: 6px;
 }
@@ -502,6 +507,10 @@ td{
     width: 45px;
 }
 
+body > .row{
+    height: 870px;
+}
+
 @media (min-width: 1120px){
 
     .modal-lg {
@@ -536,10 +545,6 @@ td{
 
     .courseColor{
         height: 52px;
-    }
-
-    #courseSelector{
-        height: 77vh;
     }
 
     thead th{
