@@ -550,8 +550,12 @@ td{
         padding-left: 0;
     }
 
-    #courseList-title {
+    #CourseList-title {
         font-size: 20px;
+    }
+
+    .courseList {
+        height: 24vh;
     }
 }
 
@@ -560,9 +564,6 @@ td{
         height: 40vh;
     }
 
-    .courseList {
-        height: 24vh;
-    }
 }
 
 @media (max-width: 1024px){
