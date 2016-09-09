@@ -6,6 +6,7 @@ body, html{
 
 .outer {
     position:relative;
+    height: 100%;
 }
 
 .dropdown-items {
@@ -20,16 +21,16 @@ body, html{
     margin: 0 auto;
     max-width: 1280px;
     min-width: 400px;
-
+    height: 95%;
     box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2) ,0 3px 7px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
 .wrap {
     overflow-x: hidden;
     max-width: 1280px;
-    height: 462px;
     border-radius: 8px;
     background-color: white;
+    height: 91%;
 }
 
 thead {
@@ -232,6 +233,7 @@ tbody tr td {
     padding-top: 5px;
     margin-top: 15px;
     background: #eae9e9;
+    height: 65.3%;
 }
 
 p {
@@ -248,8 +250,8 @@ p {
 }
 
 #courseList {
-    height: 215px;
     overflow: auto;
+    height: 87%;
 }
 
 .navbar-default {
@@ -463,8 +465,7 @@ p {
 }
 
 #courseSelector{
-    height: 96%;
-        overflow: auto;
+    height: 98%;
     padding: 15px;
 }
 
@@ -505,10 +506,6 @@ td{
 
 .headcol{
     width: 45px;
-}
-
-body > .row{
-    height: 870px;
 }
 
 @media (min-width: 1120px){
