@@ -72,9 +72,8 @@
                     <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
                         <div class="row">
                             <div class="col-xs-4" style="width: 325px">
-                                <p style="padding: 10px 50px">Rate My Professor Range:</p>
-                                <input type="text" class="form-control" placeholder="Min" style="width: 140px">
-                                <input type="text" class="form-control" placeholder="Max" style="width: 140px">
+                                <p style="padding: 12px 0">Quality of Time Vs. Quality of Professor:</p>
+                                <input id="RMP" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none" data-value="0" value="0" data-slider-tooltip="hide">
                             </div>
                             <div class="col-xs-4" style="width: 257px">
                                 <p style="padding: 12px 50px;">Morning Classes?</p>
@@ -178,6 +177,12 @@
                 });
 
                 $('#night').slider({
+                    formatter: function (value) {
+                        return 'Current value: ' + value;
+                    }
+                });
+
+                $('#RMP').slider({
                     formatter: function (value) {
                         return 'Current value: ' + value;
                     }
