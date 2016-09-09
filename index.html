@@ -121,7 +121,7 @@
         </nav>
        
         <div class="row" style="height: 91vh;">
-            <div class="col-xs-6" id="courseSelector">
+            <div class="col-md-6" id="courseSelector">
                 <div class="input-group">
                     <input type="text" id="searchcourses" class="form-control" placeholder="Search">
                     <div class="input-group-btn">
@@ -129,12 +129,13 @@
                         <ul class="dropdown-menu dropdown-menu-right" id="termselectdropdown"></ul>
                     </div><!-- /btn-group -->
                 </div><!-- /input-group -->
+                <div id="CourseDataLoader" style="padding-top:10px;"></div>
                 <ul class="cd-accordion-menu animated headers-list" style="overflow: auto; height: 93%">
                     <div id='classdata'></div>
 	            </ul> <!-- cd-accordion-menu -->
             </div><!-- /.col-xs-6 -->
 
-            <div id="MyCourses" class="col-xs-5">
+            <div id="MyCourses" class="col-md-5">
                 <span id="CourseList-title" style="float: left; margin-top: 5px;">My Courses</span>
                 <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences" style="float: right;"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
                 <ul class="nav nav-pills noselect" style="float: left; margin-left: 20px;" id="coursegroups"></ul>
@@ -146,7 +147,7 @@
 
             </div><!-- /.col-xs-5 -->
             
-            <div id="schedule" class="col-xs-5">
+            <div id="schedule" class="col-md-5">
                 <div align="center" style="padding-bottom: 5px;" class="noselect">
                     <span style="font-size: 20px; color: #0275d8; padding-left:40px; cursor: pointer;" id="prevSchedule">◀</span>
                     <span style="font-size: 16px; cursor: default;">

@@ -64,7 +64,7 @@ class ClassList {
             $("#courseSelector").find("#loading").remove();
 
             // Add loading animation
-            var loading = new Loading($("#courseSelector"), "Loading Course Data...");
+            var loading = new Loading($("#CourseDataLoader"), "Loading Course Data...");
 
             // Get the class data
             $.getJSON(self.baseURL + "unis/" + self.uni + "/" + self.term + "/all", function(data) {

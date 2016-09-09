@@ -202,11 +202,11 @@ tbody tr td {
     margin-left: 61em;
 }
 
-.col-xs-6{
+.col-md-6{
     background-color: #eae9e9;
 }
 
-.col-xs-5{
+.col-md-5{
     margin-left: 15px;
     background-color: #eae9e9;
     width: 47.5%;
@@ -599,5 +599,19 @@ td{
 
     .cd-accordion-menu label, .cd-accordion-menu a{
         font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 991px){
+    body, html{
+        overflow: auto;
+    }
+
+    .col-md-5{
+        width: 93%;
+    }
+
+    #MyCourses{
+        margin-top: 15px;
     }
 }
