@@ -19,7 +19,7 @@ body, html{
 .calendar {
     margin: 0 auto;
     max-width: 1280px;
-    min-width: 500px;
+    min-width: 400px;
 
     box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2) ,0 3px 7px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -27,7 +27,7 @@ body, html{
 .wrap {
     overflow-x: hidden;
     max-width: 1280px;
-    height: 49vh;
+    height: 462px;
     border-radius: 8px;
     background-color: white;
 }
@@ -556,15 +556,46 @@ td{
     }
 }
 
-@media (max-height: 800px) {
-    .wrap {
-        height: 40vh;
+@media (max-height: 800px){
+
+    body > .row{
+        height: 700px;
     }
 
+    #MyCourses{
+        height: 33%;
+        padding-top: 15px;
+    }
+
+    #schedule{
+        height: 64.2%
+    }
+
+    .calendar{
+        height: 95%;
+    }
+
+    .outer{
+        height: 100%
+    }
+
+    .wrap{
+        height: 89%;
+    }
 }
 
+
 @media (max-width: 1024px){
-    #schedule{
-        margin-left: 51.5%;
+
+    #courseList{
+        height: 85%;
+    }
+
+    .event{
+        font-size: 0.7rem;
+    }
+
+    .cd-accordion-menu label, .cd-accordion-menu a{
+        font-size: 1.1rem;
     }
 }
