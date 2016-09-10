@@ -9,6 +9,17 @@ class Calendar {
 
         this.bindNextPrev();
 
+        this.eventcolours = {
+            "#FF5E3A": false,
+            "#0ab915": false,
+            "#1D62F0": false,
+            "#FF2D55": false,
+            "#8E8E93": false,
+            "#095db7": false,
+            "#34AADC": false,
+            "#5AD427": false
+        }
+
         //this.addEvent("9:45", "11:00", [1, 3], "9:10-11:00");
     }
 
@@ -45,10 +56,41 @@ class Calendar {
 
                 // make sure there isn't a -1 in the days
                 if (thistime[0].indexOf(-1) == -1) {
-                    this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text);
+                    this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text, thisclass["name"]);
                 }                
             }
         }
+
+        // reset the colour ids
+        self.resetColours();
+
+    }
+
+    resetColours() {
+        for (var colour in this.eventcolours) {
+            this.eventcolours[colour] = false;
+        }
+    }
+
+    getEventColour(classname) {
+        // check if we already have a colour for this class
+        for (var colour in this.eventcolours) {
+            if (this.eventcolours[colour] == classname) {
+                return colour;
+            }
+        }
+
+        // add a new colour for this class
+        for (var colour in this.eventcolours) {
+            if (this.eventcolours[colour] == false) {
+                this.eventcolours[colour] = classname;
+                return colour;
+            }
+        }
+
+        // there are no colours left, return a default colour
+        return "#0275d8";
+
     }
 
     /*
@@ -195,7 +237,7 @@ class Calendar {
 
         Days is an array containing the integers that represent the days that this event is on
     */
-    addEvent(starttime, endtime, days, text) {
+    addEvent(starttime, endtime, days, text, classname) {
 
         var rowheight = $("#schedule").find("td:first").height() + 1;
 
@@ -229,13 +271,13 @@ class Calendar {
 
             // find the parent
             var tdelement = $("#schedule").find("#" + starthour + "-" + roundedstartmin);
-            tdelement = tdelement.find("td:eq(" + (day+1) + ")")
+            tdelement = tdelement.find("td:eq(" + (day+1) + ")");
 
             // empty it
             tdelement.empty();
 
             // create the element and append it
-            var html = '<div class="event" style="height: ' + totalheight + 'px; top: ' + topoffset + 'px;">';
+            var html = '<div class="event" style="height: ' + totalheight + 'px; top: ' + topoffset + 'px; background: ' + this.getEventColour(classname) + ';">';
 
             html += text;
 

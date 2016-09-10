@@ -150,7 +150,6 @@ tbody tr td {
 }
 
 .event {
-  background: #0275d8;
   color: white;
   border-radius: 2px;
   text-align: left;
@@ -168,7 +167,6 @@ tbody tr td {
 
 .event:hover {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  background: #0275d8;
 }
 
 .event.double {
