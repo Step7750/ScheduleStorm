@@ -66,35 +66,39 @@
 
                 <!-- Modal content-->
                 <div class="modal-content">
-                    <div class="modal-header" style="border-bottom: 3px solid #e5e5e5">
+                    <div class="modal-header">
                         <h4 class="modal-title" style="font-size: 35px; font-weight: 300; text-align: center">Schedule Preferences</h4>
                     </div>
                     <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
-                        <div class="row">
+                        <center class="row">
                             <div>
-                                <p style="padding-bottom: 10px; padding-left: 90px">Quality of Time Vs. Quality of Professor: <span style="padding-left: 217px">Morning Classes?</span></p>
-                                <span style="padding-left: 40px">Time Slots</span>
-                                <input id="RMP" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none" data-value="0" value="0" data-slider-tooltip="hide">
+                                <p style="padding-bottom: 10px;">Quality Preference</p>
+                                Time Slots
+                                <input id="slider_rmp" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none" data-value="0" value="0" data-slider-tooltip="hide" style="margin-left: 20px;">
                                 Instructors
-                                <span style="padding-left: 100px">Love</span>
-                                <input id="morning" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">Hate
                             </div>
-                        </div>
-                    </div>
-                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
-                        <div class="row">
                             <div>
-                                <div>
-                                    <p style="padding-bottom: 10px; padding-left: 170px">Marathon Classes?<span style="padding-left: 340px">Night?</span></p>
-                                    <span style="padding-left: 84px"> Love</span>
-                                    <input id="marathon" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">  Hate
-                                    <span style="padding-left: 145px">Love</span>
-                                    <input id="night" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">Hate
-                                </div>
+                                <p style="padding-top: 20px; padding-bottom: 10px;">Morning Classes</p>
+                                Hate
+                                <input id="slider_morning" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">
+                                Love
                             </div>
-                        </div>
+                        </center>
+                        <center class="row">
+                            <div>
+                                <p style="padding-top: 20px; padding-bottom: 10px;">Night Classes</p>
+                                Hate
+                                <input id="slider_night" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">
+                                Love
+                            </div>
+                            <div>
+                                <p style="padding-top: 20px; padding-bottom: 10px;">Consecutive Classes</p>
+                                Hate
+                                <input id="slider_consecutive" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">
+                                Love
+                            </div>
+                        </center>
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
@@ -170,25 +174,25 @@
         </div>
         <script>
             $(document).ready(function() {
-                $('#morning').slider({
+                $('#slider_morning').slider({
                     formatter: function (value) {
                         return 'Current value: ' + value;
                     }
                 });
 
-                $('#marathon').slider({
+                $('#slider_consecutive').slider({
                     formatter: function (value) {
                         return 'Current value: ' + value;
                     }
                 });
 
-                $('#night').slider({
+                $('#slider_night').slider({
                     formatter: function (value) {
                         return 'Current value: ' + value;
                     }
                 });
 
-                $('#RMP').slider({
+                $('#slider_rmp').slider({
                     formatter: function (value) {
                         return 'Current value: ' + value;
                     }
