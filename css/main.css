@@ -163,6 +163,7 @@ tbody tr td {
   transition: all 0.2s;
   cursor: pointer;
   position: absolute;
+  overflow: hidden;
 }
 
 .event:hover {
