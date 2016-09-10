@@ -4,28 +4,25 @@ class Preferences {
     }
 
     instantiateSliders() {
-        $('#slider_morning').slider({
-            formatter: function (value) {
-                return 'Current value: ' + value;
-            }
-        });
+        this.morningslider = $('#slider_morning').slider();
+        this.nightslider = $('#slider_night').slider();
+        this.consecutiveslider = $('#slider_consecutive').slider();
+        this.rmpslider = $('#slider_rmp').slider();
+    }
 
-        $('#slider_consecutive').slider({
-            formatter: function (value) {
-                return 'Current value: ' + value;
-            }
-        });
+    getMorningValue() {
+        return this.morningslider.slider('getValue');
+    }
 
-        $('#slider_night').slider({
-            formatter: function (value) {
-                return 'Current value: ' + value;
-            }
-        });
+    getNightValue() {
+        return this.nightslider.slider('getValue');
+    }
 
-        $('#slider_rmp').slider({
-            formatter: function (value) {
-                return 'Current value: ' + value;
-            }
-        });
+    getConsecutiveValue() {
+        return this.consecutiveslider.slider('getValue');
+    }
+
+    getRMPValue() {
+        return this.rmpslider.slider('getValue');
     }
 }
