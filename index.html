@@ -25,6 +25,7 @@
         <script src="js/Welcome.js"></script>
         <script src="js/Calendar.js"></script>
         <script src="js/Generator.js"></script>
+        <script src="js/Preferences.js"></script>
 
         <!-- Modernizer -->
 	    <script src="js/modernizr.js"></script>
@@ -38,6 +39,7 @@
             $('document').ready(function(){
                 welcomeobj = new Welcome();
                 calendar = new Calendar();
+                preferences = new Preferences();
             });
         </script>
     </head>
@@ -172,32 +174,5 @@
                 </div><!-- Calendar -->
             </div>
         </div>
-        <script>
-            $(document).ready(function() {
-                $('#slider_morning').slider({
-                    formatter: function (value) {
-                        return 'Current value: ' + value;
-                    }
-                });
-
-                $('#slider_consecutive').slider({
-                    formatter: function (value) {
-                        return 'Current value: ' + value;
-                    }
-                });
-
-                $('#slider_night').slider({
-                    formatter: function (value) {
-                        return 'Current value: ' + value;
-                    }
-                });
-
-                $('#slider_rmp').slider({
-                    formatter: function (value) {
-                        return 'Current value: ' + value;
-                    }
-                });
-            });
-        </script>
     </body>
 </html>
