@@ -11,11 +11,11 @@ class Calendar {
 
         this.eventcolours = {
             "#FF5E3A": false,
-            "#0ab915": false,
+            "#099e12": false,
             "#1D62F0": false,
             "#FF2D55": false,
             "#8E8E93": false,
-            "#095db7": false,
+            "#0b498c": false,
             "#34AADC": false,
             "#5AD427": false
         }
