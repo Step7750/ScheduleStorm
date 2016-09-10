@@ -369,6 +369,48 @@ class Generator {
         }
     }
 
+    getPreferences() {
+        this.morningSlider = preferences.getMorningValue();
+        this.nightSlider = preferences.getNightValue();
+        this.consecutiveSlider = preferences.getConsecutiveValue();
+        this.rmpSlider = preferences.getRMPValue();
+    }
+
+    myscoreSchedule(schedule) {
+        // update preference values
+        this.getPreferences();
+
+        var thisscore = 0;
+
+        var totalrating = 0;
+        var totalteachers = 0;
+        for (var classv in schedule) {
+            var thisclass = schedule[classv];
+
+            // add a score based upon the teachers
+            totalteachers += thisclass["teachers"].length;
+
+            for (var teacher in thisclass["teachers"]) {
+                teacher = thisclass["teachers"][teacher];
+
+                if (window.classList.rmpdata[teacher] != undefined && window.classList.rmpdata[teacher]["numratings"] > 2) {
+                    totalrating += window.classList.rmpdata[teacher]["rating"];
+                }
+                else {
+                    // just give them an average rating of 2.5
+                    totalrating += 2.5;
+                }
+            }
+        }  
+
+        var avgrmp = totalrating/totalteachers;
+
+        thisscore += avgrmp;
+
+
+        return thisscore;
+    }
+
     static k_combinations(set, k) {
         /**
          * Copyright 2012 Akseli Palén.

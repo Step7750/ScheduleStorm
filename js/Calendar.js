@@ -64,6 +64,10 @@ class Calendar {
         // reset the colour ids
         self.resetColours();
 
+        // get the score
+        setTimeout(function () {
+            $("#scheduleScore").text(window.mycourses.generator.myscoreSchedule(schedule));
+        }, 0);
     }
 
     resetColours() {
