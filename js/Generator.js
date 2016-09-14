@@ -432,10 +432,77 @@ class Generator {
 
         var avgrmp = totalrating/totalteachers;
 
+        // figure out how far apart the classes are
+
+        var classdistance = 0;
+
+        // We want to transform the data into a usuable format for easily seeing how apart each class is
+        var formattedschedule = this.formatScheduleInOrder(schedule);
+
         thisscore += avgrmp;
+
+        console.log(formattedschedule);
 
 
         return thisscore;
+    }
+
+    formatScheduleInOrder(schedule) {
+        // formats a list of events to the appropriate duration
+
+        // the schedule must not have any conflicting events
+        var formated = [];
+
+        console.log(schedule);
+
+        for (var classv in schedule) {
+            var thisclass = schedule[classv];
+
+            // for each time
+            for (var time in thisclass["times"]) {
+                var thistime = thisclass["times"][time];
+
+                // for each day in this time
+                for (var day in thistime[0]) {
+                    var day = thistime[0][day];
+
+                    // check whether the day index is an array
+                    if (!(formated[day] instanceof Array)) {
+                        // make it an array
+                        formated[day] = [];
+                    }
+
+                    if (formated[day].length == 0) {
+                        console.log("Appending " + thistime[1] + " to " + day);
+                        // just append the time
+                        formated[day].push(thistime[1]);
+                    }
+                    else {
+                        // iterate through each time already there
+                        for (var formatedtime in formated[day]) {
+                            // check if the end time of this event is less than the start time of the next event
+                            var thisformatedtime = formated[day][formatedtime];
+
+                            if (thistime[1][1] < thisformatedtime[0]) {
+                                console.log("Adding " + thistime[1] + " to " + day);
+                                formated[day].splice(parseInt(formatedtime), 0, thistime[1]);
+                                break;
+                            }
+                            else {
+                                if (formated[day][parseInt(formatedtime)+1] == undefined) {
+                                    console.log("Pushing " + thistime[1] + " to the end of " + day);
+                                    // push it to the end
+                                    formated[day].push(thistime[1]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return formated
+
     }
 
     static k_combinations(set, k) {
