@@ -71,6 +71,9 @@ class ClassList {
                 self.classdata = data["classes"];
                 self.rmpdata = data["rmp"];
                 
+                // Find the RMP average
+                self.findRMPAverage(self.rmpdata);
+
                 loading.remove(function () {
                     // We want to make sure the user hasn't chosen a new term while this one was loading
                     if (self.uni == window.uni && self.term == window.term) {
@@ -87,6 +90,36 @@ class ClassList {
         });
     }
 
+    /*
+        Sets the average of the passed in RMP data
+    */
+    findRMPAverage(rmpdata) {
+        var self = this;
+
+        var totalratings = 0;
+        var numratings = 0;
+
+        for (var teacher in rmpdata) {
+            var thisteacher = rmpdata[teacher];
+
+            if (thisteacher["rating"] != undefined) {
+                totalratings += thisteacher["rating"];
+                numratings += 1;
+            }
+        }
+
+        if (numratings == 0) {
+            // This term has no ratings
+            self.rmpavg = 2.5;
+        }
+        else {
+            self.rmpavg = totalratings/numratings;
+        }
+    }
+
+    /*
+        Generates a class descriptions (details button contents)
+    */
     generateClassDesc(desc) {
         var html = '<div class="accordiondesc">';
 

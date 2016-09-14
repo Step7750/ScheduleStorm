@@ -57,7 +57,7 @@ class Calendar {
                 // make sure there isn't a -1 in the days
                 if (thistime[0].indexOf(-1) == -1) {
                     this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text, thisclass["name"]);
-                }                
+                }
             }
         }
 
@@ -66,7 +66,7 @@ class Calendar {
 
         // get the score
         setTimeout(function () {
-            $("#scheduleScore").text(window.mycourses.generator.myscoreSchedule(schedule));
+            $("#scheduleScore").text(window.mycourses.generator.scoreSchedule(schedule).toFixed(2));
         }, 0);
     }
 

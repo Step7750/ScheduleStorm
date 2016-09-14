@@ -376,7 +376,7 @@ class Generator {
         this.rmpSlider = preferences.getRMPValue();
     }
 
-    myscoreSchedule(schedule) {
+    scoreSchedule(schedule) {
         // update preference values
         this.getPreferences();
 
@@ -397,8 +397,8 @@ class Generator {
                     totalrating += window.classList.rmpdata[teacher]["rating"];
                 }
                 else {
-                    // just give them an average rating of 2.5
-                    totalrating += 2.5;
+                    // just give them an average rating
+                    totalrating += window.classList.rmpavg;
                 }
             }
         }  
