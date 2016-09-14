@@ -17,6 +17,9 @@ class Generator {
         
     }
 
+    /*
+        Adds additional course info to each class for easier processing after schedules have been generated
+    */
     addCourseInfo() {
         for (var group in this.classes) {
             var thisgroup = this.classes[group];
@@ -36,6 +39,9 @@ class Generator {
         }
     }
 
+    /*
+        Converts the times on the desired classes to an easily processable format
+    */
     convertTimes() {
         for (var group in this.classes) {
             var thisgroup = this.classes[group];
@@ -58,9 +64,11 @@ class Generator {
         }
     }
     
+    /*
+        Converts a time to total minutes since 12:00AM on that day
+    */
     static convertToTotalMinutes(time) {
-        // Format XX:XXPM or AM
-        // Converts to total minutes since 12:00AM on that day 
+        // Format XX:XXPM or AM 
         var type = time.slice(-2);
 
         var hours = parseInt(time.split(":")[0]);
@@ -76,6 +84,9 @@ class Generator {
         return hours * 60 + minutes;
     }
 
+    /*
+        Converts the total minutes from 12:00AM on a given day to the timestamp
+    */
     static totalMinutesToTime(time) {
         var minutes = time % 60;
         var hours = Math.floor(time/60);
@@ -99,6 +110,9 @@ class Generator {
         }
     }
 
+    /*
+        Converts a time of the form Mo 12:00PM-1:00PM to an array of days and total minutes
+    */
     static convertTime(time) {
         // first index are the days (integer with Monday being 0)
         // second index is the array with time
@@ -178,6 +192,9 @@ class Generator {
         }
     }
 
+    /*
+        Iterates through every group combinations to find possible non-conflicting schedules
+    */
     iterateCombos() {
         // reset possible schedules
         this.possibleschedules = [];
@@ -250,6 +267,9 @@ class Generator {
         }
     }
 
+    /*
+        Given a wanted class queue and current schedule, this method will recursively find every schedule that doesn't conflict
+    */
     generateSchedules(schedule, queue) {
         var timeconflict = false;
 
@@ -369,6 +389,9 @@ class Generator {
         }
     }
 
+    /*
+        Sets the local preference values with the current state of the sliders
+    */
     getPreferences() {
         this.morningSlider = preferences.getMorningValue();
         this.nightSlider = preferences.getNightValue();
@@ -376,6 +399,9 @@ class Generator {
         this.rmpSlider = preferences.getRMPValue();
     }
 
+    /*
+        Returns a numerical score given a schedule that defines how "good" it is given the user's preferences
+    */
     scoreSchedule(schedule) {
         // update preference values
         this.getPreferences();
@@ -384,6 +410,7 @@ class Generator {
 
         var totalrating = 0;
         var totalteachers = 0;
+
         for (var classv in schedule) {
             var thisclass = schedule[classv];
 
@@ -401,7 +428,7 @@ class Generator {
                     totalrating += window.classList.rmpavg;
                 }
             }
-        }  
+        }
 
         var avgrmp = totalrating/totalteachers;
 
