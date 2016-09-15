@@ -430,11 +430,16 @@ class Generator {
             }
         }
 
-        var avgrmp = totalrating/totalteachers;
+        var avgrmp = totalrating/totalteachers * 3;
 
-        // figure out how far apart the classes are
+        if (this.rmpSlider > 0) {
+            // make this value worth more to the total score
+            avgrmp *= (1 + this.rmpSlider/20);
+        }
 
-        var classdistance = 0;
+        console.log("AVG RMP: " + avgrmp);
+
+        thisscore += avgrmp;
 
         // We want to transform the data into a usuable format for easily seeing how apart each class is
         var formattedschedule = this.formatScheduleInOrder(schedule);
@@ -477,10 +482,22 @@ class Generator {
 
                     thisconsecscore += (timediff/10) * (0.006 * -(this.consecutiveSlider/10));
 
-                    console.log("consecutive score: " + thisconsecscore);
+                    console.log("Consecutive: " + thisconsecscore);
+                    classtimescore += thisconsecscore;
                 }
             }
         }
+        
+        // The user prioritizes time slots over professors, multiply this value
+        if (this.rmpSlider < 0) {
+            // make this value worth more to the total score
+            classtimescore *= 1 + -this.rmpSlider/20;
+        }
+
+        thisscore += classtimescore;
+
+
+        console.log("Classes score: " + classtimescore);
         console.log(formattedschedule);
 
 
