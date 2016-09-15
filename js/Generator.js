@@ -483,11 +483,23 @@ class Generator {
 
 
         var classtimescore = 0.0;
+
         for (var day in formattedschedule) {
             var day = formattedschedule[day];
 
+            // Min/max time of the classes today
+            var mintime = 9999999;
+            var maxtime = 0;
             for (var x = 0; x < day.length; x++) {
                 var time = day[x];
+
+                if (time[0] < mintime) {
+                    mintime = time[0];
+                }
+
+                if (time[1] > maxtime) {
+                    maxtime = time[1];
+                }
 
                 // check if it starts in the mourning
                 if (time[0] <= 720) {
@@ -509,7 +521,7 @@ class Generator {
                     var timediff = nexttime[0] - time[1];
 
                     var thisconsecscore = 0;
-
+                    
                     if (this.consecutiveSlider > 0) {
                         var thisconsecscore = 0.2;
                     }
@@ -523,6 +535,20 @@ class Generator {
                     classtimescore += thisconsecscore;
                 }
             }
+
+            // we want there to be less time spent at school overall for a given day
+            // the longer the difference, the more penalty there is on the score depending on how much the user values time slots
+            var timediff = maxtime - mintime;
+            if (timediff > 0) {
+                if (this.rmpSlider < 0) {
+                    // multiply the value
+                    thisscore -= timediff/60 * (1 + -(this.rmpSlider/40));
+                }
+                else {
+                    thisscore -= timediff/60 * 1.5;
+                }
+            }
+
         }
 
         // The user prioritizes time slots over professors, multiply this value
@@ -532,8 +558,6 @@ class Generator {
         }
 
         thisscore += classtimescore;
-
-
         //console.log("Classes score: " + classtimescore);
         //console.log(formattedschedule);
 
