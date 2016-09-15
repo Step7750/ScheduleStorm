@@ -240,6 +240,8 @@ class Generator {
         Processes a list of successful schedules and populates the calendar
     */
     processSchedules(schedules) {
+
+        this.sortSchedules(schedules);
         // update the total
         window.calendar.setTotalGenerated(schedules.length);
 
@@ -253,6 +255,41 @@ class Generator {
             // populate the first one
             window.calendar.displaySchedule(schedules[0]);
         }
+    }
+
+    /*
+        Sorts the schedules in accordance with the schedule scoring algorithm
+    */
+    sortSchedules(schedules) {
+
+        // Add the scores for each schedules
+        for (var schedule in schedules) {
+            var thisschedule = schedules[schedule];
+
+            // add the score to the first index
+            thisschedule.unshift(this.scoreSchedule(thisschedule));
+        }
+
+        // Now sort
+        schedules.sort(this.compareSchedules);
+
+        console.log("Sorted schedules: ");
+        console.log(schedules);
+    }
+
+    /*
+        Compare function for the sorting algorithm
+    */
+    compareSchedules(a, b) {
+        if (a[0] > b[0]) {
+            return -1;
+        }
+        if (b[0] > a[0]) {
+            return 1;
+        }
+
+        // a must be equal to b
+        return 0;
     }
 
     /*
@@ -437,7 +474,7 @@ class Generator {
             avgrmp *= (1 + this.rmpSlider/20);
         }
 
-        console.log("AVG RMP: " + avgrmp);
+        //console.log("AVG RMP: " + avgrmp);
 
         thisscore += avgrmp;
 
@@ -482,12 +519,12 @@ class Generator {
 
                     thisconsecscore += (timediff/10) * (0.006 * -(this.consecutiveSlider/10));
 
-                    console.log("Consecutive: " + thisconsecscore);
+                    //console.log("Consecutive: " + thisconsecscore);
                     classtimescore += thisconsecscore;
                 }
             }
         }
-        
+
         // The user prioritizes time slots over professors, multiply this value
         if (this.rmpSlider < 0) {
             // make this value worth more to the total score
@@ -497,8 +534,8 @@ class Generator {
         thisscore += classtimescore;
 
 
-        console.log("Classes score: " + classtimescore);
-        console.log(formattedschedule);
+        //console.log("Classes score: " + classtimescore);
+        //console.log(formattedschedule);
 
 
         return thisscore;
@@ -510,7 +547,7 @@ class Generator {
         // the schedule must not have any conflicting events
         var formated = [];
 
-        console.log(schedule);
+        //console.log(schedule);
 
         for (var classv in schedule) {
             var thisclass = schedule[classv];

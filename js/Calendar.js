@@ -37,6 +37,9 @@ class Calendar {
     displaySchedule(schedule) {
         var self = this;
 
+        // get the score
+        $("#scheduleScore").text(schedule[0].toFixed(2));
+
         // Clear all the current events on the calendar
         self.clearEvents();
 
@@ -63,11 +66,6 @@ class Calendar {
 
         // reset the colour ids
         self.resetColours();
-
-        // get the score
-        setTimeout(function () {
-            $("#scheduleScore").text(window.mycourses.generator.scoreSchedule(schedule).toFixed(2));
-        }, 0);
     }
 
     resetColours() {
