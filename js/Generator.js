@@ -439,8 +439,48 @@ class Generator {
         // We want to transform the data into a usuable format for easily seeing how apart each class is
         var formattedschedule = this.formatScheduleInOrder(schedule);
 
-        thisscore += avgrmp;
 
+        var classtimescore = 0.0;
+        for (var day in formattedschedule) {
+            var day = formattedschedule[day];
+
+            for (var x = 0; x < day.length; x++) {
+                var time = day[x];
+
+                // check if it starts in the mourning
+                if (time[0] <= 720) {
+                    classtimescore += this.morningSlider/50;
+                }
+
+                // check if it starts in the night
+                if (time[0] >= 1020) {
+                    classtimescore += this.nightSlider/50;
+                }
+
+                // check for consecutive classes
+                // make sure there is a class next
+                if ((x+1) < day.length && this.consecutiveSlider != 0) {
+                    // get the time of the next class
+                    var nexttime = day[x+1];
+
+                    // get the difference between the end of class1 and start of class2
+                    var timediff = nexttime[0] - time[1];
+
+                    var thisconsecscore = 0;
+
+                    if (this.consecutiveSlider > 0) {
+                        var thisconsecscore = 0.2;
+                    }
+                    else {
+                        var thisconsecscore = -0.2;                        
+                    }
+
+                    thisconsecscore += (timediff/10) * (0.006 * -(this.consecutiveSlider/10));
+
+                    console.log("consecutive score: " + thisconsecscore);
+                }
+            }
+        }
         console.log(formattedschedule);
 
 
@@ -473,7 +513,7 @@ class Generator {
                     }
 
                     if (formated[day].length == 0) {
-                        console.log("Appending " + thistime[1] + " to " + day);
+                        //console.log("Appending " + thistime[1] + " to " + day);
                         // just append the time
                         formated[day].push(thistime[1]);
                     }
@@ -484,13 +524,13 @@ class Generator {
                             var thisformatedtime = formated[day][formatedtime];
 
                             if (thistime[1][1] < thisformatedtime[0]) {
-                                console.log("Adding " + thistime[1] + " to " + day);
+                                //console.log("Adding " + thistime[1] + " to " + day);
                                 formated[day].splice(parseInt(formatedtime), 0, thistime[1]);
                                 break;
                             }
                             else {
                                 if (formated[day][parseInt(formatedtime)+1] == undefined) {
-                                    console.log("Pushing " + thistime[1] + " to the end of " + day);
+                                    //console.log("Pushing " + thistime[1] + " to the end of " + day);
                                     // push it to the end
                                     formated[day].push(thistime[1]);
                                 }
