@@ -149,6 +149,10 @@ tbody tr td {
     display: none;
 }
 
+body > .row{
+    height: 91vh;
+}
+
 .event {
   color: white;
   border-radius: 2px;
@@ -530,9 +534,6 @@ td{
         font-size: 13px;
     }
 
-    .courseColor{
-        height: 52px;
-    }
 
     thead th{
         font-size: 0.8rem;
@@ -543,36 +544,12 @@ td{
         font-size: 20px;
     }
 
-    .courseList {
-        height: 24vh;
-    }
-}
-
-@media (max-height: 800px){
-
     body > .row{
-        height: 700px;
+        height: 90vh;
     }
 
-    #MyCourses{
-        height: 33%;
-        padding-top: 15px;
-    }
-
-    #schedule{
-        height: 64.2%
-    }
-
-    .calendar{
-        height: 95%;
-    }
-
-    .outer{
-        height: 100%
-    }
-
-    .wrap{
-        height: 89%;
+    #courseSelector > ul{
+        height: 91%;
     }
 }
 
@@ -590,6 +567,14 @@ td{
     .cd-accordion-menu label, .cd-accordion-menu a{
         font-size: 1.1rem;
     }
+
+    body > .row{
+        height: 88vh;
+    }
+
+    .wrap{
+        height: 88%;
+    }
 }
 
 @media (max-width: 991px){
@@ -598,10 +583,15 @@ td{
     }
 
     .col-md-5{
-        width: 93%;
+        width: 100%;
+        margin-left: 0;
     }
 
     #MyCourses{
         margin-top: 15px;
+    }
+
+    body > .row{
+        width: 97vw;
     }
 }
