@@ -32,12 +32,11 @@ class Generator {
                 this.iterateCombos();
 
                 callback(this.possibleschedules);
-                //callback(this.sub());
             },
+            /*
+                Iterates through every group combinations to find possible non-conflicting schedules
+            */
             iterateCombos: function () {
-                /*
-                    Iterates through every group combinations to find possible non-conflicting schedules
-                */
 
                 // reset possible schedules
                 this.possibleschedules = [];
@@ -75,8 +74,6 @@ class Generator {
                         }
                     }
                 }
-
-                //this.processSchedules(this.possibleschedules);
             },
             /*
                 Pushes every combination given the type of groups
@@ -119,8 +116,6 @@ class Generator {
                 if (queue.length == 0) {
                     // we found a successful schedule, push it
                     this.possibleschedules.push(schedule);
-
-                    // TODO: Add scoring method
                 }
                 else {
                     if (schedule.length > 1) {
