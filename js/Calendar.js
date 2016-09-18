@@ -50,6 +50,13 @@ class Calendar {
     }
 
     /*
+        Sets loading status of the animation
+    */
+    setLoadingStatus(message) {
+        this.loading.setStatus(message);
+    }
+
+    /*
         Empties out the calendar
     */
     emptyCalendar() {

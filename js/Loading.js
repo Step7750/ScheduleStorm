@@ -20,8 +20,8 @@ class Loading {
 	createCubeHTML(subjects, text, styling) {
 		this.faces = ["front", "back", "left", "right", "bottom", "top"];
 
-		if (styling == undefined) var html = "<center id='loading'>" + text +"<div class='Cube panelLoad'>";
-		else var html = "<center id='loading' style='" + styling + "'>" + text +"<div class='Cube panelLoad'>";
+		if (styling == undefined) var html = "<center id='loading'><div style='display: inline;' id='status'>" + text +"</div><div class='Cube panelLoad'>";
+		else var html = "<center id='loading' style='" + styling + "'><div style='display: inline;' id='status'>" + text +"</div><div class='Cube panelLoad'>";
 
 		for (var key in subjects) {
 			html += "<div class='cube-face cube-face-" + 
@@ -46,5 +46,13 @@ class Loading {
 				cb();
 			});
 		});
+	}
+
+	/*
+		Sets the status text to the given message
+	*/
+	setStatus(message) {
+		console.log("Changing data");
+		this.html.find("#status:first").text(message);
 	}
 }
