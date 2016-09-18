@@ -20,9 +20,34 @@ class Calendar {
             "#5AD427": false
         }
 
-        //this.addEvent("9:45", "11:00", [1, 3], "9:10-11:00");
+        //this.startLoading("Generating Schedules...");
     }
 
+    /*
+        Starts loading animation
+    */
+    startLoading(message) {
+        this.loading = new Loading($("#schedule").find(".wrap:first"), message, "position: absolute; top: 20%; left: 40%;");
+        this.isLoading = true;
+    }
+
+    /*
+        If there is a loading animation, stops it
+    */
+    doneLoading(cb) {
+        var self = this;
+
+        if (self.isLoading) {
+            self.loading.remove(function () {
+                self.isLoading = false;
+                cb();
+            });
+        }
+        else {
+            self.isLoading = false;
+            cb();
+        }
+    }
 
     /*
         Empties out the calendar

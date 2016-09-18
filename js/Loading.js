@@ -1,14 +1,14 @@
 class Loading {
 	// Creates the loading animation at the specified element
 
-	constructor(element, loadingtext) {
+	constructor(element, loadingtext, styling) {
 		this.element = element;
 
 		// We need at least 150px for the animation
 		element.css("min-height", "150px");
 
 		// TODO: We should use the user's most recent selections to generate the loading subjects
-		this.html = $(this.createCubeHTML(["CPSC", "ART", "CHEM", "GEOG", "MATH", "STAT"], loadingtext))
+		this.html = $(this.createCubeHTML(["CPSC", "ART", "CHEM", "GEOG", "MATH", "STAT"], loadingtext, styling))
 					.hide()
 					.appendTo(element)
 					.fadeIn();
@@ -17,10 +17,11 @@ class Loading {
 	/*
 		Constructs the cube html given the subjects
 	*/
-	createCubeHTML(subjects, text) {
+	createCubeHTML(subjects, text, styling) {
 		this.faces = ["front", "back", "left", "right", "bottom", "top"];
 
-		var html = "<center id='loading'>" + text +"<div class='Cube panelLoad'>";
+		if (styling == undefined) var html = "<center id='loading'>" + text +"<div class='Cube panelLoad'>";
+		else var html = "<center id='loading' style='" + styling + "'>" + text +"<div class='Cube panelLoad'>";
 
 		for (var key in subjects) {
 			html += "<div class='cube-face cube-face-" + 
