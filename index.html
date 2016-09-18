@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.1.3/css/bootstrap-slider.min.css"><!-- Bootstrap Slider -->
         <link rel="stylesheet" href="css/main.css"> <!-- Main CSS -->
         <link rel="stylesheet" href="css/loading.css"> <!-- Loading animation CSS -->
+        <link rel="stylesheet" href="intro.js-2.3.0/minified/introjs.min.css"><!-- IntroJs CSS -->
 
         <!-- JQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -29,7 +30,7 @@
         <script src="js/Welcome.js"></script>
         <script src="js/Calendar.js"></script>
         <script src="js/Generator.js"></script>
-
+        <script src="intro.js-2.3.0/minified/intro.min.js"></script>
         <!-- Modernizer -->
 	    <script src="js/modernizr.js"></script>
 
@@ -157,10 +158,11 @@
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown noselect" style="display: inline">
+                        <li class="dropdown noselect" >
                             <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
                             <ul class="dropdown-menu"></ul>
                         </li>
+                        <a href="javascript:void(0)" onclick="introJs().start()" class="glyphicon glyphicon-question-sign" style="padding-top: 13px; color: #e6e6e6; text-decoration: none"></a>
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
