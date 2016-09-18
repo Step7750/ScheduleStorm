@@ -32,21 +32,21 @@ class MyCourses {
 
         $("#coursegroups").append(addGroupbtn);
 
-        this.addGroup(0);
+        this.addGroup(0, true);
         this.setGroupActive(0);
     }
 
     /*
         Adds a new course group of the specified type (0 for All, 1 for one, etc..)
     */
-    addGroup(type) {
+    addGroup(type, noremove) {
         // make sure we have 4 total groups or less
         if (this.courses.length <= 3) {
             var thisgroup = {"type": type, "courses": {}};
             var id = this.courses.length;
             this.courses[id] = thisgroup;
 
-            this.generatePill(id, type);
+            this.generatePill(id, type, noremove);
         }
 
         // Remove the add button if the max group amount is exceeded
@@ -56,7 +56,7 @@ class MyCourses {
     /*
         Generates, binds, and appends the given pill with the speicifed id and type
     */
-    generatePill(id, type) {
+    generatePill(id, type, noremove) {
         var self = this;
 
         var text = this.numConvert[type] + " of";
@@ -90,7 +90,7 @@ class MyCourses {
         });
 
         // Populate the dropdown
-        html.find('.dropdown-menu').append(this.generatePillDropdown());
+        html.find('.dropdown-menu').append(this.generatePillDropdown(noremove));
 
         // Bind the dropdown click handler
         html.find('li').click(function (event) {
@@ -99,11 +99,49 @@ class MyCourses {
             // find the group id
             var groupid = $(this).parent().parent().attr("groupid");
 
-            // Change the group type
-            self.changeGroupType(groupid, grouptype);
+            if (grouptype == -1) {
+                // wants to remove this group
+                self.removeGroup(groupid);
+            }
+            else {
+                // Change the group type
+                self.changeGroupType(groupid, grouptype);
+            }
         });
 
         $("#addGroupbtn").before(html);
+    }
+
+    /*
+        Removes the specified group and removes the appropriate HTML elements
+    */
+    removeGroup(groupid) {
+        groupid = parseInt(groupid);
+
+        // we need to remove this pill
+        $('li[groupid="' + groupid + '"]').remove();
+
+        // set the previous group to active
+        this.setGroupActive(groupid-1);
+
+        // we need to change the HTML groupid tags of the groups after this one
+        if ((groupid+1) < this.courses.length) {
+            // this is not the last group
+
+            // decrement the groupid of every subsequent group
+            for (var x = (groupid+1); x < this.courses.length; x++) {
+                $('li[groupid="' + x + '"]').attr("groupid", x-1);
+            }
+        }
+
+        // now we need to splice the array
+        this.courses.splice(groupid, 1);
+
+        // Check if we can display the add button again
+        if (this.courses.length < 4) $("#addGroupbtn").show();
+
+        // regenerate the schedules
+        this.generator = new Generator(this.courses);
     }
 
     /*
@@ -153,11 +191,16 @@ class MyCourses {
     /*
         Generates the dropdown HTML for a group pill
     */
-    generatePillDropdown() {
+    generatePillDropdown(noremove) {
         var html = '';
 
         for (var x in this.numConvert) {
             html += '<li grouptype="' + x + '"><a>' + this.numConvert[x] + ' of</a></li>';
+        }
+
+        if (noremove != true) {
+            html += '<li role="separator" class="divider"></li>';
+            html += '<li grouptype="-1"><a>Remove</a></li>';
         }
 
         return html;
