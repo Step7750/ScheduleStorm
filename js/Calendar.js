@@ -7,6 +7,8 @@ class Calendar {
 
         this.resizeCalendarNoScroll(0, 4, 9, 17);
 
+        this.isLoading = false;
+
         this.bindNextPrev();
 
         this.eventcolours = {
@@ -27,6 +29,7 @@ class Calendar {
         Starts loading animation
     */
     startLoading(message) {
+        this.clearEvents();
         this.loading = new Loading($("#schedule").find(".wrap:first"), message, "position: absolute; top: 20%; left: 40%;");
         this.isLoading = true;
     }

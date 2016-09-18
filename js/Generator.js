@@ -3,7 +3,6 @@ class Generator {
         // chosen classes
         this.classes = jQuery.extend(true, {}, classes);
 
-
         this.convertTimes();
         this.addCourseInfo();
 
@@ -19,6 +18,8 @@ class Generator {
     */
     schedGen() {
         var self = this;
+
+        self.doneGenerating = false;
 
         // Instantiate the generator
         var schedgenerator = operative({
@@ -333,14 +334,25 @@ class Generator {
             }
         });
         
-        // Spawn the generator
-        schedgenerator.init(this.classes, function(result) {
-            console.log("Web worker finished generating schedules");
+        window.calendar.doneLoading(function () {
 
-            // Now score and sort them
-            self.possibleschedules = result;
-            self.schedSorter();
-        });
+            // only show the loader if the generation is taking longer than 500ms
+            // since the animations for it would take longer than the actual gen
+            setTimeout(function () {
+                if (self.doneGenerating == false) window.calendar.startLoading("Generating Schedules...");
+            }, 500);
+
+            // Spawn the generator
+            schedgenerator.init(self.classes, function(result) {
+                console.log("Web worker finished generating schedules");
+                
+                self.possibleschedules = result;
+                self.doneGenerating = true;
+                
+                // Now score and sort them
+                self.schedSorter();
+            });
+        })
     }
 
     /*
@@ -586,7 +598,10 @@ class Generator {
 
                 // Replace the reference with the sorted schedules
                 self.possibleschedules = result;
-                self.processSchedules(result);
+
+                window.calendar.doneLoading(function () {
+                    self.processSchedules(result);
+                });
             }
         );
     }
