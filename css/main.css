@@ -69,7 +69,7 @@ tbody {
 table {
   background: #fff;
   width: 100%;
-  height: 100%;
+  height: 10%;
   border-collapse: collapse;
   table-layout: fixed;
 
@@ -99,7 +99,10 @@ thead {
     z-index: 2;
     background: white;
     border-bottom: 2px solid #ddd;
+}
 
+.offset{
+    height: 100%;
 }
 
 tr, tr td {
