@@ -48,6 +48,9 @@ class MyCourses {
 
             this.generatePill(id, type);
         }
+
+        // Remove the add button if the max group amount is exceeded
+        if (this.courses.length == 4) $("#addGroupbtn").hide();
     }
 
     /*
