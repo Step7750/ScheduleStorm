@@ -111,6 +111,37 @@
             </div>
         </div>
 
+        <div class="modal fade" id="About" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" style="font-size: 35px; font-weight: 300; text-align: center">About Schedule Storm</h4>
+                    </div>
+                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
+                        <h4 style="font-size:25px; font-weight:400; text-align: center; padding-bottom: 10px">What is Schedule Storm?</h4>
+                        <p>Schedule Storm is a multi-university schedule generator that produces schedules live with the courses you add to My Courses. With it you can add specific classes or general courses and give preference
+                            weighting based on what you would want your schedule to look like. We have also included Rate My Professor ratings for all professors that have such a rating. You can view these beside the
+                            professors name in brackets.</p>
+                    </div>
+                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
+                        <h4 style="font-size:25px; font-weight:400; text-align: center; padding-bottom: 10px">How Do You Use Schedule Storm?</h4>
+                        <p>At the top of the page in the right corner there is a envelope symbol that looks like <span class="glyphicon glyphicon-question-sign"></span>. Click on this and it will go through a tutorial on how to use the site.</p>
+                    </div>
+                    <div class="modal-body" style="border-bottom: 1px solid #e5e5e5">
+                        <h4 style="font-size:25px; font-weight:400; text-align: center; padding-bottom: 10px;">Who developed Schedule Storm?</h4>
+                        <p>Schedule Storm was developed by <a href="http://steamcommunity.com/profiles/76561198066173602/">Perplex</a>(Front-End) and <a href="http://steamcommunity.com/id/Step7750">Step7750</a>(Back-end). We are
+                            both currently university students who were fed up with terrible schedule builders that our universities provided. You can contact us by leaving a comment on either of our steam profiles, by adding us on steam
+                            and sending us a message, or by leaving an issue on the <a href="https://github.com/Step7750/ScheduleStorm">Github page</a></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
@@ -124,8 +155,9 @@
                     <span id="Brandname">Schedule <img alt='Brand' src="assets/logo.png"></span>
 
                 </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown noselect">
+                        <li class="dropdown noselect" style="display: inline">
                             <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
                             <ul class="dropdown-menu"></ul>
                         </li>
@@ -152,6 +184,7 @@
             <div id="MyCourses" class="col-md-5">
                 <span id="CourseList-title" style="float: left; margin-top: 5px;">My Courses</span>
                 <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences" style="float: right;"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
+                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#About" style="float: right; margin-right: 10px"><span class="glyphicon glyphicon-info-sign"></span> About</button>
                 <ul class="nav nav-pills noselect" style="float: left; margin-left: 20px;" id="coursegroups"></ul>
                 
                 <!-- Dynamically populated myclasses list -->
