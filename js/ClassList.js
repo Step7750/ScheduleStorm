@@ -188,7 +188,30 @@ class ClassList {
         element.slideDown();
     }
 
+    /*
+        Abbreviates the given times by shortening day codes and spaces
+    */
+    static abbreviateTimes(time) {
+        // abbreviations of days
+        var abbreviations = {
+            "Mo": "M",
+            "Tu": "T",
+            "We": "W",
+            "Th": "R",
+            "Fr": "F",
+            "Sa": "S",
+            "Su": "U"
+        }
 
+        for (var reduce in abbreviations) {
+            time = time.replace(reduce, abbreviations[reduce]);
+        }
+
+        // remove spacing around the dash
+        time = time.replace(" - ", "-");
+        
+        return time;
+    }
     /*
         Populates a list of given clases
     */
@@ -228,11 +251,18 @@ class ClassList {
                 }
             }
 
+            var timescopy = thisclass["times"].slice();
+
+            // we want to reduce the size of the times (Th)
+            for (var time in timescopy) {
+                timescopy[time] = ClassList.abbreviateTimes(timescopy[time]);
+            }
+
             html += "<td style='width: 20%;'>" + teachers + "</td>";
 
             html += "<td>" + thisclass["rooms"].join("<br>") + "</td>";
 
-            html += "<td style='width: 30%;'>" + thisclass["times"].join("<br>") + "</td>";
+            html += "<td style='width: 30%;'>" + timescopy.join("<br>") + "</td>";
 
             html += "<td style='width: 15%;'>" + thisclass["location"] + "</td>";
 
