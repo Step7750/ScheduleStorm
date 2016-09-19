@@ -6,7 +6,7 @@ class Generator {
         this.convertTimes();
         this.addCourseInfo();
 
-        console.log(this.classes);
+        //console.log(this.classes);
 
         // Generates the schedules
         this.schedGen();
@@ -47,6 +47,8 @@ class Generator {
                     for (var combos in this.combinations[0]) {
                         // create a copy to work with
                         var combocopy = JSON.parse(JSON.stringify(this.combinations[0][combos]));
+
+                        // geenrate the schedules
                         this.generateSchedules([], combocopy);
 
                         this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
@@ -116,7 +118,8 @@ class Generator {
 
                 if (queue.length == 0) {
                     // we found a successful schedule, push it
-                    this.possibleschedules.push(schedule);
+                    // we need to make a copy since the higher depths will undo the actions
+                    this.possibleschedules.push(JSON.parse(JSON.stringify(schedule)));
                 }
                 else {
                     if (schedule.length > 1) {
@@ -189,7 +192,13 @@ class Generator {
                                             delete queue[0]["types"][type];
 
                                             // recursively call the generator
-                                            this.generateSchedules(JSON.parse(JSON.stringify(schedule)), JSON.parse(JSON.stringify(queue)));
+                                            this.generateSchedules(schedule, queue);
+
+                                            // remove the class
+                                            schedule.pop();
+
+                                            // add the type again
+                                            queue[0]["types"][type] = thisclass["id"];
 
                                             break;
                                         }
@@ -208,21 +217,29 @@ class Generator {
                                     var thisclass = queue[0]["obj"]["classes"][classv];
 
                                     if (thisclass["type"] == foundType) {
-                                        // Create a copy of the schedule and push this class
-                                        var thisschedule = JSON.parse(JSON.stringify(schedule));
-                                        thisschedule.push(thisclass);
+                                        // Push the class
+                                        schedule.push(thisclass);
 
-                                        this.generateSchedules(thisschedule, JSON.parse(JSON.stringify(queue)));
+                                        // recursively go down a depth
+                                        this.generateSchedules(schedule, queue);
+
+                                        // pop the class we added
+                                        schedule.pop();
                                     }
                                 }
+
+                                queue[0]["types"][foundType] = true;
                             }
                         }
                         else {
                             // we've already found all the types for this class, move on to the next
                             // remove this course
-                            queue.shift();
+                            var thisitem = queue.shift();
 
                             this.generateSchedules(schedule, queue);
+
+                            // add the item back
+                            queue.unshift(thisitem);
                         }
                     }
                 }
@@ -348,6 +365,8 @@ class Generator {
                 
                 self.possibleschedules = result;
                 self.doneGenerating = true;
+
+                console.log(result);
                 
                 // Now score and sort them
                 self.schedSorter();
