@@ -552,6 +552,9 @@ class ClassList {
         // empty out whatever is there
         $("#classdata").empty();
 
+        // scroll to the top
+        $("#classdatawraper").scrollTop(0);
+
         if (self.searchFound.length && searchphrasecopy == self.searchphrase) {
             // We found results
             self.populateClassList(self.searchFound, $("#classdata"), "", true);
