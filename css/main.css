@@ -563,6 +563,10 @@ td{
     .cd-accordion-menu label, .cd-accordion-menu a{
         font-size: 1.1rem;
     }
+
+    .accordiondesc{
+        font-size: 1rem;
+    }
 }
 
 
