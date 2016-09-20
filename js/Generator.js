@@ -10,6 +10,9 @@ class Generator {
         this.schedSort = false;
         this.schedgenerator = false;
 
+        this.doneGenerating = false;
+        this.doneScoring = false;
+
         // Generates the schedules
         this.schedGen();
         
@@ -358,7 +361,7 @@ class Generator {
             // only show the loader if the generation is taking longer than 500ms
             // since the animations for it would take longer than the actual gen
             setTimeout(function () {
-                if (self.doneGenerating == false) window.calendar.startLoading("Generating Schedules...");
+                if (self.doneScoring == false) window.calendar.startLoading("Generating Schedules...");
             }, 500);
 
             // Spawn the generator
@@ -367,7 +370,7 @@ class Generator {
                 
                 self.possibleschedules = result;
 
-                console.log(result);
+                self.doneGenerating = true;
                 
                 // Now score and sort them
                 self.schedSorter();
@@ -380,6 +383,8 @@ class Generator {
     */
     schedSorter() {
         var self = this;
+
+        self.doneScoring = false;
 
         // Get the user's scoring preferences
         this.getPreferences();
@@ -616,7 +621,8 @@ class Generator {
                 console.log("Web worker finished sorting schedules");
                 console.log(result);
 
-                self.doneGenerating = true;
+                self.doneScoring = true;
+
                 // Replace the reference with the sorted schedules
                 self.possibleschedules = result;
 
@@ -800,4 +806,35 @@ class Generator {
         if (this.schedSort != false) this.schedSort.terminate();
         if (this.schedgenerator != false) this.schedgenerator.terminate();
     }
+
+    /*
+        Updates the sorting for the current schedule given new preferences
+    */
+    updateScores() {
+        var self = this;
+
+        // check whether we have already generated schedules
+        if (this.doneGenerating == true) {
+            // terminate any current scorer
+            this.stop();
+
+            // remove current scores
+            for (var schedule in this.possibleschedules) {
+                var thisschedule = this.possibleschedules[schedule];
+
+                // remove the first index (score) if its a number
+                if (typeof thisschedule[0] == "number") thisschedule.shift();
+            }
+
+            setTimeout(function () {
+                console.log("Hello");
+                if (self.doneScoring == false && window.calendar.isLoading == false) window.calendar.startLoading("Generating Schedules...");
+            }, 500);
+
+            // now score it again
+            this.schedSorter();
+        }
+    }
+
+
 }

@@ -66,6 +66,12 @@ class Preferences {
         localStorage.setItem('nightslider', this.getNightValue());
         localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
         localStorage.setItem('rmpslider', this.getRMPValue());
+
+        // update any current schedule generation
+        if (window.mycourses.generator != false) {
+            // update the scores
+            window.mycourses.generator.updateScores();
+        }
     }
 
     /*
