@@ -422,6 +422,28 @@ p {
     outline: none;
 }
 
+.removeCourseButton {
+  padding: 0 !important;
+  float: right;
+  color: #f33d3a;
+  font-size: 35px;
+  margin-top: -7px;
+  border-color: #ffffff;
+}
+
+.removeCourseButton:hover{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #a01715;
+}
+
+.removeCourseButton:focus{
+    background-color: #ffffff;
+    border-color: #ffffff;
+    color: #a01715;
+    outline: none;
+}
+
 
 /*
   Remove button

@@ -397,31 +397,22 @@ class ClassList {
                         var thiselement = $(self.generateAccordionHTML(name, thispath));
 
                         if (thisdata[val]["classes"] != undefined) {
-                            // this is a label for a course, allow the user to add the general course
-                            var addbutton = $('<div class="addCourseButton">+</div>');
 
-                            addbutton.click(function (event) {
-                                event.stopPropagation();
+                            // check if the user has already selected this course
+                            // if so, put a remove button
+                            var subject = thispath.split("\\");
 
-                                // get the path for this course
-                                var path = $(this).parent().attr("path");
-                                var splitpath = path.split("\\");
+                            var coursenum = subject[subject.length-1] // 203
+                            var subject = subject[subject.length-2]; // CPSC
 
+                            var coursecode = subject + " " + coursenum; // CPSC 203
 
-                                var coursedata = self.classdata;
-
-                                // get the data for this course
-                                for (var apath in splitpath) {
-                                    if (splitpath[apath] != "") {
-                                        coursedata = coursedata[splitpath[apath]];
-                                    }
-                                }
-
-                                // Add the course to the current active group
-                                window.mycourses.addCourse(coursedata, path);
-                            });
-
-                            thiselement.find("label").append(addbutton)
+                            if (window.mycourses.hasCourse(coursecode)) {
+                                self.appendCourseRemoveBtn(coursecode, thiselement.find("label"));
+                            }
+                            else {
+                                self.appendCourseAddBtn(coursecode, thiselement.find("label"));
+                            }
                         }
 
                         thiselement.find("label").click(function (event) {
@@ -433,6 +424,73 @@ class ClassList {
                 }
             }
         }
+    }
+
+    /*
+        Appends a course add button to the element
+    */
+    appendCourseAddBtn(coursecode, element) {
+        var self = this;
+
+        // this is a label for a course, allow the user to add the general course
+        var addbutton = $('<div class="addCourseButton" code="' + coursecode +'">+</div>');
+
+        addbutton.click(function (event) {
+            event.stopPropagation();
+
+            // get the path for this course
+            var path = $(this).parent().attr("path");
+            var splitpath = path.split("\\");
+
+
+            var coursedata = self.classdata;
+
+            // get the data for this course
+            for (var apath in splitpath) {
+                if (splitpath[apath] != "") {
+                    coursedata = coursedata[splitpath[apath]];
+                }
+            }
+
+            // Add the course to the current active group
+            window.mycourses.addCourse(coursedata, path);
+
+            // we want to remove this button and replace it with a remove btn
+            var coursecode = $(this).attr("code");
+
+            self.appendCourseRemoveBtn(coursecode, $(this).parent());
+
+            // now remove this old button
+            $(this).remove();
+        });
+
+        element.append(addbutton);
+    }
+
+    /*
+        Appends a remove course button to the element
+    */
+    appendCourseRemoveBtn(coursecode, element) {
+        var self = this;
+
+        var removebtn = $('<div class="removeCourseButton" code="' + coursecode + '">×</div>');
+
+        removebtn.click(function (event) {
+            event.stopPropagation();
+
+            var coursecode = $(this).attr("code");
+
+            // rmeove the course
+            window.mycourses.removeCourse(coursecode);
+
+            // add an "add" button
+            self.appendCourseAddBtn(coursecode, $(this).parent());
+
+            // remove this button
+            $(this).remove();
+        });
+
+        element.append(removebtn);
     }
 
     /*

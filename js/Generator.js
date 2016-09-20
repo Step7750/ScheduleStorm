@@ -26,8 +26,9 @@ class Generator {
 
         self.doneGenerating = false;
 
-        // Instantiate the generator
-        self.schedgenerator = operative({
+        window.calendar.doneLoading(function () {
+            // Instantiate the generator
+            self.schedgenerator = operative({
             possibleschedules: [],
             combinations: [],
             classes: {},
@@ -354,9 +355,8 @@ class Generator {
                 }
                 return combs;
             }
-        });
+            });
         
-        window.calendar.doneLoading(function () {
 
             // only show the loader if the generation is taking longer than 500ms
             // since the animations for it would take longer than the actual gen

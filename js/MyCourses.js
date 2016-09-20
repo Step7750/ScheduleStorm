@@ -3,7 +3,7 @@ class MyCourses {
         // TODO: Add saving courses, currently uni and term are redundant
         this.courses = [];
         this.generator = false;
-        
+
         this.numConvert = {
             0: "All",
             1: "One",
@@ -338,10 +338,12 @@ class MyCourses {
 
                 // check if its the active group
                 // if so, removing the UI element
-                var label = $('label[path="' + course + '"]');
-                label.parent().slideUp(function () {
-                    $(this).empty();
-                });
+                if (group == this.activeGroup) {
+                    var label = $('label[path="' + course + '"]');
+                    label.parent().slideUp(function () {
+                        $(this).empty();
+                    });
+                }
             }
         }
 
