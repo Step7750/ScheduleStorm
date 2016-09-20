@@ -6,7 +6,9 @@ class Generator {
         this.convertTimes();
         this.addCourseInfo();
 
-        //console.log(this.classes);
+
+        this.schedSort = false;
+        this.schedgenerator = false;
 
         // Generates the schedules
         this.schedGen();
@@ -22,7 +24,7 @@ class Generator {
         self.doneGenerating = false;
 
         // Instantiate the generator
-        var schedgenerator = operative({
+        self.schedgenerator = operative({
             possibleschedules: [],
             combinations: [],
             classes: {},
@@ -360,11 +362,10 @@ class Generator {
             }, 500);
 
             // Spawn the generator
-            schedgenerator.init(self.classes, function(result) {
+            self.schedgenerator.init(self.classes, function(result) {
                 console.log("Web worker finished generating schedules");
                 
                 self.possibleschedules = result;
-                self.doneGenerating = true;
 
                 console.log(result);
                 
@@ -384,7 +385,7 @@ class Generator {
         this.getPreferences();
 
         // Instantiate the sorter
-        var schedSort = operative({
+        self.schedSort = operative({
             possibleschedules: [],
             init: function(schedules, morningSlider, nightSlider, consecutiveSlider, rmpSlider, rmpData, rmpAvg, callback) {
                 // Set local variables in the blob
@@ -610,11 +611,12 @@ class Generator {
         });
     
         // Spawn the web worker
-        schedSort.init(this.possibleschedules, this.morningSlider, this.nightSlider, this.consecutiveSlider, this.rmpSlider, window.classList.rmpdata, window.classList.rmpavg,
+        self.schedSort.init(this.possibleschedules, this.morningSlider, this.nightSlider, this.consecutiveSlider, this.rmpSlider, window.classList.rmpdata, window.classList.rmpavg,
             function(result) {
                 console.log("Web worker finished sorting schedules");
                 console.log(result);
 
+                self.doneGenerating = true;
                 // Replace the reference with the sorted schedules
                 self.possibleschedules = result;
 
@@ -789,5 +791,13 @@ class Generator {
         this.nightSlider = preferences.getNightValue();
         this.consecutiveSlider = preferences.getConsecutiveValue();
         this.rmpSlider = preferences.getRMPValue();
+    }
+
+    /*
+        Stops any current generation
+    */
+    stop() {
+        if (this.schedSort != false) this.schedSort.terminate();
+        if (this.schedgenerator != false) this.schedgenerator.terminate();
     }
 }

@@ -3,6 +3,7 @@ class MyCourses {
         // TODO: Add saving courses, currently uni and term are redundant
         this.courses = [];
         this.generator = false;
+        
         this.numConvert = {
             0: "All",
             1: "One",
@@ -141,7 +142,7 @@ class MyCourses {
         if (this.courses.length < 4) $("#addGroupbtn").show();
 
         // regenerate the schedules
-        this.generator = new Generator(this.courses);
+        this.startGeneration();
     }
 
     /*
@@ -153,7 +154,7 @@ class MyCourses {
         // Change the HTML
         $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
 
-        this.generator = new Generator(this.courses);
+        this.startGeneration();
     }
 
     /*
@@ -302,7 +303,7 @@ class MyCourses {
             self.updateAccordion(coursecode);
         }
 
-        this.generator = new Generator(this.courses);
+        this.startGeneration();
     }
 
     /*
@@ -344,7 +345,7 @@ class MyCourses {
             }
         }
 
-        this.generator = new Generator(this.courses);
+        this.startGeneration();
     }
 
     /*
@@ -479,6 +480,9 @@ class MyCourses {
 
                             // update UI
                             self.updateAccordion(coursecode);
+
+                            // update the generation
+                            self.startGeneration();
                         })
 
                         html.find("tr:first").append(removebtn);
@@ -493,6 +497,17 @@ class MyCourses {
 
             element.slideDown();
         });
+    }
+
+    /*
+        Initiates schedule generation given the current chosen classes
+    */
+    startGeneration() {
+        // we want to terminate the previous generator if its still running
+        if (this.generator != false) this.generator.stop();
+
+        // generate the schedules
+        this.generator = new Generator(this.courses);
     }
 
     /*
