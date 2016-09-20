@@ -559,6 +559,10 @@ td{
     #courseSelector > ul{
         height: 91%;
     }
+
+    .cd-accordion-menu label, .cd-accordion-menu a{
+        font-size: 1.1rem;
+    }
 }
 
 
