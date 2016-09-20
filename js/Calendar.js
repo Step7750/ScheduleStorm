@@ -72,8 +72,9 @@ class Calendar {
     displaySchedule(schedule) {
         var self = this;
 
-        // get the score
-        $("#scheduleScore").text(schedule[0].toFixed(2));
+        // set the score
+        // make sure its a number
+        if (typeof schedule[0] == "number") $("#scheduleScore").text(schedule[0].toFixed(2));
 
         // Clear all the current events on the calendar
         self.clearEvents();
