@@ -360,83 +360,98 @@ class ClassList {
     }
 
     /*
-        Populates the classlist on demand given the hierarchy
+        Does proper DOM manipulation for adding accordion elements
     */
-    populateClassList(data, element, path) {
+    addAccordionDOM(data, element, path) {
         var self = this;
 
-        // Slide up the element
-        element.slideUp(function () {
-            for (var arrayelement in data) {
-                // this array is sorted my order of importance of populating the elements
-                var thisdata = data[arrayelement];
+        for (var arrayelement in data) {
+            // this array is sorted my order of importance of populating the elements
+            var thisdata = data[arrayelement];
 
-                if (thisdata != undefined) {
-                    for (var val in thisdata) {
-                        if (val == "classes") {
-                            // This is a class, process it differently
-                            self.populateClass(thisdata, element, path);
+            if (thisdata != undefined) {
+                for (var val in thisdata) {
+                    if (val == "classes") {
+                        // This is a class, process it differently
+                        self.populateClass(thisdata, element, path);
+                    }
+                    else if (val != "description") {
+                        // Generate this new element, give it the path
+                        var thispath = "";
+                        if (thisdata[val]["path"] != undefined) {
+                            thispath = thisdata[val]["path"];
                         }
-                        else if (val != "description") {
-                            // Generate this new element, give it the path
-                            var thispath = "";
-                            if (thisdata[val]["path"] != undefined) {
-                                thispath = thisdata[val]["path"];
+                        else {
+                            thispath = path + "\\" + val;
+                        }
+
+                        var name = val;
+                        
+                        if (thisdata[val]["description"] != undefined) {
+                            if (thisdata[val]["description"]["name"] != undefined) {
+                                name += " - " + thisdata[val]["description"]["name"]
                             }
-                            else {
-                                thispath = path + "\\" + val;
-                            }
+                        }
 
-                            var name = val;
-                            
-                            if (thisdata[val]["description"] != undefined) {
-                                if (thisdata[val]["description"]["name"] != undefined) {
-                                    name += " - " + thisdata[val]["description"]["name"]
-                                }
-                            }
+                        var thiselement = $(self.generateAccordionHTML(name, thispath));
 
-                            var thiselement = $(self.generateAccordionHTML(name, thispath));
+                        if (thisdata[val]["classes"] != undefined) {
+                            // this is a label for a course, allow the user to add the general course
+                            var addbutton = $('<div class="addCourseButton">+</div>');
 
-                            if (thisdata[val]["classes"] != undefined) {
-                                // this is a label for a course, allow the user to add the general course
-                                var addbutton = $('<div class="addCourseButton">+</div>');
-
-                                addbutton.click(function (event) {
-                                    event.stopPropagation();
-
-                                    // get the path for this course
-                                    var path = $(this).parent().attr("path");
-                                    var splitpath = path.split("\\");
-
-
-                                    var coursedata = self.classdata;
-
-                                    // get the data for this course
-                                    for (var apath in splitpath) {
-                                        if (splitpath[apath] != "") {
-                                            coursedata = coursedata[splitpath[apath]];
-                                        }
-                                    }
-
-                                    // Add the course to the current active group
-                                    window.mycourses.addCourse(coursedata, path);
-                                });
-
-                                thiselement.find("label").append(addbutton)
-                            }
-
-                            thiselement.find("label").click(function (event) {
+                            addbutton.click(function (event) {
                                 event.stopPropagation();
-                                self.bindButton(self.classdata, this, "class");
+
+                                // get the path for this course
+                                var path = $(this).parent().attr("path");
+                                var splitpath = path.split("\\");
+
+
+                                var coursedata = self.classdata;
+
+                                // get the data for this course
+                                for (var apath in splitpath) {
+                                    if (splitpath[apath] != "") {
+                                        coursedata = coursedata[splitpath[apath]];
+                                    }
+                                }
+
+                                // Add the course to the current active group
+                                window.mycourses.addCourse(coursedata, path);
                             });
-                            element.append(thiselement);
+
+                            thiselement.find("label").append(addbutton)
                         }
+
+                        thiselement.find("label").click(function (event) {
+                            event.stopPropagation();
+                            self.bindButton(self.classdata, this, "class");
+                        });
+                        element.append(thiselement);
                     }
                 }
             }
+        }
+    }
 
-            element.slideDown();
-        });
+    /*
+        Populates the classlist on demand given the hierarchy
+    */
+    populateClassList(data, element, path, noanimations) {
+        var self = this;
+
+        if (noanimations != true) {
+            // Slide up the element
+            element.slideUp(function () {
+                self.addAccordionDOM(data, element, path);
+                element.slideDown();
+            });
+        }
+        else {
+            self.addAccordionDOM(data, element, path);
+            element.show();
+        }
+
     }
 
     /*
@@ -498,27 +513,25 @@ class ClassList {
             if (e.keyCode == 13) {
                 // they pressed enter
                 self.searchFound = [];
-                $("#classdata").slideUp(function () {
-                    $("#classdata").empty();
+                $("#classdata").empty();
 
 
-                    if (searchval == "" || searchval == " ") {
-                        // Just populate the faculties
-                        self.populateClassList([self.classdata], $("#classdata"), "");
+                if (searchval == "" || searchval == " ") {
+                    // Just populate the faculties
+                    self.populateClassList([self.classdata], $("#classdata"), "", true);
+                }
+                else {
+                    // find and populate the results
+                    self.findText(self.classdata, searchval.toLowerCase(), "", "", 0);
+
+                    if (self.searchFound.length) {
+                        // We found results
+                        self.populateClassList(self.searchFound, $("#classdata"), "", true);
                     }
                     else {
-                        // find and populate the results
-                        self.findText(self.classdata, searchval.toLowerCase(), "", "", 0);
-
-                        if (self.searchFound.length) {
-                            // We found results
-                            self.populateClassList(self.searchFound, $("#classdata"), "");
-                        }
-                        else {
-                            $("#classdata").text("We couldn't find anything :(").slideDown();
-                        }
+                        $("#classdata").text("We couldn't find anything").slideDown();
                     }
-                });
+                }
 
             }
         })
