@@ -507,34 +507,58 @@ class ClassList {
         // Custom search
         var self = this;
 
+        self.typingtimer = null;
+        self.typinginterval = 100;
+
         $("#searchcourses").keyup(function (e) {
 
+            clearTimeout(self.typingtimer);
+
             var searchval = $("#searchcourses").val();
-            if (e.keyCode == 13) {
-                // they pressed enter
-                self.searchFound = [];
+
+            self.searchFound = [];
+
+            self.searchphrase = searchval.toLowerCase();
+
+
+            if (searchval == "" || searchval == " ") {
+                // Just populate the faculties
                 $("#classdata").empty();
-
-
-                if (searchval == "" || searchval == " ") {
-                    // Just populate the faculties
-                    self.populateClassList([self.classdata], $("#classdata"), "", true);
-                }
-                else {
-                    // find and populate the results
-                    self.findText(self.classdata, searchval.toLowerCase(), "", "", 0);
-
-                    if (self.searchFound.length) {
-                        // We found results
-                        self.populateClassList(self.searchFound, $("#classdata"), "", true);
-                    }
-                    else {
-                        $("#classdata").text("We couldn't find anything").slideDown();
-                    }
-                }
-
+                self.populateClassList([self.classdata], $("#classdata"), "", true);
             }
+            else {
+                if (searchval.length > 2) {
+                    self.typingtimer = setTimeout(function () {
+                        self.doneTyping();
+                    }, self.typinginterval);
+                }
+            }
+
+            
         })
+    }
+
+    /*
+        Performs the search given the phrase when the user is done typing
+    */
+    doneTyping() {
+        var self = this;
+
+        var searchphrasecopy = self.searchphrase.slice();
+
+        // find and populate the results
+        self.findText(self.classdata, searchphrasecopy, "", "", 0);
+
+        // empty out whatever is there
+        $("#classdata").empty();
+
+        if (self.searchFound.length && searchphrasecopy == self.searchphrase) {
+            // We found results
+            self.populateClassList(self.searchFound, $("#classdata"), "", true);
+        }
+        else if (searchphrasecopy == self.searchphrase) {
+            $("#classdata").text("We couldn't find anything").slideDown();
+        }
     }
 
     /*
@@ -592,7 +616,11 @@ class ClassList {
     /*
         Populates the global searchFound obj with courses that match the specified text (recursive)
     */
-    findText(data, text, path, prevkey, depth) {
+    findText(data, text, path, prevkey, depth, alreadyFound) {
+        if (text != this.searchphrase) {
+            return;
+        }
+
         if (data["classes"] != undefined) {
             // we are parsing a class
 
@@ -600,7 +628,8 @@ class ClassList {
                 var splitpath = path.split("\\");
                 var key = splitpath[splitpath.length-2] + " " + prevkey;
 
-                this.addSearchData(data, key, depth, path);
+                // We only want to add this course if it hasn't already been added
+                if (alreadyFound != true) this.addSearchData(data, key, depth, path);
             }
         }
         else {
@@ -617,10 +646,12 @@ class ClassList {
                         searchkey = splitpath[splitpath.length-2] + " " + searchkey;
                     }
 
+                    var thisFound = false;
                     // Find the text
                     if (searchkey.toLowerCase().indexOf(text) > -1) {
                         // We found it in the key, add it
                         this.addSearchData(data[key], searchkey, depth, thispath);
+                        thisFound = true;
                     }
                     else {
                         // check if it has a description, if so, check that
@@ -628,6 +659,7 @@ class ClassList {
                             if (data[key]["description"]["name"].toLowerCase().indexOf(text) > -1) {
                                 // We found the text in the description, add it to the found list
                                 this.addSearchData(data[key], searchkey, depth, thispath);
+                                thisFound = true;
                             }
                         }
                     }
@@ -635,7 +667,7 @@ class ClassList {
                     var thisdata = data[key];
                     
                     // Recursively look at the children
-                    this.findText(thisdata, text, thispath, key, depth+1);
+                    this.findText(thisdata, text, thispath, key, depth+1, thisFound);
                 }
             }
         }
