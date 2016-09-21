@@ -219,14 +219,17 @@ class ClassList {
     generateClasses(data, element, path, addButton) {
         var self = this;
 
-        var html = "<div class='accordiontableparent'><table class='table accordiontable'><tbody>";
+        var html = $("<div class='accordiontableparent'><table class='table accordiontable'><tbody></tbody></table></div>");
+
         for (var index = 0; index < data["classes"].length; index++) {
-            html += "<tr>";
+            
+            var thishtml = "<tr>";
+
             var thisclass = data["classes"][index];
 
             var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
             
-            html += "<td style='width: 15%;'>" + id + "</td>";
+            thishtml += "<td style='width: 15%;'>" + id + "</td>";
 
             var teachers = "";
             for (var teacher in thisclass["teachers"]) {
@@ -259,44 +262,25 @@ class ClassList {
                 timescopy[time] = ClassList.abbreviateTimes(timescopy[time]);
             }
 
-            html += "<td style='width: 20%;'>" + teachers + "</td>";
+            thishtml += "<td style='width: 20%;'>" + teachers + "</td>";
 
-            html += "<td>" + thisclass["rooms"].join("<br>") + "</td>";
+            thishtml += "<td>" + thisclass["rooms"].join("<br>") + "</td>";
 
-            html += "<td style='width: 30%;'>" + timescopy.join("<br>") + "</td>";
+            thishtml += "<td style='width: 30%;'>" + timescopy.join("<br>") + "</td>";
 
-            html += "<td style='width: 15%;'>" + thisclass["location"] + "</td>";
+            thishtml += "<td style='width: 15%;'>" + thisclass["location"] + "</td>";
 
-            html += "<td>" + thisclass["status"] + "</td>";
+            thishtml += "<td>" + thisclass["status"] + "</td>";
+
+            thishtml += "</tr>";
+
+            thishtml = $(thishtml);
 
             if (addButton) {
-                html += "<td>" + '<button class="btn btn-default" classid="' + thisclass["id"] + '" path="' + path + '">&plus;</button>' + "</td>";
+                self.appendClassAddBtn(thisclass["id"], path, thishtml);
             }
 
-            html += "</tr>";
-        }
-
-        html += "</tbody></table></div>";
-
-        html = $(html);
-
-        if (addButton) {
-            html.find("button").click(function () {
-                // get the path for this course
-                var path = $(this).attr('path');
-                var splitpath = path.split("\\");
-
-                var coursedata = self.classdata;
-
-                // get the data for this course
-                for (var apath in splitpath) {
-                    if (splitpath[apath] != "") {
-                        coursedata = coursedata[splitpath[apath]];
-                    }
-                }
-
-                window.mycourses.addCourse(coursedata, $(this).attr('path'), $(this).attr('classid'));
-            });
+            html.find("tbody").append(thishtml);
         }
 
         element.append(html);
@@ -491,6 +475,35 @@ class ClassList {
         });
 
         element.append(removebtn);
+    }
+
+    /*
+        Appends an add class button to the element (table)
+    */
+    appendClassAddBtn(id, path, element) {
+        var self = this;
+
+        var button = $('<td><button class="btn btn-default" classid="' + id + '" path="' + path + '">&plus;</button></td>');
+
+        button.find("button").click(function () {
+            // get the path for this course
+            var path = $(this).attr('path');
+            var splitpath = path.split("\\");
+
+            var coursedata = self.classdata;
+
+            // get the data for this course
+            for (var apath in splitpath) {
+                if (splitpath[apath] != "") {
+                    coursedata = coursedata[splitpath[apath]];
+                }
+            }
+
+            window.mycourses.addCourse(coursedata, $(this).attr('path'), $(this).attr('classid'));
+        });
+
+        // append it to the element
+        element.append(button);
     }
 
     /*
