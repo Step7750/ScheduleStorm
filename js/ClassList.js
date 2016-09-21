@@ -494,6 +494,18 @@ class ClassList {
     }
 
     /*
+        Updates the remove button on a removed course in My Courses
+    */
+    updateRemovedCourse(coursecode) {
+        var removedCourse = $("div[code='" + coursecode + "']");
+        if (removedCourse.length > 0) {
+            var parent = removedCourse.parent();
+            this.appendCourseAddBtn(coursecode, removedCourse.parent());
+            removedCourse.remove();
+        }
+    }
+
+    /*
         Populates the classlist on demand given the hierarchy
     */
     populateClassList(data, element, path, noanimations) {

@@ -337,7 +337,7 @@ class MyCourses {
                 delete thisgroup["courses"][course];
 
                 // check if its the active group
-                // if so, removing the UI element
+                // if so, remove the UI element
                 if (group == this.activeGroup) {
                     var label = $('label[path="' + course + '"]');
                     label.parent().slideUp(function () {
@@ -386,6 +386,9 @@ class MyCourses {
                 event.stopPropagation();
 
                 self.removeCourse($(this).parent().attr("path"));
+
+                // we want to update any elements on the classlist
+                window.classList.updateRemovedCourse($(this).parent().attr("path"));
             })
         }
 
