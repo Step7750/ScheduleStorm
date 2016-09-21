@@ -506,6 +506,18 @@ class ClassList {
     }
 
     /*
+        Updates the add button on an added course in My Courses
+    */
+    updateAddedCourse(coursecode) {
+        var addedCourse = $("div[code='" + coursecode + "']");
+        if (addedCourse.length > 0) {
+            var parent = addedCourse.parent();
+            this.appendCourseRemoveBtn(coursecode, addedCourse.parent());
+            addedCourse.remove();
+        }
+    }
+
+    /*
         Populates the classlist on demand given the hierarchy
     */
     populateClassList(data, element, path, noanimations) {

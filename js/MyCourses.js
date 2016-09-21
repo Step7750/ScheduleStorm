@@ -301,6 +301,9 @@ class MyCourses {
 
             // Update the accordion if its open
             self.updateAccordion(coursecode);
+
+            // update the classlist buttons
+            window.classList.updateAddedCourse(coursecode);
         }
 
         this.startGeneration();
