@@ -2,7 +2,7 @@
   <img src="http://i.imgur.com/ZBRXem4.png"/>
 </p>
 
-Input your courses, preferences, and your machine will take care of the rest
+[ScheduleStorm.com](schedulestorm.com)
 
 Schedule Storm is a schedule generator web app that let's you input your courses and preferences to generate possible schedules.
 
@@ -17,6 +17,15 @@ Want us to support your university?
   * If you can, feel free to send pull requests with additional functionality
   * If not, file a new issue and we'll look into it!
 
+## Features
+  * Very fast and responsive accordion for searching courses
+  * Unified UI with your proposed schedules, class search, and selected courses
+  * Add specific classes and allow the generator to fill out the rest
+  * Instant schedule generation when adding courses
+  * Easy to read calendar
+  * Inline RMP Ratings
+  * Dynamic Scoring that takes into account your preferences 
+  * Supports many Unis, with a framework for adding more
 
 ## How does it work?
 
@@ -50,5 +59,5 @@ For the classlist, we wanted to provide the user with a new means of browsing fo
 
 * MongoDB
 * Python Backend w/ Falcon for the API Server and threads for each University
-* ES6 OOP Frontend (transpiled to ES5 in production to support more clients)
+* ES6 JS OOP Frontend (transpiled to ES5 in production to support more clients)
 * Heavy use of JQuery to manipulate the DOM
