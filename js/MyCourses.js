@@ -370,6 +370,48 @@ class MyCourses {
     }
 
     /*
+        Returns a boolean as to whether the specified class id has been selected in any group
+    */
+    hasClass(classid) {
+        for (var group in this.courses) {
+            var thisgroup = this.courses[group];
+
+            for (var course in thisgroup["courses"]) {
+                for (var classv in thisgroup["courses"][course]["types"]) {
+                    if (thisgroup["courses"][course]["types"][classv] == classid) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    removeClass(classid) {
+        for (var group in this.courses) {
+            var thisgroup = this.courses[group];
+
+            for (var course in thisgroup["courses"]) {
+                for (var classv in thisgroup["courses"][course]["types"]) {
+                    if (thisgroup["courses"][course]["types"][classv] == classid) {
+                        thisgroup["courses"][course]["types"][classv] = true;
+
+                        // update UI
+                        this.updateAccordion(course);
+
+                        // update the generation
+                        this.startGeneration();
+
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /*
         Appends the given course to the current courselist HTML
     */
     displayCourse(course, path, classid, animated) {
@@ -475,7 +517,7 @@ class MyCourses {
                         var html = window.classList.generateClasses(data, element, false, false);
 
                         // add the remove button
-                        var removebtn = $('<td><button class="btn btn-default" id="removeClassBtn" type="' + type +'" code="' + coursecode + '">×</button></td>');
+                        var removebtn = $('<td><button class="btn btn-default" id="removeClassBtn" type="' + type +'" code="' + coursecode + '" myclassid="' + data["classes"][0]["id"] + '">×</button></td>');
 
                         // bind class removing button
                         removebtn.find("button").click(function (event) {
@@ -485,6 +527,9 @@ class MyCourses {
                             
                             // set to generic class
                             self.courses[self.activeGroup]["courses"][coursecode]["types"][type] = true;
+
+                            // update the class list
+                            window.classList.updateRemovedClass($(this).attr("myclassid"));
 
                             // update UI
                             self.updateAccordion(coursecode);

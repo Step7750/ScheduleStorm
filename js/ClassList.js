@@ -213,6 +213,7 @@ class ClassList {
         
         return time;
     }
+
     /*
         Populates a list of given clases
     */
@@ -277,7 +278,13 @@ class ClassList {
             thishtml = $(thishtml);
 
             if (addButton) {
-                self.appendClassAddBtn(thisclass["id"], path, thishtml);
+                // check whether we have added this class already
+                if (window.mycourses.hasClass(thisclass["id"]) == true) {
+                    self.appendClassRemoveBtn(thisclass["id"], path, thishtml);
+                }
+                else {
+                    self.appendClassAddBtn(thisclass["id"], path, thishtml);
+                }
             }
 
             html.find("tbody").append(thishtml);
@@ -500,6 +507,44 @@ class ClassList {
             }
 
             window.mycourses.addCourse(coursedata, $(this).attr('path'), $(this).attr('classid'));
+
+            // now add a remove button here
+            self.appendClassRemoveBtn($(this).attr('classid'), $(this).attr('path'), $(this).parent().parent());
+
+            $(this).parent().remove();
+        });
+
+        // append it to the element
+        element.append(button);
+    }
+
+    /*
+        Appends a class remove button to the specified element
+    */
+    appendClassRemoveBtn(id, path, element) {
+        var self = this;
+
+        var button = $('<td><button class="btn btn-default" id="removeClassBtn" classid="' + id + '" path="' + path + '">×</button></td>');
+
+        button.find("button").click(function () {
+            // get the path for this course
+            var path = $(this).attr('path');
+            var splitpath = path.split("\\");
+
+            var coursedata = self.classdata;
+
+            // get the data for this course
+            for (var apath in splitpath) {
+                if (splitpath[apath] != "") {
+                    coursedata = coursedata[splitpath[apath]];
+                }
+            }
+
+            window.mycourses.removeClass($(this).attr('classid'));
+
+            self.appendClassAddBtn($(this).attr('classid'), $(this).attr('path'), $(this).parent().parent());
+
+            $(this).parent().remove();
         });
 
         // append it to the element
@@ -527,6 +572,17 @@ class ClassList {
             var parent = addedCourse.parent();
             this.appendCourseRemoveBtn(coursecode, addedCourse.parent());
             addedCourse.remove();
+        }
+    }
+
+    /*
+        Updates the specified class button if it is visible
+    */
+    updateRemovedClass(classid) {
+        var removedClass = $("button[classid='" + classid + "']");
+        if (removedClass.length > 0) {
+            this.appendClassAddBtn(classid, removedClass.attr("path"), removedClass.parent().parent());
+            removedClass.parent().remove();
         }
     }
 
