@@ -6,9 +6,16 @@
 
 Schedule Storm is a schedule generator web app that let's you input your courses and preferences to generate possible schedules.
 
-Rather than just supporting one university, Schedule Storm is a platform in which you can support your any university by extending the modules.
+Rather than just supporting one university, Schedule Storm is a platform in which you can support your university by extending the modules.
 
-#### Supported Universities:
+## Table of Contents
+  * [Supported Universities](https://github.com/Step7750/ScheduleStorm#supported-universities)
+  * [Features](https://github.com/Step7750/ScheduleStorm#features)
+  * [How does it work?](https://github.com/Step7750/ScheduleStorm#how-does-it-work)
+  * [Why is it better?](https://github.com/Step7750/ScheduleStorm#why-is-it-better)
+  * [Tech Stack](https://github.com/Step7750/ScheduleStorm#tech-stack)
+
+## Supported Universities:
   * University of Calgary
   * University of Alberta (TODO)
   * Mount Royal University (TODO)
@@ -61,3 +68,15 @@ For the classlist, we wanted to provide the user with a new means of browsing fo
 * Python Backend w/ Falcon for the API Server and threads for each University
 * ES6 JS OOP Frontend (transpiled to ES5 in production to support more clients)
 * Heavy use of JQuery to manipulate the DOM
+
+### Backend
+
+Each university has an instantiated thread from it's module (ex. UCalgary.py). The backend handles API requests and necessary scraping in an all-in-one package. Each supported university must have an entry in the settings file and have an enabled flag. RMP gets a dedicated thread that looks at the currently enabled Unis and scrapes the ratings for them in the specified interval. Each university has it's settings passed into it's thread upon creation. Each university is required to handle scraping, db management, and API response handlers for itself.
+
+
+## Inspiration from:
+
+* [Hey Winston for University of Alberta](https://github.com/ahoskins/winston)
+
+
+
