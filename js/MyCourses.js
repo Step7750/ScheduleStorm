@@ -297,6 +297,11 @@ class MyCourses {
                 }
             }
 
+            if (thiscourse["types"][classtype] != true) {
+                // update the class list button (remove the old class button)
+                window.classList.updateRemovedClass(thiscourse["types"][classtype]);
+            }
+
             thiscourse["types"][classtype] = classid;
 
             // Update the accordion if its open
