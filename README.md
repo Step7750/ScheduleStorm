@@ -28,6 +28,24 @@ When a client chooses a specific term and uni, we send over all of the class dat
 
 Since the client has all the data they need, class searching and generation can all be done client side now. Due to this, there is no additional latency in sending requests back and forth. 
 
+## Why is it better?
+
+From the very beginning, we wanted to have a very unified experience when using Schedule Storm. When you add a new course, you can instantly see how your schedules changed. When you change your schedule scoring preferences, you can instantly see the new sorting in the background.
+
+We greatly prioritized speed as part of this experience:
+  * Class Searching is completely client side
+  * Class Generation is completely client side
+  * Class Scoring is completely client side
+  * In order to minimize UI lag when generating complex schedules, generation and scoring are in web workers
+
+When most people look for classes, they want to know how "good" the teacher is and compare that to how good the time slot is. As a result, Schedule Storm takes ratemyprofessor ratings into account when generating schedules. If you believe RMP does not give a good indication of a professor's quality, you can simply change your preferences for score weighting.
+
+Another feature that we saw lacking in other schedule generators was the ability to choose a specific class and let it figure out the proper tutorials, labs, etc... This lets you choose that specific tutorial with your friends, but let it figure out what are the best lectures and labs for it. 
+
+We decided to expand upon Winston's class group features and allow you to have All of, one of, two of, etc... of a certain number of classes. This allows you to make a new group, add a bunch of options to it, and only want it to select 2 or 3 of them.
+
+For the classlist, we wanted to provide the user with a new means of browsing for possible specific classes rather than using their school's (probably) archaic class searching system. When we find a match, professors have a little number next to their name to indicate their RMP rating. We also have in-line course descriptions, requirements, and notes; you won't have to go anywhere else to check whether you have the prerequisites.
+
 ## Tech Stack
 
 * MongoDB
