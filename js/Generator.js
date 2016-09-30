@@ -721,12 +721,19 @@ class Generator {
         // Map the days
         var map = {
             "Mo": 0,
+            "M": 0,
             "Tu": 1,
+            "T": 1,
             "We": 2,
+            "W": 2,
             "Th": 3,
+            "R": 3,
             "Fr": 4,
+            "F": 4,
             "Sa": 5,
-            "Su": 6
+            "S": 5,
+            "Su": 6,
+            "U": 6
         }
         
         if (time.indexOf(" - ") > -1) {
