@@ -214,7 +214,11 @@ class MyCourses {
         var map = {
             "LEC": "Lecture",
             "TUT": "Tutorial",
-            "LAB": "Lab"
+            "LAB": "Lab",
+            "SEM": "Seminar",
+            "LCL": "Lecture/Lab",
+            "LBL": "Lab/Lecture",
+            "CLN": "Clinic"
         }
 
         if (map[type] != undefined) {
