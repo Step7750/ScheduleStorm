@@ -11,6 +11,8 @@ class Calendar {
 
         this.bindNextPrev();
 
+        this.bindSchedulePhotoDL();
+
         this.eventcolours = {
             "#FF5E3A": false,
             "#099e12": false,
@@ -25,6 +27,30 @@ class Calendar {
         //this.startLoading("Generating Schedules...");
     }
 
+    /*
+        Binds the Schedule Photo Download button and implements the DL functionality
+    */
+    bindSchedulePhotoDL() {
+        var self = this;
+
+        // on click
+        $("#dlSchedulePhoto").click(function () {
+            // create the canvas
+            html2canvas($(".calendar"), {
+                onrendered: function (canvas) {            
+                    // Download the picture
+                    var a = document.createElement('a');
+                    a.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+                    // Set the name of the file
+                    if (window.uni != null && window.term != null) a.download = window.uni + '_' + window.term + '_ScheduleStorm.png';
+                    else a.download = 'ScheduleStorm_Schedule.png';
+
+                    a.click();
+                }
+            });
+        });
+    }
     /*
         Starts loading animation
     */

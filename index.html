@@ -21,6 +21,9 @@
         <!-- Operative (Web Workers wraper) -->
         <script src="js/operative.min.js"></script>
 
+        <!-- HTML2Canvas (for taking Schedule screenshots) -->
+        <script src="js/html2canvas.min.js"></script>
+
         <!-- Custom JS -->
         <script src="js/Loading.js"></script>
         <script src="js/Preferences.js"></script>
@@ -173,7 +176,7 @@
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown noselect" >
+                        <li class="dropdown noselect">
                             <a id="MyUniversity" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
                             <ul class="dropdown-menu"></ul>
                         </li>
@@ -213,17 +216,17 @@
             <div id="schedule" class="col-md-5">
                 <div style="padding-bottom: 5px;" class="noselect">
                     <div style="text-align: center;">
-                        <span style="font-size: 20px; color: #0275d8; cursor: pointer;" id="prevSchedule">◀</span>
+                        <span style="font-size: 20px; color: #0275d8; cursor: pointer;" id="prevSchedule" title="Go to the previous schedule">◀</span>
                         <span style="font-size: 16px; cursor: default;">
                             <div style="display: inline;" id="curGenIndex">0</div>
                             <div style="display: inline;">/</div>
                             <div style="display: inline;" id="totalGen">0</div>
                         </span>
-                        <span style="font-size: 20px; color: #0275d8; cursor: pointer;" id="nextSchedule">▶</span>
+                        <span style="font-size: 20px; color: #0275d8; cursor: pointer;" id="nextSchedule" title="Go to the next schedule">▶</span>
                     </div>
                     
                     <div style="float: left; margin-top: -20px;">
-                        <button class="btn btn-default btn-xs" title="Download a Photo of your Schedule">
+                        <button class="btn btn-default btn-xs" title="Download a Photo of your Schedule" id="dlSchedulePhoto">
                             <span class="glyphicon glyphicon-picture"></span>
                         </button>
                     </div>
