@@ -42,6 +42,10 @@ thead th {
     width: 100%;
 }
 
+.slider{
+    margin: 0 10px;
+}
+
 header {
   background: #fff;
   padding: 1rem;
