@@ -24,6 +24,11 @@ class Preferences {
                                 .on('slideStop', function () {
                                     self.savePreferences();
                                 });
+
+        // Bind checkbox change event
+        $("#onlyOpenCheckbox").change(function () {
+            self.savePreferences();
+        })
     }
 
     getMorningValue() {
@@ -41,6 +46,10 @@ class Preferences {
     getRMPValue() {
         return this.rmpslider.slider('getValue');
     }
+
+    getOnlyOpenValue() {
+        return $("#onlyOpenCheckbox").is(":checked");
+    }
     
     setMorningValue(value) {
         if (value != null) this.morningslider.slider('setValue', parseInt(value));
@@ -56,7 +65,11 @@ class Preferences {
 
     setRMPValue(value) {
         if (value != null) this.rmpslider.slider('setValue', parseInt(value));
-    }    
+    } 
+
+    setOnlyOpenValue(value) {
+        if (value != null) $("#onlyOpenCheckbox").attr("checked", (value === "true"));
+    }
 
     /*
         Saves the current slider values to localStorage
@@ -66,6 +79,7 @@ class Preferences {
         localStorage.setItem('nightslider', this.getNightValue());
         localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
         localStorage.setItem('rmpslider', this.getRMPValue());
+        localStorage.setItem('onlyOpenCheckbox', this.getOnlyOpenValue());
 
         // update any current schedule generation
         if (window.mycourses.generator != false) {
@@ -82,5 +96,6 @@ class Preferences {
         this.setNightValue(localStorage.getItem('nightslider'));
         this.setConsecutiveValue(localStorage.getItem('consecutiveslider'));
         this.setRMPValue(localStorage.getItem('rmpslider'));
+        this.setOnlyOpenValue(localStorage.getItem('onlyOpenCheckbox'));
     }
 }

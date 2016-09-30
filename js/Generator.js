@@ -26,14 +26,20 @@ class Generator {
 
         self.doneGenerating = false;
 
+        // Get the user's scoring preferences
+        // Want to get whether they only allow open classes or not
+        this.getPreferences();
+
         window.calendar.doneLoading(function () {
             // Instantiate the generator
             self.schedgenerator = operative({
             possibleschedules: [],
             combinations: [],
             classes: {},
-            init: function(classes, callback) {
+            init: function(classes, onlyOpen, callback) {
                 this.classes = classes;
+                this.onlyOpen = onlyOpen;
+
                 this.findCombinations();
 
                 this.iterateCombos();
@@ -60,7 +66,7 @@ class Generator {
                         this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
 
                         if (this.combinations.length > 1) {
-                            console.log("Processing further groups");
+                            // console.log("Processing further groups");
                             this.possibleschedules = [];
                             // We have to add the other groups
                             for (var group = 1; group < this.combinations.length; group++) {
@@ -128,7 +134,17 @@ class Generator {
                     this.possibleschedules.push(JSON.parse(JSON.stringify(schedule)));
                 }
                 else {
-                    if (schedule.length > 1) {
+                    // Check that if they selected that they only want open classes,
+                    // we make sure the most recent one is open
+                    if (schedule.length > 1 && this.onlyOpen == true) {
+                        var addedClass = schedule[schedule.length-1];
+
+                        if (addedClass["status"] != "Open") {
+                            timeconflict = true;
+                        }
+                    }
+
+                    if (schedule.length > 1 && timeconflict == false) {
                         // TODO: REFACTOR NEEDED
 
                         // Check whether the most recent index has a time conflict with any of the others
@@ -156,7 +172,7 @@ class Generator {
                         }
                     }
 
-                    if (schedule.length > 1) {
+                    if (schedule.length > 1 && timeconflict == false) {
                         // if there are group numbers, make sure all classes are in the same group
                         // Some Unis require your tutorials to match the specific lecture etc...
                         // we only need to look at the most recent and second most recent groups
@@ -365,7 +381,7 @@ class Generator {
             }, 500);
 
             // Spawn the generator
-            self.schedgenerator.init(self.classes, function(result) {
+            self.schedgenerator.init(self.classes, self.onlyOpen, function(result) {
                 console.log("Web worker finished generating schedules");
                 
                 self.possibleschedules = result;
@@ -804,6 +820,7 @@ class Generator {
         this.nightSlider = preferences.getNightValue();
         this.consecutiveSlider = preferences.getConsecutiveValue();
         this.rmpSlider = preferences.getRMPValue();
+        this.onlyOpen = preferences.getOnlyOpenValue();
     }
 
     /*
@@ -834,12 +851,19 @@ class Generator {
             }
 
             setTimeout(function () {
-                console.log("Hello");
                 if (self.doneScoring == false && window.calendar.isLoading == false) window.calendar.startLoading("Generating Schedules...");
             }, 500);
 
-            // now score it again
-            this.schedSorter();
+            // check whether the current open value is different, if so, we need to regenerate the schedules
+            if (preferences.getOnlyOpenValue() != this.onlyOpen) {
+                // we need to fully regenerate the schedule
+                self.doneScoring = false;
+                this.schedGen();
+            }
+            else {
+                // now score it again
+                this.schedSorter();
+            }
         }
     }
 
