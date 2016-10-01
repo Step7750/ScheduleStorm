@@ -136,7 +136,7 @@ class Generator {
                 else {
                     // Check that if they selected that they only want open classes,
                     // we make sure the most recent one is open
-                    if (schedule.length > 1 && this.onlyOpen == true) {
+                    if (schedule.length > 0 && this.onlyOpen == true) {
                         var addedClass = schedule[schedule.length-1];
 
                         if (addedClass["status"] != "Open") {
