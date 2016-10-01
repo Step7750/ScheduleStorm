@@ -4,6 +4,11 @@ body, html{
     overflow: hidden;
 }
 
+
+.blockedTime {
+  background-color: #ecc6c6;
+}
+
 .outer {
     position:relative;
     height: 100%;

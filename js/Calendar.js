@@ -7,6 +7,9 @@ class Calendar {
 
         this.resizeCalendarNoScroll(0, 4, 9, 17);
 
+
+        this.blockedTimes = [];
+
         this.isLoading = false;
 
         this.bindNextPrev();
@@ -486,6 +489,14 @@ class Calendar {
         }
 
         table += '</tbody></table></div>';
+
+        table = $(table);
+
+        table.find("td:not(.headcol)").click(function () {
+            $(this).toggleClass("blockedTime");
+        });
+
+        // want to bind 
 
         $("#schedule").find(".outer:first").append(table);
     }
