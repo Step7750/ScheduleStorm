@@ -23,8 +23,6 @@ class Calendar {
             "#34AADC": false,
             "#5AD427": false
         }
-
-        //this.startLoading("Generating Schedules...");
     }
 
     /*
@@ -479,7 +477,7 @@ class Calendar {
             var iteratelength = endDay - startDay + 1;
 
             for (var x = 0; x < iteratelength; x++) {
-                table += "<td></td>";
+                table += "<td day='" + x + "'></td>";
             }
 
             table += "</tr>";
