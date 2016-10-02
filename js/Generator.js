@@ -865,6 +865,12 @@ class Generator {
             // populate the first one
             window.calendar.displaySchedule(schedules[0]);
         }
+        else {
+            // If there are blocked times, make sure the schedule fits all of them
+            // This is to make sure the user can remove time blocks that were outside
+            // of the previous schedule range
+            window.calendar.displayBlockedTimes();
+        }
     }
 
     /*
@@ -933,6 +939,4 @@ class Generator {
             }
         }
     }
-
-
 }

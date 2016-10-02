@@ -454,6 +454,10 @@ class Calendar {
             endHour += 6 - (endHour - startHour);
         }
 
+        if (endHour > 24) {
+            endHour = 24;
+        }
+
         var windowheight = $(window).height();
         var calendarheight = windowheight * 0.49;
 
@@ -594,5 +598,48 @@ class Calendar {
 
         // append the table
         $("#schedule").find(".outer:first").append(table);
+    }
+
+    /*
+        If there are blocked times, fits the schedule to display them all
+    */
+    displayBlockedTimes() {
+        var maxDay = 0;
+        var minDay = 6;
+
+        var minTime = 1440;
+        var maxTime = 0;
+
+        // Iterate through the blocked times
+        for (var day in this.blockedTimes) {
+            var thisDay = this.blockedTimes[day];
+
+            if (thisDay != undefined && thisDay.length > 0) {
+                // Check if it sets a new day range
+                if (day < minDay) minDay = day;
+                if (day > maxDay) maxDay = day;
+
+                // Iterate times
+                for (var time in thisDay) {
+                    var thistime = thisDay[time];
+
+                    var totalMin = parseInt(thistime.split("-")[0])*60 + parseInt(thistime.split("-")[1]);
+
+                    // Check if it sets a new time range
+                    if (totalMin > maxTime) maxTime = totalMin;
+                    if (totalMin < minTime) minTime = totalMin;
+                }
+            }
+        }
+        
+        // Make sure there are actually some blocked times
+        if (maxDay > 0 && minDay < 6 && minTime < 1440 && maxTime > 0) {
+            // Make sure its atleast monday to friday
+            if (minDay != 0) minDay = 0;
+            if (maxDay < 4) maxDay = 4;
+
+            // Draw it
+            this.resizeCalendarNoScroll(minDay, maxDay, Math.floor(minTime/60), Math.floor(maxTime/60));
+        }
     }
 }
