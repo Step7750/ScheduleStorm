@@ -755,46 +755,8 @@ class Generator {
     }
 
     /*
-        Removes classes that infringe upon some blocked times
+        Converts the format of the blockedTimes to the total minutes format used by the generator
     */
-    removeBlockedClasses() {
-        for (var group in this.classes) {
-            for (var course in this.classes[group]["courses"]) {
-                for (var classv in this.classes[group]["courses"][course]["obj"]["classes"]) {
-                    var thisclass = this.classes[group]["courses"][course]["obj"]["classes"][classv];
-
-                    var deleted = false;
-                    for (var time in thisclass["times"]) {
-                        var thistime = thisclass["times"][time];
-
-                        for (var day in thisclass["times"][time][0]) {
-                            if (this.blockedTimes[day] != undefined) {
-                                for (var blockedTime in this.blockedTimes[day]) {
-                                    if (Generator.isConflicting(thistime[1], [this.blockedTimes[day][blockedTime], this.blockedTimes[day][blockedTime]+30])) {
-                                        console.log("Deleting " + thisclass["id"]);
-                                        delete this.classes[group]["courses"][course]["obj"]["classes"][classv];
-
-                                        deleted = true;
-                                        break
-                                    }
-                                }
-                            }
-
-                            if (deleted) {
-                                break;
-                            }
-                        }
-
-                        if (deleted) {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        console.log(this.classes);
-    }
-
     convertBlockedTimes() {
         for (var day in this.blockedTimes) {
             for (var time in this.blockedTimes[day]) {
