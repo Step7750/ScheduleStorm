@@ -795,13 +795,9 @@ class Generator {
             "Tu": 1,
             "We": 2,
             "Th": 3,
-            "R": 3,
             "Fr": 4,
-            "F": 4,
             "Sa": 5,
-            "S": 5,
-            "Su": 6,
-            "U": 6
+            "Su": 6
         }
 
         // Map for other types of days
@@ -835,7 +831,7 @@ class Generator {
             // For other naming schemes
             for (var day in map2) {
                 if (days.indexOf(day) > -1) {
-                    dayarray.push(map[day]);
+                    dayarray.push(map2[day]);
                 }
             }
         }

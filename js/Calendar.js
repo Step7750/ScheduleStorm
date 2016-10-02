@@ -8,7 +8,8 @@ class Calendar {
         console.log("Setting up calendar");
 
         this.blockedTimes = [];
-        
+        this.prevBlockedTimes = [];
+
         this.resizeCalendarNoScroll(0, 4, 9, 17);
 
         this.removeTimes = false;
@@ -33,6 +34,18 @@ class Calendar {
         // We want to bind the mouse up handler for blocking times
         $(document).mouseup(function () {
             self.mouseDown = false;
+
+            // Change each deep array to strings for comparison
+            var blockedTimesString = JSON.stringify(self.blockedTimes);
+            var prevBlockedTimesString = JSON.stringify(self.prevBlockedTimes);
+
+            // Check if the blocked times changed, if so, restart generation
+            if (blockedTimesString != prevBlockedTimesString) {
+                window.mycourses.startGeneration();
+            }
+
+            // Reset prev
+            self.prevBlockedTimes = self.blockedTimes;
         });
     }
 
@@ -518,6 +531,9 @@ class Calendar {
 
             // Ex. If you start of removing a time block, you can only remove
             // other timeblocks when you hover
+
+            // Preserve the old copy of the blocked times for the mouseUp document event
+            self.prevBlockedTimes = jQuery.extend(true, [], self.blockedTimes);
 
             self.mouseDown = true;
 
