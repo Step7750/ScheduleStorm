@@ -220,13 +220,52 @@ class ClassList {
     generateClasses(data, element, path, addButton) {
         var self = this;
 
+        // clone the data since we're going to modify it
+        data = JSON.parse(JSON.stringify(data));
+
         var html = $("<div class='accordiontableparent'><table class='table accordiontable'><tbody></tbody></table></div>");
 
+        // Array that stores the ordered classes
+        var orderedClasses = [];
+
+        // Order to use
+        var typeOrder = ["LEC", "LCL", "SEM", "LAB", "LBL", "CLN", "TUT"];
+
+        // Order the classes
+        for (var type in typeOrder) {
+
+            var nonPushedClasses = [];
+
+            type = typeOrder[type];
+
+            // Go through each class and if it has the same type, add it
+            for (var index = 0; index < data["classes"].length; index++) {
+                var thisclass = data["classes"][index];
+                if (thisclass["type"] == type) {
+                    // add to the ordered classes
+                    orderedClasses.push(thisclass);
+                }
+                else {
+                    // push it to the classes that haven't been pushed yet
+                    nonPushedClasses.push(thisclass);
+                }
+            }
+
+            data["classes"] = nonPushedClasses;
+        }
+
+        // Add the rest of the classes that weren't matched
         for (var index = 0; index < data["classes"].length; index++) {
+            var thisclass = data["classes"][index];
+            // add to the ordered classes
+            orderedClasses.push(thisclass);
+        }
+
+        for (var index = 0; index < orderedClasses.length; index++) {
             
             var thishtml = "<tr>";
 
-            var thisclass = data["classes"][index];
+            var thisclass = orderedClasses[index];
 
             var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
             
