@@ -19,6 +19,7 @@ class Calendar {
         this.bindNextPrev();
 
         this.bindSchedulePhotoDL();
+        this.bindRemoveBlockedTimes();
 
         this.eventcolours = {
             "#FF5E3A": false,
@@ -73,6 +74,34 @@ class Calendar {
             });
         });
     }
+
+    /*
+        Binds button that allows you to remove all blocked times
+    */
+    bindRemoveBlockedTimes() {
+        var self = this;
+
+        $("#removeBlockedTimes").click(function () {   
+            // Make sure there are actually blocked times before regenning
+            if (JSON.stringify(self.blockedTimes) != "[]") {
+                self.blockedTimes = [];
+                self.prevBlockedTimes = [];
+
+                // Visually remove all of the blocked times
+                self.removeAllBlockedTimeUI();
+
+                window.mycourses.startGeneration();
+            }
+        })
+    }
+
+    /*
+        Visually removes all blocked times from the Schedule UI
+    */
+    removeAllBlockedTimeUI() {
+        $(".calendar").find(".blockedTime").toggleClass("blockedTime");
+    }
+
     /*
         Starts loading animation
     */
