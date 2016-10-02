@@ -506,6 +506,10 @@ class Calendar {
         table.find("td:not(.headcol)").mousedown(function () {
             // If the first block you mouse down on causes a certain event,
             // you can only cause that event when hovering over other blocks
+
+            // Ex. If you start of removing a time block, you can only remove
+            // other timeblocks when you hover
+            
             self.mouseDown = true;
 
             // check the event we're making
@@ -563,9 +567,7 @@ class Calendar {
             }
         });
 
-        // want to bind 
-
-
+        // append the table
         $("#schedule").find(".outer:first").append(table);
     }
 }
