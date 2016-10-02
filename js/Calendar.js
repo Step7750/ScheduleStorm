@@ -1,6 +1,8 @@
 class Calendar {
     // Handles the UI construction of the calendar
     constructor() {
+        var self = this;
+
         this.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
         console.log("Setting up calendar");
@@ -9,6 +11,7 @@ class Calendar {
 
 
         this.blockedTimes = [];
+        this.removeTimes = false;
 
         this.isLoading = false;
 
@@ -26,6 +29,11 @@ class Calendar {
             "#34AADC": false,
             "#5AD427": false
         }
+
+        // We want to bind the mouse up handler for blocking times
+        $(document).mouseup(function () {
+            self.mouseDown = false;
+        });
     }
 
     /*
@@ -427,6 +435,8 @@ class Calendar {
         // This is to make sure the appearance of the calendar doesn't look weird and
         // that every row is 20px high
         
+        var self = this;
+
         if ((endHour - startHour) < 6) {
             endHour += 6 - (endHour - startHour);
         }
@@ -492,11 +502,69 @@ class Calendar {
 
         table = $(table);
 
-        table.find("td:not(.headcol)").click(function () {
+        // bind the blocked times mouse events 
+        table.find("td:not(.headcol)").mousedown(function () {
+            // If the first block you mouse down on causes a certain event,
+            // you can only cause that event when hovering over other blocks
+            self.mouseDown = true;
+
+            // check the event we're making
+            var thisday = parseInt($(this).attr("day"));
+            var thistime = $(this).parent().attr("id");
+
+            // we want to populate the index if it's undefined
+            if (self.blockedTimes[thisday] == undefined) {
+                self.blockedTimes[thisday] = [];
+            }
+
+            // check whether we've already blocked this timeslot
+            if (self.blockedTimes[thisday].indexOf(thistime) > -1) {
+                // we want to remove it
+                self.removeTimes = true;
+                var thisindex = self.blockedTimes[thisday].indexOf(thistime);
+
+                // modify the array
+                self.blockedTimes[thisday].splice(thisindex, 1);
+            }
+            else {
+                // we want to add blocked times
+                self.removeTimes = false;
+                self.blockedTimes[thisday].push(thistime);
+            }
+
+            // Toggle the visual class
             $(this).toggleClass("blockedTime");
+
+        }).mouseover(function () {
+            if (self.mouseDown) {
+                // get the data for this time block
+                var thisday = parseInt($(this).attr("day"));
+                var thistime = $(this).parent().attr("id");
+
+                if (self.blockedTimes[thisday] == undefined) {
+                    self.blockedTimes[thisday] = [];
+                }
+
+                if (self.removeTimes == true && self.blockedTimes[thisday].indexOf(thistime) > -1) {
+                    // we want to remove this timeblock
+                    var thisindex = self.blockedTimes[thisday].indexOf(thistime);
+                    self.blockedTimes[thisday].splice(thisindex, 1);
+
+                    // toggle the class
+                    $(this).toggleClass("blockedTime");
+                }
+                else if (self.removeTimes == false && self.blockedTimes[thisday].indexOf(thistime) == -1) {
+                    // we want to add blocked times
+                    self.blockedTimes[thisday].push(thistime);
+
+                    // toggle the class
+                    $(this).toggleClass("blockedTime");
+                }
+            }
         });
 
         // want to bind 
+
 
         $("#schedule").find(".outer:first").append(table);
     }
