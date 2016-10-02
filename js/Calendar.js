@@ -604,8 +604,8 @@ class Calendar {
         If there are blocked times, fits the schedule to display them all
     */
     displayBlockedTimes() {
-        var maxDay = 0;
-        var minDay = 6;
+        var maxDay = -1;
+        var minDay = 7;
 
         var minTime = 1440;
         var maxTime = 0;
@@ -633,7 +633,7 @@ class Calendar {
         }
         
         // Make sure there are actually some blocked times
-        if (maxDay > 0 && minDay < 6 && minTime < 1440 && maxTime > 0) {
+        if (maxDay > -1 && minDay < 7 && minTime < 1440 && maxTime > 0) {
             // Make sure its atleast monday to friday
             if (minDay != 0) minDay = 0;
             if (maxDay < 4) maxDay = 4;
