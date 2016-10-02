@@ -7,10 +7,10 @@ class Calendar {
 
         console.log("Setting up calendar");
 
+        this.blockedTimes = [];
+        
         this.resizeCalendarNoScroll(0, 4, 9, 17);
 
-
-        this.blockedTimes = [];
         this.removeTimes = false;
 
         this.isLoading = false;
@@ -490,7 +490,16 @@ class Calendar {
             var iteratelength = endDay - startDay + 1;
 
             for (var x = 0; x < iteratelength; x++) {
-                table += "<td day='" + x + "'></td>";
+                table += "<td day='" + x + "'";
+
+                // Check if this is a blocked time
+                if (self.blockedTimes[x] != undefined) {
+                    if (self.blockedTimes[x].indexOf(hour + "-" + min) > -1) {
+                        table += ' class="blockedTime"';
+                    }
+                }
+
+                table += "></td>";
             }
 
             table += "</tr>";
@@ -509,7 +518,7 @@ class Calendar {
 
             // Ex. If you start of removing a time block, you can only remove
             // other timeblocks when you hover
-            
+
             self.mouseDown = true;
 
             // check the event we're making
