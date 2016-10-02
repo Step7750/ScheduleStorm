@@ -44,6 +44,9 @@ class ClassList {
                     // This is a new term, reinstantiate the object so we can show the new results
                     window.classList = new ClassList(self.uni, newterm);
                     window.mycourses = new MyCourses(self.uni, newterm);
+
+                    // reset the calendar
+                    window.calendar.resetCalendar();
                 }
             })
 

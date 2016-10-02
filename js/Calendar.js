@@ -5,12 +5,7 @@ class Calendar {
 
         this.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-        console.log("Setting up calendar");
-
-        this.blockedTimes = [];
-        this.prevBlockedTimes = [];
-
-        this.resizeCalendarNoScroll(0, 4, 9, 17);
+        this.resetCalendar();
 
         this.removeTimes = false;
 
@@ -670,5 +665,18 @@ class Calendar {
             // Draw it
             this.resizeCalendarNoScroll(minDay, maxDay, Math.floor(minTime/60), Math.floor(maxTime/60));
         }
+    }
+
+    /*
+        Resets the calendar (removes timeblocks and current schedules)
+    */
+    resetCalendar() {
+        this.blockedTimes = [];
+        this.prevBlockedTimes = [];
+
+        this.setTotalGenerated(0);
+        this.setCurrentIndex(-1);
+
+        this.resizeCalendarNoScroll(0, 4, 9, 17);
     }
 }

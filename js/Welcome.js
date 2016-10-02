@@ -149,6 +149,10 @@ class Welcome {
                 window.classList = new ClassList(thisobj.uni, thisobj.term);
                 window.mycourses = new MyCourses(thisobj.uni, thisobj.term);
 
+                // reset the calendar
+                window.calendar.resetCalendar();
+
+                // hide the modal
                 $("#welcomeModal").modal('hide');
             });
             list.append(button);
