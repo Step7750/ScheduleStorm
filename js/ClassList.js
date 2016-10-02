@@ -272,41 +272,63 @@ class ClassList {
             thishtml += "<td style='width: 15%;'>" + id + "</td>";
 
             var teachers = "";
+            var addedTeachers = [];
+
             for (var teacher in thisclass["teachers"]) {
-                if (teacher > 0) {
-                    teachers += "<br>";
-                }
-                teacher = thisclass["teachers"][teacher];
+                // Check if we've already added this teacher
+                if (addedTeachers.indexOf(thisclass["teachers"][teacher]) == -1) {
+                    if (teacher > 0) {
+                        teachers += "<br>";
+                    }
+                    teacher = thisclass["teachers"][teacher];
 
-                // want to find RMP rating
-                var rating = "";
-                if (this.rmpdata[teacher] != undefined) {
-                    rating = this.rmpdata[teacher]["rating"];
-                }
+                    // want to find RMP rating
+                    var rating = "";
+                    if (this.rmpdata[teacher] != undefined) {
+                        rating = this.rmpdata[teacher]["rating"];
+                    }
 
-                if (teacher != "Staff") {
-                    teacher = ClassList.abbreviateName(teacher);
-                }
+                    if (teacher != "Staff") {
+                        teacher = ClassList.abbreviateName(teacher);
+                    }
 
-                teachers += teacher;
+                    teachers += teacher;
 
-                if (rating != "") {
-                    teachers += " (" + rating + ")";
+                    if (rating != "") {
+                        teachers += " (" + rating + ")";
+                    }
+
+                    addedTeachers.push(teacher);
                 }
             }
 
             var timescopy = thisclass["times"].slice();
-
-            // we want to reduce the size of the times (Th)
+            var addedTimes = [];
+            // we want to reduce the size of the times (Th) and remove dupes
             for (var time in timescopy) {
-                timescopy[time] = ClassList.abbreviateTimes(timescopy[time]);
+                var abbrevTime = ClassList.abbreviateTimes(timescopy[time]);
+
+                if (addedTimes.indexOf(abbrevTime) == -1) {
+                    addedTimes.push(abbrevTime);
+                }
+            }
+
+            // Remove duplicates in rooms
+            var addedRooms = [];
+
+            for (var room in thisclass["rooms"]) {
+                room = thisclass["rooms"][room];
+
+                if (addedRooms.indexOf(room) == -1) {
+                    addedRooms.push(room);
+                }
             }
 
             thishtml += "<td style='width: 20%;'>" + teachers + "</td>";
 
-            thishtml += "<td>" + thisclass["rooms"].join("<br>") + "</td>";
+            thishtml += "<td>" + addedRooms.join("<br>") + "</td>";
 
-            thishtml += "<td style='width: 30%;'>" + timescopy.join("<br>") + "</td>";
+            thishtml += "<td style='width: 25%;'>" + addedTimes.join("<br>") + "</td>";
 
             thishtml += "<td style='width: 15%;'>" + thisclass["location"] + "</td>";
 
