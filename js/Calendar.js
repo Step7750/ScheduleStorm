@@ -102,8 +102,12 @@ class Calendar {
     */
     startLoading(message) {
         this.clearEvents();
-        this.loading = new Loading($("#schedule").find(".wrap:first"), message, "position: absolute; top: 20%; left: 40%;");
-        this.isLoading = true;
+
+        // If it is already loading, don't add another loading sign
+        if (this.isLoading == false) {
+            this.loading = new Loading($("#schedule").find(".wrap:first"), message, "position: absolute; top: 20%; left: 40%;");
+            this.isLoading = true;
+        }
     }
 
     /*
