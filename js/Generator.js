@@ -17,6 +17,8 @@ class Generator {
         this.doneGenerating = false;
         this.doneScoring = false;
 
+        this.terminated = false;
+
         // Generates the schedules
         this.schedGen();
         
@@ -424,12 +426,14 @@ class Generator {
             self.schedgenerator.init(self.classes, self.blockedTimes, self.onlyOpen, function(result) {
                 console.log("Web worker finished generating schedules");
                 
-                self.possibleschedules = result;
+                if (self.terminated == false) {
+                    self.possibleschedules = result;
 
-                self.doneGenerating = true;
-                
-                // Now score and sort them
-                self.schedSorter();
+                    self.doneGenerating = true;
+                    
+                    // Now score and sort them
+                    self.schedSorter();
+                }
             });
         })
     }
@@ -677,14 +681,16 @@ class Generator {
                 console.log("Web worker finished sorting schedules");
                 console.log(result);
 
-                self.doneScoring = true;
+                if (self.terminated == false) {
+                    self.doneScoring = true;
 
-                // Replace the reference with the sorted schedules
-                self.possibleschedules = result;
+                    // Replace the reference with the sorted schedules
+                    self.possibleschedules = result;
 
-                window.calendar.doneLoading(function () {
-                    self.processSchedules(result);
-                });
+                    window.calendar.doneLoading(function () {
+                        self.processSchedules(result);
+                    });
+                }
             }
         );
     }
@@ -902,6 +908,8 @@ class Generator {
     stop() {
         if (this.schedSort != false) this.schedSort.terminate();
         if (this.schedgenerator != false) this.schedgenerator.terminate();
+
+        this.terminated = true;
     }
 
     /*
@@ -913,7 +921,8 @@ class Generator {
         // check whether we have already generated schedules
         if (this.doneGenerating == true) {
             // terminate any current scorer
-            this.stop();
+            if (this.schedSort != false) this.schedSort.terminate();
+            if (this.schedgenerator != false) this.schedgenerator.terminate();
 
             // remove current scores
             for (var schedule in this.possibleschedules) {
