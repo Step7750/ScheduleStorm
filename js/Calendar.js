@@ -115,11 +115,12 @@ class Calendar {
     */
     doneLoading(cb) {
         var self = this;
+        self.loadingcb = cb;
 
         if (self.isLoading) {
             self.loading.remove(function () {
                 self.isLoading = false;
-                cb();
+                self.loadingcb();
             });
         }
         else {
