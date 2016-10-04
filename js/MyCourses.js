@@ -346,6 +346,17 @@ class MyCourses {
             var thisgroup = this.courses[group];
 
             if (thisgroup["courses"][course] != undefined) {
+
+                // Remove any remove class buttons since those classes are no longer added
+                for (var classval in thisgroup["courses"][course]["types"]) {
+                    var thisclassval = thisgroup["courses"][course]["types"][classval];
+
+                    if (thisclassval != true) {
+                        window.classList.updateRemovedClass(thisclassval);
+                    }
+                }
+
+                // Delete this course
                 delete thisgroup["courses"][course];
 
                 // check if its the active group
@@ -359,6 +370,7 @@ class MyCourses {
             }
         }
 
+        // Restart generation
         this.startGeneration();
     }
 
@@ -441,21 +453,11 @@ class MyCourses {
             // bind remove button
             html.find(".removeBtn").click(function (event) {
                 event.stopPropagation();
-
-
-                // we want to update each currently open lecture specific button
+                
                 var coursecode = $(this).parent().attr("path");
 
-                for (var classval in self.courses[self.activeGroup]["courses"][coursecode]["types"]) {
-                    var thisclassval = self.courses[self.activeGroup]["courses"][coursecode]["types"][classval];
-
-                    if (thisclassval != true) {
-                        window.classList.updateRemovedClass(thisclassval);
-                    }
-                }
-
                 // remove the course in My Courses
-                self.removeCourse($(this).parent().attr("path"));
+                self.removeCourse(coursecode);
 
                 // we want to update the general course remove button
                 window.classList.updateRemovedCourse($(this).parent().attr("path"));

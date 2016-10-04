@@ -535,7 +535,7 @@ class ClassList {
 
             var coursecode = $(this).attr("code");
 
-            // rmeove the course
+            // remove the course
             window.mycourses.removeCourse(coursecode);
 
             // add an "add" button
