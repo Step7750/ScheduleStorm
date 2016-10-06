@@ -78,6 +78,14 @@ class Welcome {
 
                 // Get the selected uni code (UCalgary, etc...)
                 self.uni = $(this).find("a").attr("uni");
+                console.log(self.uni);
+                if (self.uni === "UAlberta") {
+                    console.log('yo');
+                    $("#ENG").html('<p style="padding: 10px 0"><input type="checkbox" value="" style="margin-right: 10px" id="Engineering">Engineering Student?(Shows ENG restricted classes outside of the faculty of Engineering)</p>');
+                }
+                else{
+                    $("#ENG").html('');
+                }
 
                 // Change the text of the element
                 $("#MyUniversity").hide().html(self.unis[self.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
@@ -114,6 +122,10 @@ class Welcome {
             button.click(function() {
 
                 thisobj.uni = $(this).attr("value");
+                if (thisobj.uni === "UAlberta") {
+                    console.log('yo');
+                    $("#ENG").html('<p style="padding: 10px 0"><input type="checkbox" value="" style="margin-right: 10px" id="Engineering">Engineering Student?(Shows ENG restricted classes outside of the faculty of Engineering)</p>');
+                }
                 $("#MyUniversity").hide().html($(this).text() + " <span class='caret'></span>").fadeIn('slow');
 
                 $("#uniModalList").slideUp(function () {
