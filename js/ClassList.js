@@ -244,18 +244,8 @@ class ClassList {
             // Go through each class and if it has the same type, add it
             for (var index = 0; index < data["classes"].length; index++) {
                 var thisclass = data["classes"][index];
-                if (preferences.getEngineeringValue() === false) {
-                    if ('section' in thisclass && thisclass['section'][1].match(/[a-z]/i) === null){
-                        if (thisclass["type"] == type) {
-                        // add to the ordered classes
-                        orderedClasses.push(thisclass);
-                        }
-                        else {
-                            // push it to the classes that haven't been pushed yet
-                            nonPushedClasses.push(thisclass);
-                        }
-                    }
-                    else if (!('section' in thisclass)){
+                if (self.uni == 'UAlberta' && preferences.getEngineeringValue() === false) {
+                    if (thisclass['section'][1].match(/[a-z]/i) === null){
                         if (thisclass["type"] == type) {
                         // add to the ordered classes
                         orderedClasses.push(thisclass);
