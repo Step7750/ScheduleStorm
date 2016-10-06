@@ -244,7 +244,7 @@ class ClassList {
             // Go through each class and if it has the same type, add it
             for (var index = 0; index < data["classes"].length; index++) {
                 var thisclass = data["classes"][index];
-                if (self.uni == 'UAlberta' && preferences.getEngineeringValue() === false) {
+                if (self.uni === 'UAlberta' && Number(self.term)%10 === 0 && preferences.getEngineeringValue() === false) {
                     if (thisclass['section'][1].match(/[a-z]/i) === null){
                         if (thisclass["type"] == type) {
                         // add to the ordered classes
