@@ -255,6 +255,16 @@ class ClassList {
                             nonPushedClasses.push(thisclass);
                         }
                     }
+                    else if (!('section' in thisclass)){
+                        if (thisclass["type"] == type) {
+                        // add to the ordered classes
+                        orderedClasses.push(thisclass);
+                        }
+                        else {
+                            // push it to the classes that haven't been pushed yet
+                            nonPushedClasses.push(thisclass);
+                        }
+                    }
                 }
                 else{
                     if (thisclass["type"] == type) {
