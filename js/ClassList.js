@@ -422,7 +422,7 @@ class ClassList {
         var self = this;
 
         for (var arrayelement in data) {
-            // this array is sorted my order of importance of populating the elements
+            // this array is sorted by order of importance of populating the elements
             var thisdata = data[arrayelement];
 
             if (thisdata != undefined) {
