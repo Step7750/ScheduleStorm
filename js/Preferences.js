@@ -36,7 +36,7 @@ class Preferences {
         // Bind Engineering student change event
         $("#engineeringCheckbox").change(function(){
             console.log("Hello?");
-            self.savePreferences();
+            self.savePreferences(true);
         })
     }
 
@@ -102,7 +102,7 @@ class Preferences {
     /*
         Saves the current slider values to localStorage
     */
-    savePreferences() {
+    savePreferences(regenerate) {
         localStorage.setItem('morningslider', this.getMorningValue());
         localStorage.setItem('nightslider', this.getNightValue());
         localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
@@ -113,9 +113,15 @@ class Preferences {
         console.log("Saving preferences");
         // update any current schedule generation
         if (window.mycourses.generator != false) {
-            console.log("Updating generator");
-            // update the scores
-            window.mycourses.generator.updateScores();
+            if (regenerate != true) {
+                console.log("Updating scorer");
+                // update the scores
+                window.mycourses.generator.updateScores();
+            }
+            else {
+                console.log("Updating generation");
+                window.mycourses.startGeneration();
+            }
         }
     }
 
