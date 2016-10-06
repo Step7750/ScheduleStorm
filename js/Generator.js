@@ -3,6 +3,17 @@ class Generator {
         // chosen classes
         this.classes = JSON.parse(JSON.stringify(classes));
 
+
+        if (window.uni == "UAlberta" && Number(window.term) % 10 === 0) {
+            // Check if they are an engineering student
+            var engineerFlag = preferences.getEngineeringValue();
+
+            // If they aren't an engineer, prune out courses that are restricted to engg outside of faculty of engg
+            if (engineerFlag == false) {
+                this.UAlbertaRemoveEnggClasses();
+            }
+        }
+
         // Remove "duplicate" classes
         this.removeClassDupes(this.classes);
 
@@ -26,6 +37,33 @@ class Generator {
         // Generates the schedules
         this.schedGen();
         
+    }
+
+    /*
+        For UAlberta, if the user is not in engg, remove restricted classes outside the faculty of engineering
+    */
+    UAlbertaRemoveEnggClasses() {
+        for (var group in this.classes) {
+            // for every group
+            for (var course in this.classes[group]["courses"]) {
+                var thiscourse = this.classes[group]["courses"][course];
+
+                // Stores the current non engg classes
+                var nonEnggClasses = [];
+
+                // For every class
+                for (var classv in thiscourse["obj"]["classes"]) {
+                    var thisclass = thiscourse["obj"]["classes"][classv];
+
+                    if (thisclass['section'][1].match(/[a-z]/i) === null){
+                        nonEnggClasses.push(thisclass);
+                    }
+                }
+
+                // Overwrite the classes with non-engg classes
+                thiscourse["obj"]["classes"] = nonEnggClasses;
+            }
+        }
     }
 
     /*
