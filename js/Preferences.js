@@ -29,6 +29,11 @@ class Preferences {
         $("#onlyOpenCheckbox").change(function () {
             self.savePreferences();
         })
+
+        // Bind Engineering student change event
+        $("#Engineering").change(function(){
+            self.savePreferences();
+        })
     }
 
     getMorningValue() {
@@ -49,6 +54,10 @@ class Preferences {
 
     getOnlyOpenValue() {
         return $("#onlyOpenCheckbox").is(":checked");
+    }
+
+    getEngineeringValue() {
+        return $('#Engineering').is(':checked');
     }
     
     setMorningValue(value) {
@@ -71,6 +80,10 @@ class Preferences {
         if (value != null) $("#onlyOpenCheckbox").attr("checked", (value === "true"));
     }
 
+    setEngineeringValue(value) {
+        if (value != null) $("#Engineering").attr("checked", (value === "true"));
+    }
+
     /*
         Saves the current slider values to localStorage
     */
@@ -80,6 +93,7 @@ class Preferences {
         localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
         localStorage.setItem('rmpslider', this.getRMPValue());
         localStorage.setItem('onlyOpenCheckbox', this.getOnlyOpenValue());
+        localStorage.setItem('Engineering', this.getEngineeringValue());
 
         // update any current schedule generation
         if (window.mycourses.generator != false) {
@@ -97,5 +111,6 @@ class Preferences {
         this.setConsecutiveValue(localStorage.getItem('consecutiveslider'));
         this.setRMPValue(localStorage.getItem('rmpslider'));
         this.setOnlyOpenValue(localStorage.getItem('onlyOpenCheckbox'));
+        this.setEngineeringValue(localStorage.getItem('Engineering'));
     }
 }
