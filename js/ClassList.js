@@ -234,6 +234,8 @@ class ClassList {
         // Order to use
         var typeOrder = ["LEC", "LCL", "SEM", "LAB", "LBL", "CLN", "TUT"];
 
+        var engineerFlag = preferences.getEngineeringValue();
+
         // Order the classes
         for (var type in typeOrder) {
 
@@ -244,11 +246,13 @@ class ClassList {
             // Go through each class and if it has the same type, add it
             for (var index = 0; index < data["classes"].length; index++) {
                 var thisclass = data["classes"][index];
-                if (self.uni === 'UAlberta' && Number(self.term)%10 === 0 && preferences.getEngineeringValue() === false) {
+
+                // If this student is at U of A and they aren't an engineer, don't display engineering classes
+                if (self.uni === 'UAlberta' && Number(self.term) % 10 === 0 && engineerFlag === false) {
                     if (thisclass['section'][1].match(/[a-z]/i) === null){
                         if (thisclass["type"] == type) {
-                        // add to the ordered classes
-                        orderedClasses.push(thisclass);
+                            // add to the ordered classes
+                            orderedClasses.push(thisclass);
                         }
                         else {
                             // push it to the classes that haven't been pushed yet
@@ -284,9 +288,11 @@ class ClassList {
 
             var thisclass = orderedClasses[index];
 
-            var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
+            // If U of A, just show section numbers
+            if (self.uni == "UAlberta") var id = thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")";
+            else var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
             
-            thishtml += "<td style='width: 15%;'>" + id + "</td>";
+            thishtml += "<td style='width: 18%;'>" + id + "</td>";
 
             var teachers = "";
             var addedTeachers = [];
