@@ -245,7 +245,7 @@ class ClassList {
             for (var index = 0; index < data["classes"].length; index++) {
                 var thisclass = data["classes"][index];
                 if (preferences.getEngineeringValue() === false) {
-                    if (thisclass['section'][1].match(/[a-z]/i) === null){
+                    if ('section' in thisclass && thisclass['section'][1].match(/[a-z]/i) === null){
                         if (thisclass["type"] == type) {
                         // add to the ordered classes
                         orderedClasses.push(thisclass);
