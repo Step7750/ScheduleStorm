@@ -668,7 +668,7 @@ class Calendar {
             if (maxDay < 4) maxDay = 4;
 
             // Draw it
-            this.resizeCalendarNoScroll(minDay, maxDay, Math.floor(minTime/60), Math.floor(maxTime/60));
+            this.resizeCalendarNoScroll(minDay, maxDay, Math.floor(minTime/60), Math.floor(maxTime/60)+1);
         }
     }
 

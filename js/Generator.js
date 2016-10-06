@@ -3,6 +3,10 @@ class Generator {
         // chosen classes
         this.classes = JSON.parse(JSON.stringify(classes));
 
+        // Remove "duplicate" classes
+        this.removeClassDupes(this.classes);
+
+        // add additional data to the classes
         this.convertTimes();
         this.addCourseInfo();
 
@@ -22,6 +26,104 @@ class Generator {
         // Generates the schedules
         this.schedGen();
         
+    }
+
+    /*
+        Removes classes that share the same type, time, rmp score, group, status, and location as another
+
+        This heuristic does not decrease accuracy since the removed classes have the same properties 
+        as another that will be used in generation
+    */
+    removeClassDupes(classes) {
+        for (var group in classes) {
+            // for every group
+
+            for (var course in classes[group]["courses"]) {
+                var thiscourse = classes[group]["courses"][course];
+
+                // Stores the current non dupe classes
+                var nonDupeClasses = [];
+
+                // For every class
+                for (var classv in thiscourse["obj"]["classes"]) {
+                    var thisclass = thiscourse["obj"]["classes"][classv];
+
+                    var hasDupe = false;
+
+                    // We want to make sure we don't remove a class the user manually specified
+                    // We also don't want to remove duplicate lectures, since the student may desire a specific teacher
+                    // Obviously, this can all be overridden by manually specifying classes
+                    if ((thiscourse["types"][thisclass["type"]] != thisclass["id"]) && thisclass["type"] != "LEC") {
+
+                        // They didn't explicitly want to remove this class, we can try to remove it if its a dupe
+                        var thisrmpavg = Generator.getRMPAvgForClass(thisclass);
+                        var timesString = JSON.stringify(thisclass["times"]);
+                        
+                        // We only look at classes above this index
+                        for (var anotherclass = (parseInt(classv)+1); anotherclass < thiscourse["obj"]["classes"].length; anotherclass++) {
+
+                            var otherclass = thiscourse["obj"]["classes"][anotherclass];
+                            
+                            // Check if it has similiar properties
+                            if (otherclass["id"] != thisclass["id"] && 
+                                otherclass["group"] == thisclass["group"] &&
+                                otherclass["location"] == thisclass["location"] &&
+                                otherclass["type"] == thisclass["type"] &&
+                                thisrmpavg == Generator.getRMPAvgForClass(otherclass)) {
+
+                                // check if this has a worse status or the same status
+                                if ((otherclass["status"] == "Open" && thisclass["status"] != "Open") ||
+                                    otherclass["status"] == thisclass["status"]) {
+
+                                    var otherTimesString = JSON.stringify(otherclass["times"]);
+
+                                    // Check if they have the same times
+                                    if (otherTimesString == timesString) {
+                                        // This is a dupe, remove it
+                                        hasDupe = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (hasDupe == false) {
+                        // add it to the non dupe classes array
+                        nonDupeClasses.push(thisclass);
+                    }
+                }
+
+                // Overwrite the classes with non-duped classes
+                thiscourse["obj"]["classes"] = nonDupeClasses;
+            }
+        }
+    }
+
+    /*
+        Given a class object, returns the RMP average for that class
+    */
+    static getRMPAvgForClass(thisclass) {
+
+        var rmptotal = 0;
+        var rmpamount = 0;
+
+        for (var teacher in thisclass["teachers"]) {
+            // check if in rmp
+            if (window.classList.rmpdata[teacher] != undefined && window.classList.rmpdata[teacher]["rating"] != undefined) {
+                rmptotal += window.classList.rmpdata[teacher]["rating"];
+                rmpamount += 1;
+            }
+        }
+
+        if (rmpamount == 0) {
+            // we couldn't find any matches, just return the rmp average for every teacher
+            return window.classList.rmpavg;
+        }
+        else {
+            // Got a match
+            return rmptotal/rmpamount;
+        }
     }
 
     /*
