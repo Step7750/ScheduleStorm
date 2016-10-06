@@ -2,6 +2,9 @@ class Preferences {
     constructor() {
         this.instantiateSliders();
         this.loadPreferences();
+
+        // Update the Uni, remove needless options on start
+        this.updatedUni();
     }
 
     instantiateSliders() {
@@ -31,9 +34,21 @@ class Preferences {
         })
 
         // Bind Engineering student change event
-        $("#Engineering").change(function(){
+        $("#engineeringCheckbox").change(function(){
+            console.log("Hello?");
             self.savePreferences();
         })
+    }
+
+    /*
+        Hides/shows different preferences based upon the current uni selected
+    */
+    updatedUni(newuni) {
+        $("#engineeringCheckbox").parent().hide();
+
+        if (newuni == "UAlberta") {
+            $("#engineeringCheckbox").parent().show();
+        }
     }
 
     getMorningValue() {
@@ -57,7 +72,7 @@ class Preferences {
     }
 
     getEngineeringValue() {
-        return $('#Engineering').is(':checked');
+        return $('#engineeringCheckbox').is(':checked');
     }
     
     setMorningValue(value) {
@@ -81,7 +96,7 @@ class Preferences {
     }
 
     setEngineeringValue(value) {
-        if (value != null) $("#Engineering").attr("checked", (value === "true"));
+        if (value != null) $("#engineeringCheckbox").attr("checked", (value === "true"));
     }
 
     /*
@@ -93,10 +108,12 @@ class Preferences {
         localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
         localStorage.setItem('rmpslider', this.getRMPValue());
         localStorage.setItem('onlyOpenCheckbox', this.getOnlyOpenValue());
-        localStorage.setItem('Engineering', this.getEngineeringValue());
+        localStorage.setItem('engineeringCheckbox', this.getEngineeringValue());
 
+        console.log("Saving preferences");
         // update any current schedule generation
         if (window.mycourses.generator != false) {
+            console.log("Updating generator");
             // update the scores
             window.mycourses.generator.updateScores();
         }
@@ -111,6 +128,6 @@ class Preferences {
         this.setConsecutiveValue(localStorage.getItem('consecutiveslider'));
         this.setRMPValue(localStorage.getItem('rmpslider'));
         this.setOnlyOpenValue(localStorage.getItem('onlyOpenCheckbox'));
-        this.setEngineeringValue(localStorage.getItem('Engineering'));
+        this.setEngineeringValue(localStorage.getItem('engineeringCheckbox'));
     }
 }

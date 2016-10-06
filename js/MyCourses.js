@@ -4,6 +4,9 @@ class MyCourses {
         this.courses = [];
         this.generator = false;
 
+        // Update the preferences shown
+        window.preferences.updatedUni(uni);
+
         this.numConvert = {
             0: "All",
             1: "One",
