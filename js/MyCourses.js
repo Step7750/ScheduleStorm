@@ -6,6 +6,9 @@ class MyCourses {
         this.uni = uni;
         this.term = term;
 
+        $("#coursegroups").empty();
+        $("#courseList").empty();
+
         // Update the preferences shown
         window.preferences.updatedUni(uni);
 
@@ -17,19 +20,13 @@ class MyCourses {
             4: "Four",
             5: "Five"
         }
-
-        // Type represents how many courses to choose (0 = all, 1 = one of, etc)
-        this.setupPills();
     }
 
     /*
-        Sets up the initial group pills and creates the "All of" initial pill
+        Creates and appends the "Add group" button
     */
-    setupPills() {
+    genAddGroupBtn() {
         var self = this;
-
-        $("#coursegroups").empty();
-        $("#courseList").empty();
 
         var addGroupbtn = $('<li role="presentation" id="addGroupbtn" style="margin-left: 8px;"><a class="MyCourses">&plus;</a></li>');
         addGroupbtn.click(function (event) {
@@ -47,6 +44,10 @@ class MyCourses {
         Called by ClassList when done loading the class list
     */
     loadState() {
+
+        // generate the add group btn
+        this.genAddGroupBtn();
+
         var loadedState = localStorage.getItem(this.uni + "_" + this.term + "_saved");
 
         if (loadedState != null) {
