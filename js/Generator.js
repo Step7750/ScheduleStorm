@@ -3,13 +3,14 @@ class Generator {
         // chosen classes
         this.classes = JSON.parse(JSON.stringify(classes));
 
-
+        this.engineerFlag = false;
+        
         if (window.uni == "UAlberta" && Number(window.term) % 10 === 0) {
             // Check if they are an engineering student
-            var engineerFlag = preferences.getEngineeringValue();
+            this.engineerFlag = preferences.getEngineeringValue();
 
             // If they aren't an engineer, prune out courses that are restricted to engg outside of faculty of engg
-            if (engineerFlag == false) {
+            if (this.engineerFlag == false) {
                 this.UAlbertaRemoveEnggClasses();
             }
         }
@@ -109,17 +110,37 @@ class Generator {
                                 otherclass["type"] == thisclass["type"] &&
                                 thisrmpavg == Generator.getRMPAvgForClass(otherclass)) {
 
-                                // check if this has a worse status or the same status
-                                if ((otherclass["status"] == "Open" && thisclass["status"] != "Open") ||
-                                    otherclass["status"] == thisclass["status"]) {
+                                var sectionConflict = false;
+                                // If u of a, make sure both classes are non-engg or eng
+                                if (window.uni == "UAlberta" && Number(window.term) % 10 === 0 && this.engineerFlag == true) {
 
-                                    var otherTimesString = JSON.stringify(otherclass["times"]);
+                                    // For engg classes, the second element in the section string is always an alpha character
+                                    if (otherclass['section'][1].match(/[a-z]/i) != null
+                                        && thisclass['section'][1].match(/[a-z]/i) == null) {
+                                        sectionConflict = true;
+                                    }
+                                    
 
-                                    // Check if they have the same times
-                                    if (otherTimesString == timesString) {
-                                        // This is a dupe, remove it
-                                        hasDupe = true;
-                                        break;
+                                    if (otherclass['section'][1].match(/[a-z]/i) == null 
+                                        && thisclass['section'][1].match(/[a-z]/i) != null){
+                                        sectionConflict = true;
+                                    }
+                                } 
+                                
+
+                                if (sectionConflict == false) {
+                                    // check if this has a worse status or the same status
+                                    if ((otherclass["status"] == "Open" && thisclass["status"] != "Open") ||
+                                        otherclass["status"] == thisclass["status"]) {
+
+                                        var otherTimesString = JSON.stringify(otherclass["times"]);
+
+                                        // Check if they have the same times
+                                        if (otherTimesString == timesString) {
+                                            // This is a dupe, remove it
+                                            hasDupe = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -182,10 +203,13 @@ class Generator {
                 possibleschedules: [],
                 combinations: [],
                 classes: {},
-                init: function(classes, blockedTimes, onlyOpen, callback) {
+                init: function(classes, blockedTimes, term, uni, enggFlag, onlyOpen, callback) {
                     this.classes = classes;
                     this.onlyOpen = onlyOpen;
                     this.blockedTimes = blockedTimes;
+                    this.uni = uni;
+                    this.term = term;
+                    this.enggFlag = enggFlag;
 
                     this.findCombinations();
 
@@ -288,6 +312,31 @@ class Generator {
 
                             if (addedClass["status"] != "Open") {
                                 timeconflict = true;
+                            }
+                        }
+
+                        // For UAlberta, if the user is in engg, if the last class is an engg restricted class and this is the same course,
+                        // make sure they are both engg
+                        if (schedule.length > 1 && timeconflict == false 
+                            && enggFlag == true && this.uni == "UAlberta" 
+                            && Number(this.term) % 10 === 0) {
+
+                            if (schedule[schedule.length-1]["name"] == schedule[schedule.length-2]["name"]) {
+                                // make sure they have the same group number
+
+                                // If the first one is engg, then the second one must be
+                                // and vice versa
+                                if (schedule[schedule.length-2]['section'][1].match(/[a-z]/i) != null 
+                                    && schedule[schedule.length-1]['section'][1].match(/[a-z]/i) == null) {
+                                    timeconflict = true;
+                                }
+                                
+
+                                if (schedule[schedule.length-2]['section'][1].match(/[a-z]/i) == null 
+                                    && schedule[schedule.length-1]['section'][1].match(/[a-z]/i) != null){
+                                    timeconflict = true;
+                                }
+                                
                             }
                         }
 
@@ -563,18 +612,24 @@ class Generator {
             }, 500);
 
             // Spawn the generator
-            self.schedgenerator.init(self.classes, self.blockedTimes, self.onlyOpen, function(result) {
-                console.log("Web worker finished generating schedules");
-                
-                if (self.terminated == false) {
-                    self.possibleschedules = result;
-
-                    self.doneGenerating = true;
+            self.schedgenerator.init(self.classes, 
+                                    self.blockedTimes, 
+                                    window.term, 
+                                    window.uni, 
+                                    preferences.getEngineeringValue(), 
+                                    self.onlyOpen, 
+                function(result) {
+                    console.log("Web worker finished generating schedules");
                     
-                    // Now score and sort them
-                    self.schedSorter();
-                }
-            });
+                    if (self.terminated == false) {
+                        self.possibleschedules = result;
+
+                        self.doneGenerating = true;
+                        
+                        // Now score and sort them
+                        self.schedSorter();
+                    }
+                });
         })
     }
 
