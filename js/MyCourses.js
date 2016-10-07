@@ -1,8 +1,10 @@
 class MyCourses {
     constructor(uni, term) {
-        // TODO: Add saving courses, currently uni and term are redundant
         this.courses = [];
         this.generator = false;
+
+        this.uni = uni;
+        this.term = term;
 
         // Update the preferences shown
         window.preferences.updatedUni(uni);
@@ -27,6 +29,7 @@ class MyCourses {
         var self = this;
 
         $("#coursegroups").empty();
+        $("#courseList").empty();
 
         var addGroupbtn = $('<li role="presentation" id="addGroupbtn" style="margin-left: 8px;"><a class="MyCourses">&plus;</a></li>');
         addGroupbtn.click(function (event) {
@@ -35,9 +38,53 @@ class MyCourses {
         });
 
         $("#coursegroups").append(addGroupbtn);
+    }
 
-        this.addGroup(0, true);
-        this.setGroupActive(0);
+    /*
+        If there is a saved state, loads it and populates the courses
+        If not, sets up the initial state
+
+        Called by ClassList when done loading the class list
+    */
+    loadState() {
+        var loadedState = localStorage.getItem(this.uni + "_" + this.term + "_saved");
+
+        if (loadedState != null) {
+            console.log("Loaded saved state");
+            loadedState = JSON.parse(loadedState);
+
+            this.courses = loadedState;
+
+            for (var group in this.courses) {
+                var thisgroup = this.courses[group];
+
+                if (group == 0) {
+                    // you cannot remove the first group
+                    this.generatePill(group, thisgroup["type"], true);
+                    //this.addGroup(thisgroup["type"], true);
+                }
+                else {
+                    this.generatePill(group, thisgroup["type"]);
+                }
+            }
+            // set the first group active
+            this.setGroupActive(0);
+
+            // start generation
+            this.startGeneration();
+        }
+        else {
+            // add default group
+            this.addGroup(0, true);
+            this.setGroupActive(0);
+        }
+    }
+
+    /*
+        Saves the current selected courses into localStorage
+    */
+    saveState() {
+        localStorage.setItem(this.uni + "_" + this.term + "_saved", JSON.stringify(this.courses));
     }
 
     /*
@@ -591,6 +638,9 @@ class MyCourses {
 
         // generate the schedules
         this.generator = new Generator(this.courses);
+
+        // save the current state to localStorage
+        this.saveState();
     }
 
     /*

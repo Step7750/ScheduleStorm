@@ -82,6 +82,10 @@ class ClassList {
                     // We want to make sure the user hasn't chosen a new term while this one was loading
                     if (self.uni == window.uni && self.term == window.term) {
                         // In case the user spammed different terms while loading
+                        
+                        // let mycourses load any saved states
+                        window.mycourses.loadState();
+                        
                         $("#classdata").empty();
 
                         // Remove the loading animation and populate the list
