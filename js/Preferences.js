@@ -35,9 +35,11 @@ class Preferences {
 
         // Bind Engineering student change event
         $("#engineeringCheckbox").change(function(){
-            console.log("Hello?");
             self.savePreferences(true);
-        })
+        });
+
+        // Initialize tooltip for engineering checkbox
+        $("#engineeringCheckboxTooltip").tooltip();
     }
 
     /*
@@ -110,16 +112,13 @@ class Preferences {
         localStorage.setItem('onlyOpenCheckbox', this.getOnlyOpenValue());
         localStorage.setItem('engineeringCheckbox', this.getEngineeringValue());
 
-        console.log("Saving preferences");
         // update any current schedule generation
         if (window.mycourses.generator != false) {
             if (regenerate != true) {
-                console.log("Updating scorer");
                 // update the scores
                 window.mycourses.generator.updateScores();
             }
             else {
-                console.log("Updating generation");
                 window.mycourses.startGeneration();
             }
         }
