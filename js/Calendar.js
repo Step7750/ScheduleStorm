@@ -12,6 +12,7 @@ class Calendar {
         this.isLoading = false;
 
         this.bindNextPrev();
+        this.initializeTooltips();
 
         this.bindSchedulePhotoDL();
         this.bindRemoveBlockedTimes();
@@ -43,6 +44,19 @@ class Calendar {
             // Reset prev
             self.prevBlockedTimes = self.blockedTimes;
         });
+    }
+
+    /*
+        Initializes the tooltips associated with buttons on the calendar
+    */
+    initializeTooltips() {
+        // Initialize prev/next sched tooltips
+        $("#prevSchedule").tooltip();
+        $("#nextSchedule").tooltip();
+
+        // Initialize left side button tooltips
+        $("#dlSchedulePhoto").tooltip();
+        $("#removeBlockedTimes").tooltip();
     }
 
     /*
