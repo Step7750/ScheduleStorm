@@ -410,10 +410,25 @@ class Generator {
                             // since classes that belong to the same course are appended consecutively
                             if (schedule[schedule.length-1]["name"] == schedule[schedule.length-2]["name"]) {
                                 // make sure they have the same group number
-                                if (schedule[schedule.length-1]["group"] != schedule[schedule.length-2]["group"]) {
-                                    // we have a conflict
-                                    timeconflict = true;
+
+                                // If it is a string, make it an array
+                                if (typeof schedule[schedule.length-1]["group"] == "string") {
+                                	schedule[schedule.length-1]["group"] = [schedule[schedule.length-1]["group"]];
                                 }
+                                if (typeof schedule[schedule.length-2]["group"] == "string") {
+                                	schedule[schedule.length-2]["group"] = [schedule[schedule.length-2]["group"]];
+                                isPossible = false;
+                                // Check if there is any combination that matches up
+                                for (firstgroup in schedule[schedule.length-1]["group"]) {
+                                	for (secondgroup in schedule[schedule.length-2]["group"]) {
+                                		if (schedule[schedule.length-1]["group"][firstgroup] == schedule[schedule.length-2]["group"][secondgroup]) {
+                                			isPossible = true;
+                                			break;
+                                		}
+                                	}
+                                }
+
+                                if (isPossible == false) timeconflict = true;
                             }
                         }
 
