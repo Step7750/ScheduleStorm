@@ -884,7 +884,7 @@ class ClassList {
                     var searchkey = key;
 
                     // Add the subject to a course num if we can (231 = CPSC 231)
-                    if (depth == 2) {
+                    if (data[key]["classes"] != null) {
                         splitpath = thispath.split("\\");
                         searchkey = splitpath[splitpath.length-2] + " " + searchkey;
                     }
