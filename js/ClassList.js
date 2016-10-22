@@ -159,7 +159,7 @@ class ClassList {
     generateClassDetails(element, path) {
         var self = this;
 
-        var button = $(this.generateAccordionHTML("Details", path + "\\description"));
+        var button = $(this.generateAccordionHTML("Details", path + "\\description", "accordionDetailButton"));
 
         button.find("label").click(function () {
             self.bindButton(self.classdata, this, "detail");
@@ -919,7 +919,8 @@ class ClassList {
     /*
         Generates the general accordian structure HTML given a value
     */
-    generateAccordionHTML(value, path) {
-        return '<li class="has-children"><label path="' + path +'" accordopen="false">' + value + '</label><ul></ul></li>';
+    generateAccordionHTML(value, path, customclasses) {
+        if (customclasses) return '<li class="has-children"><label path="' + path +'" accordopen="false" class="' + customclasses + '">' + value + '</label><ul></ul></li>';
+        else return '<li class="has-children"><label path="' + path +'" accordopen="false">' + value + '</label><ul></ul></li>';
     }
 }

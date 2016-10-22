@@ -64,6 +64,10 @@ Main Components
     font-size: 1.2rem;
 }
 
+.accordionDetailButton {
+    padding-left: 90px !important;
+}
+
 .accordiondetail {
     padding: 12px 18px 12px 110px;
 }
