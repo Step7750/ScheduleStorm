@@ -50,9 +50,12 @@ class MyCourses {
 
         var loadedState = localStorage.getItem(this.uni + "_" + this.term + "_saved");
 
-        if (loadedState != null) {
+        // Parse it
+        if (loadedState != null) loadedState = JSON.parse(loadedState);
+
+        // Make sure it has a length > 0
+        if (loadedState.length > 0) {
             console.log("Loaded saved state");
-            loadedState = JSON.parse(loadedState);
 
             this.courses = loadedState;
 
@@ -62,7 +65,6 @@ class MyCourses {
                 if (group == 0) {
                     // you cannot remove the first group
                     this.generatePill(group, thisgroup["type"], true);
-                    //this.addGroup(thisgroup["type"], true);
                 }
                 else {
                     this.generatePill(group, thisgroup["type"]);
