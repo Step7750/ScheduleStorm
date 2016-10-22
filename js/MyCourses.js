@@ -269,7 +269,14 @@ class MyCourses {
             "SEM": "Seminar",
             "LCL": "Lecture/Lab",
             "LBL": "Lab/Lecture",
-            "CLN": "Clinic"
+            "CLN": "Clinic",
+            "DD": "Distance Delivery",
+            "BL": "Blended Delivery",
+            "WKT": "Work Term",
+            "FLD": "Field Work",
+            "PRC": "Practicum",
+            "CLI": "Clinical",
+            "IDS": "Internship"
         }
 
         if (map[type] != undefined) {
