@@ -175,6 +175,20 @@ class Calendar {
     }
 
     /*
+        Sets the calendar status to the defined text
+    */
+    setCalendarStatus(text) {
+        $("#schedule").find("#calendarStatus").text(text);
+    }
+
+    /*
+        Resets the calendar status to an empty string
+    */
+    resetCalendarStatus() {
+        this.setCalendarStatus("");
+    }
+
+    /*
         Displays the given schedule
     */
     displaySchedule(schedule) {

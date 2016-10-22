@@ -4,6 +4,15 @@ body, html{
     overflow: hidden;
 }
 
+#calendarStatus {
+  position: absolute !important;
+  top: 40% !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(-40%) !important;
+  z-index: 999 !important;
+  cursor: default;
+  pointer-events: none;
+}
 
 .blockedTime {
   background-color: #ecc6c6;
