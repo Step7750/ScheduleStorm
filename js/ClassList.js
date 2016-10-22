@@ -293,7 +293,7 @@ class ClassList {
             var thisclass = orderedClasses[index];
 
             // If U of A, just show section numbers
-            if (self.uni == "UAlberta") var id = thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")";
+            if (self.uni == "UAlberta" || self.uni == "MTRoyal") var id = thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")";
             else var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
             
             thishtml += "<td style='width: 18%;'>" + id + "</td>";
