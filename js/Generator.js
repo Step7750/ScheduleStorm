@@ -947,6 +947,9 @@ class Generator {
                 for (var classv in classobj) {
                     var thisclass = classobj[classv];
 
+                    // Keep a copy of the old formatting for future uses
+                    thisclass["oldtimes"] = thisclass["times"].slice();
+
                     // convert time
                     for (var time in thisclass["times"]) {
                         thisclass["times"][time] = Generator.convertTime(thisclass["times"][time]);
