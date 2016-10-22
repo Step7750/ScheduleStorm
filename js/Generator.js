@@ -1093,6 +1093,9 @@ class Generator {
             // This is to make sure the user can remove time blocks that were outside
             // of the previous schedule range
             window.calendar.displayBlockedTimes();
+
+            // Force the current schedule to empty
+            window.calendar.currentSchedule = [];
         }
     }
 

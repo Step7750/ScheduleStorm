@@ -221,35 +221,40 @@ class Calendar {
 
         var allowedAttributes = ["id", "name", "type", "rooms", "teachers", "times", "section"];
 
-        // Iterate through each class and populate the return Text
-        for (var classv in schedule) {
-            var thisclass = schedule[classv];
+        if (schedule.length > 0) {
+            // Iterate through each class and populate the return Text
+            for (var classv in schedule) {
+                var thisclass = schedule[classv];
 
-            var thisrow = "";
+                var thisrow = "";
 
-            // Make sure this is a class object
-            if (typeof thisclass != "number") {
+                // Make sure this is a class object
+                if (typeof thisclass != "number") {
 
-                    // Fill up the row with the correct formatting and order of attributes
-                    if (thisclass["id"] != undefined) thisrow += thisclass["id"] + " | ";
+                        // Fill up the row with the correct formatting and order of attributes
+                        if (thisclass["id"] != undefined) thisrow += thisclass["id"] + " | ";
 
-                    if (thisclass["name"] != undefined) thisrow += thisclass["name"] + " | ";
+                        if (thisclass["name"] != undefined) thisrow += thisclass["name"] + " | ";
 
-                    if (thisclass["section"] != undefined) {
-                        thisrow += thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")" + " | ";
-                    }
-                    else if (thisclass["group"] != undefined) {
-                        thisrow += thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")" + " | ";
-                    }
-                    
-                    thisrow += thisclass["teachers"] + " | ";
-                    thisrow += thisclass["rooms"] + " | ";
-                    thisrow += thisclass["oldtimes"] + " | "
-                    thisrow += thisclass["status"];
+                        if (thisclass["section"] != undefined) {
+                            thisrow += thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")" + " | ";
+                        }
+                        else if (thisclass["group"] != undefined) {
+                            thisrow += thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")" + " | ";
+                        }
+                        
+                        thisrow += thisclass["teachers"] + " | ";
+                        thisrow += thisclass["rooms"] + " | ";
+                        thisrow += thisclass["oldtimes"] + " | "
+                        thisrow += thisclass["status"];
+                }
+
+                // Add the row if it was actually populated
+                if (thisrow != "") returnText += thisrow + "\n";
             }
-
-            // Add the row if it was actually populated
-            if (thisrow != "") returnText += thisrow + "\n";
+        }
+        else {
+            returnText += "There were no possible schedules generated :(";
         }
 
         return returnText;
