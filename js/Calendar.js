@@ -16,8 +16,10 @@ class Calendar {
         this.bindNextPrev();
         this.initializeTooltips();
 
+        // Bind left side buttons
         this.bindSchedulePhotoDL();
         this.bindRemoveBlockedTimes();
+        this.bindCopyScheduleToClipboard();
 
         this.eventcolours = {
             "#FF5E3A": false,
@@ -59,6 +61,7 @@ class Calendar {
         // Initialize left side button tooltips
         $("#dlSchedulePhoto").tooltip();
         $("#removeBlockedTimes").tooltip();
+        $("#copySchedToClipboard").tooltip();
     }
 
     /*
@@ -106,6 +109,18 @@ class Calendar {
         })
     }
 
+    /*
+        Binds the copy schedule to clipboard button
+    */
+    bindCopyScheduleToClipboard() {
+        var self = this;
+
+        self.copyschedclipboard = new Clipboard('#copySchedToClipboard', {
+            text: function(trigger) {
+                return self.generateScheduleText(self.currentSchedule);
+            }
+        });
+    }
     /*
         Visually removes all blocked times from the Schedule UI
     */

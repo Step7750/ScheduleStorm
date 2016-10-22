@@ -23,6 +23,9 @@
 
         <!-- HTML2Canvas (for taking Schedule screenshots) -->
         <script src="js/html2canvas.min.js"></script>
+        
+        <!-- clipboard.js (for copying the schedule to clipboard) -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
 
         <!-- Custom JS -->
         <script src="js/Loading.js"></script>
@@ -237,7 +240,11 @@
                         <button class="btn btn-default btn-xs" title="Download a Photo of your Schedule" data-toggle="tooltip" id="dlSchedulePhoto">
                             <span class="glyphicon glyphicon-picture"></span>
                         </button>
-
+                        
+                        <button class="btn btn-default btn-xs" title="Copy Schedule to Clipboard" data-toggle="tooltip" id="copySchedToClipboard">
+                            <span class="glyphicon glyphicon-copy"></span>
+                        </button>
+                        
                         <button class="btn btn-default btn-xs" title="Remove All Blocked Times" data-toggle="tooltip" id="removeBlockedTimes">
                             <span class="glyphicon glyphicon-hourglass"></span>
                         </button>
