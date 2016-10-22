@@ -18,6 +18,9 @@ class Generator {
         // Remove "duplicate" classes
         this.removeClassDupes(this.classes);
 
+        // Defines how many courses were selected, set by addCourseInfo
+        this.courseamount = 0;
+
         // add additional data to the classes
         this.convertTimes();
         this.addCourseInfo();
@@ -190,6 +193,8 @@ class Generator {
     */
     schedGen() {
         var self = this;
+
+        window.calendar.resetCalendarStatus();
 
         self.doneGenerating = false;
 
@@ -658,6 +663,8 @@ class Generator {
     schedSorter() {
         var self = this;
 
+        window.calendar.resetCalendarStatus();
+
         self.doneScoring = false;
 
         // Get the user's scoring preferences
@@ -917,6 +924,9 @@ class Generator {
             var thisgroup = this.classes[group];
             var thiscourses = thisgroup["courses"];
             for (var course in thiscourses) {
+            	// Add this to the course amount
+            	this.courseamount += 1;
+
                 var thiscourse  = thiscourses[course];
 
                 // convert the times of each class
@@ -1086,6 +1096,8 @@ class Generator {
 
         if (schedules.length > 0) {
             // populate the first one
+            window.calendar.resetCalendarStatus();
+
             window.calendar.displaySchedule(schedules[0]);
         }
         else {
@@ -1093,6 +1105,9 @@ class Generator {
             // This is to make sure the user can remove time blocks that were outside
             // of the previous schedule range
             window.calendar.displayBlockedTimes();
+
+            // If they added any course and there are no possibilities, set a status
+            if (this.courseamount > 0) window.calendar.setCalendarStatus("No Possible Schedules :(");
 
             // Force the current schedule to empty
             window.calendar.currentSchedule = [];
