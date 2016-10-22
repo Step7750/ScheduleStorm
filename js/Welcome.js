@@ -33,20 +33,23 @@ class Welcome {
                 window.unis = data;
                 thisobj.unis = data;
 
+                var localUni = localStorage.getItem("uni");
+                var localTerm = localStorage.getItem("term");
+
                 // Check to see if they have already selected a Uni and Term in localstorage
-                if (localStorage.getItem("uni") != undefined && localStorage.getItem("term") != undefined) {
+                if (thisobj.unis[localUni] != undefined && thisobj.unis[localUni]["terms"][localTerm] != undefined) {
                     // Hide the modal
                     $("#welcomeModal").modal('hide');
 
                     // Set this uni
-                    thisobj.uni = localStorage.getItem("uni");
-
+                    thisobj.uni = localUni;
+                    
                     // Populate the top right dropdown
                     $("#MyUniversity").hide().html(thisobj.unis[thisobj.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
 
                     // Load up the classes
-                    window.classList = new ClassList(localStorage.getItem("uni"), localStorage.getItem("term"));
-                    window.mycourses = new MyCourses(localStorage.getItem("uni"), localStorage.getItem("term"));
+                    window.classList = new ClassList(localUni, localTerm);
+                    window.mycourses = new MyCourses(localUni, localTerm);
                 }
                 else {
                     $("#uniModalList").find("#dataList").hide();
