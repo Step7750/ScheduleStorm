@@ -417,7 +417,10 @@ class Generator {
                                 }
                                 if (typeof schedule[schedule.length-2]["group"] == "string") {
                                 	schedule[schedule.length-2]["group"] = [schedule[schedule.length-2]["group"]];
+                                }
+
                                 isPossible = false;
+                                
                                 // Check if there is any combination that matches up
                                 for (firstgroup in schedule[schedule.length-1]["group"]) {
                                 	for (secondgroup in schedule[schedule.length-2]["group"]) {
@@ -428,6 +431,7 @@ class Generator {
                                 	}
                                 }
 
+                                // Check if there is a possible combo, if not, there is a time conflict
                                 if (isPossible == false) timeconflict = true;
                             }
                         }
