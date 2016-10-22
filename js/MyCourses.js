@@ -54,7 +54,7 @@ class MyCourses {
         if (loadedState != null) loadedState = JSON.parse(loadedState);
 
         // Make sure it has a length > 0
-        if (loadedState.length > 0) {
+        if (loadedState != null && loadedState.length > 0) {
             console.log("Loaded saved state");
 
             this.courses = loadedState;
