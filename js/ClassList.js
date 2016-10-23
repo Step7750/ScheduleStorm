@@ -22,7 +22,6 @@ class ClassList {
         this.getClasses();
     }
 
-
     /*
         Populates the term selector dropdown beside the search bar
     */
@@ -76,6 +75,18 @@ class ClassList {
             if (self.location != null) {
                 self.location = null;
                 $("#locationselect").html('All Locations <img src="assets/arrow.png">');
+
+                // Get the original class data with all info
+                self.classdata = JSON.parse(self.stringClassData);
+
+                // Slide up the classdata div
+                $("#classdata").slideUp(function () {
+                    // empty it
+                    $("#classdata").empty();
+
+                    // populate the classdata with the original class data
+                    self.populateClassList([self.classdata], $("#classdata"), "");
+                })
             }
         });
 
@@ -100,11 +111,106 @@ class ClassList {
                 if (newlocation != self.location) {
                     self.location = newlocation;
                     $("#locationselect").html(newlocation + ' <img src="assets/arrow.png">');
+
+                    // Update the classlist
+                    self.updateLocation(self.location);
                 }
             });
 
             // Append this to the dropdown
             $("#locationselectdropdown").append(html);
+        }
+    }
+
+    /*
+        Updates the classlist to only include the specified locations
+    */
+    updateLocation(newlocation) {
+        var self = this;
+
+        // Get the original class data with all info
+        self.classdata = JSON.parse(self.stringClassData);
+
+        // Prune out children that don't have relevant locations
+        self.pruneLocations("", "", self.classdata, newlocation);
+
+        // Slide up the class data
+        $("#classdata").slideUp(function () {
+            // Empty it
+            $("#classdata").empty();
+
+            // If we found results, populate it
+            if (Object.keys(self.classdata).length > 0) {
+                self.populateClassList([self.classdata], $("#classdata"), "");
+            }
+            else {
+                // We didn't find any matches
+                $("#classdata").text("There are no courses with that location :(").slideDown();
+            }
+        });
+    }
+
+    /*
+        Recursive function that prunes out branches that don't have a relevant location within them
+    */
+    pruneLocations(parent, parentkey, data, location) {
+        var self = this;
+
+        // Check if this is a class
+        if (data["classes"] != null) {
+            // Boolean as to whether we've found a class with a relevant location
+            var foundLocation = false;
+
+            for (var classv in data["classes"]) {
+                var thisclass = data["classes"][classv];
+
+                if (thisclass["location"] == location) {
+                    foundLocation = true;
+                }
+                else {
+                    // remove this class from the array
+                    data["classes"].splice(classv, 1);
+                }
+            }
+
+            if (foundLocation == false) {
+                // tell the parent to delete themselves if other branches aren't fruitfull
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            var deleteThis = true;
+
+            // For every key in this data
+            for (var key in data) {
+                if (key != "description") {
+                    // Get this data
+                    var thisdata = data[key];
+
+                    // Call this function on the child and see if they have any children with a relevant location
+                    if (self.pruneLocations(data, key, thisdata, location) == false) {
+                        deleteThis = false;
+                    }
+                    else {
+                        // No child has a relevant location, remove this branch
+                        delete data[key];
+                    }
+                }
+            }
+
+            if (deleteThis == true) {
+                // Remove this parent branch
+                delete parent[parentkey];
+
+                // tell any parents that this branch doesn't have a match
+                return true;
+            }
+            else {
+                return false;
+            }
         }
     }
 
@@ -127,6 +233,9 @@ class ClassList {
             $.getJSON(self.baseURL + "unis/" + self.uni + "/" + self.term + "/all", function(data) {
                 self.classdata = data["classes"];
                 self.rmpdata = data["rmp"];
+
+                // Make a saved string copy for future purposes if they change locations
+                self.stringClassData = JSON.stringify(self.classdata);
                 
                 // Find the RMP average
                 self.findRMPAverage(self.rmpdata);
