@@ -207,10 +207,19 @@
             <div class="col-md-6" id="courseSelector">
                 <div class="input-group">
                     <input type="text" id="searchcourses" class="form-control" placeholder="Search">
+
+                    <!-- Location Dropdown -->
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="locationselect"><img src="assets/arrow.png"></button>
+                        <ul class="dropdown-menu dropdown-menu-right" id="locationselectdropdown"></ul>
+                    </div><!-- /btn-group -->
+
+                    <!-- Term Dropdown -->
                     <div class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="termselect"><img src="assets/arrow.png"></button>
                         <ul class="dropdown-menu dropdown-menu-right" id="termselectdropdown"></ul>
                     </div><!-- /btn-group -->
+
                 </div><!-- /input-group -->
                 <div id="CourseDataLoader" style="padding-top:10px;"></div>
                 <ul class="cd-accordion-menu animated headers-list" style="overflow: auto" id="classdatawraper">

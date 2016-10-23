@@ -5,6 +5,7 @@ class ClassList {
         this.detailKeys = ["prereq", "coreq", "antireq", "notes"];
         this.uni = uni;
         this.term = term;
+        this.location = null;
         window.term = term;
         window.uni = uni;
 
@@ -12,12 +13,12 @@ class ClassList {
         localStorage.setItem('uni', uni);
         localStorage.setItem('term', term);
 
-        this.location = location;
         this.searchFound = []; // Array that sorts search results by order of importance
 
         $("#searchcourses").unbind(); // unbind search if there is a bind
 
         this.createTermDropdown();
+        this.createLocationDropdown();
         this.getClasses();
     }
 
@@ -53,6 +54,58 @@ class ClassList {
             $("#termselectdropdown").append(html);
         }
 
+    }
+
+    /*
+        Populates the location dropdown
+    */
+    createLocationDropdown() {
+        var self = this;
+
+        $("#locationselectdropdown").empty();
+
+        // Set the default value
+        $("#locationselect").html('All Locations <img src="assets/arrow.png">');
+
+        // Create and bind the all locations option in the dropdown
+        var alllochtml = $('<li><a location="all">All Locations</a></li>');
+
+        // Bind the click event
+        alllochtml.click(function () {
+            // Only update if there was a change
+            if (self.location != null) {
+                self.location = null;
+                $("#locationselect").html('All Locations <img src="assets/arrow.png">');
+            }
+        });
+
+        // Append it to the dropdown
+        $("#locationselectdropdown").append(alllochtml);
+
+        // Add a divider
+        $("#locationselectdropdown").append('<li role="separator" class="divider"></li>');
+
+        // Append every location to the dropdown for this uni
+        for (var location in window.unis[self.uni]["locations"]) {
+            var thislocation = window.unis[self.uni]["locations"][location];
+
+            // Create the HTML
+            var html = $('<li><a location="' + thislocation + '">' + thislocation + '</a></li>');
+
+            // Bind the click event
+            html.click(function () {
+                // check if they changed locations
+                var newlocation= $(this).find("a").attr("location");
+
+                if (newlocation != self.location) {
+                    self.location = newlocation;
+                    $("#locationselect").html(newlocation + ' <img src="assets/arrow.png">');
+                }
+            });
+
+            // Append this to the dropdown
+            $("#locationselectdropdown").append(html);
+        }
     }
 
     /*
