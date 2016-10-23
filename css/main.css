@@ -431,6 +431,10 @@ p {
   font-size: 35px;
   margin-top: -7px;
   border-color: #ffffff;
+  position: relative;
+  top: 0px;
+  right: 20px;
+  margin-right: -20px;
 }
 
 .addCourseButton:hover{
@@ -453,6 +457,10 @@ p {
   font-size: 35px;
   margin-top: -7px;
   border-color: #ffffff;
+  position: relative;
+  top: 0px;
+  right: 20px;
+  margin-right: -20px;
 }
 
 .removeCourseButton:hover{
@@ -480,6 +488,10 @@ p {
   font-size: 35px;
   margin-top: -7px;
   border-color: #ffffff;
+  position: relative;
+  top: 0px;
+  right: 20px;
+  margin-right: -20px;
 }
 
 .removeBtn:hover{
