@@ -161,17 +161,20 @@ class ClassList {
             // Boolean as to whether we've found a class with a relevant location
             var foundLocation = false;
 
+            // array that contains the classes that have the location
+            var includesLocations = [];
+
             for (var classv in data["classes"]) {
                 var thisclass = data["classes"][classv];
 
                 if (thisclass["location"] == location) {
                     foundLocation = true;
-                }
-                else {
-                    // remove this class from the array
-                    data["classes"].splice(classv, 1);
+                    includesLocations.push(thisclass);
                 }
             }
+
+            // overwrite the classes
+            data["classes"] = includesLocations;
 
             if (foundLocation == false) {
                 // tell the parent to delete themselves if other branches aren't fruitfull
