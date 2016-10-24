@@ -116,7 +116,13 @@ class Calendar {
             if (window.uni != null && window.term != null) a.download = window.uni + '_' + window.term + '_ScheduleStorm.png';
             else a.download = 'ScheduleStorm_Schedule.png';
 
+            // Append it to the body
+            document.body.appendChild(a);
+
             a.click();
+
+            // Remove it from the body
+            document.body.removeChild(a);
 
             // Reset the styling of the source element
             srcEl.style.position = "";
