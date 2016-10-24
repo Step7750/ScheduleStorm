@@ -72,22 +72,60 @@ class Calendar {
 
         // on click
         $("#dlSchedulePhoto").click(function () {
-            // create the canvas
-            html2canvas($(".calendar"), {
-                onrendered: function (canvas) {            
-                    // Download the picture
-                    var a = document.createElement('a');
-                    a.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-
-                    // Set the name of the file
-                    if (window.uni != null && window.term != null) a.download = window.uni + '_' + window.term + '_ScheduleStorm.png';
-                    else a.download = 'ScheduleStorm_Schedule.png';
-
-                    a.click();
-                }
-            });
+            // Take the screenshot
+            self.takeHighResScreenshot(document.getElementById("maincalendar"), 2);
         });
     }
+
+    /*
+        Takes a high-res screenshot of the calendar and downloads it as a png to the system
+
+        Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
+    */
+    takeHighResScreenshot(srcEl, scaleFactor) {
+        // Save original size of element
+        var originalWidth = srcEl.offsetWidth;
+        var originalHeight = srcEl.offsetHeight;
+        // Force px size (no %, EMs, etc)
+        srcEl.style.width = originalWidth + "px";
+        srcEl.style.height = originalHeight + "px";
+
+        // Position the element at the top left of the document because of bugs in html2canvas.
+        // See html2canvas issues #790, #820, #893, #922
+        srcEl.style.position = "fixed";
+        srcEl.style.top = "0";
+        srcEl.style.left = "0";
+
+        // Create scaled canvas
+        var scaledCanvas = document.createElement("canvas");
+        scaledCanvas.width = originalWidth * scaleFactor;
+        scaledCanvas.height = originalHeight * scaleFactor;
+        scaledCanvas.style.width = originalWidth + "px";
+        scaledCanvas.style.height = originalHeight + "px";
+        var scaledContext = scaledCanvas.getContext("2d");
+        scaledContext.scale(scaleFactor, scaleFactor);
+
+        html2canvas(srcEl, { canvas: scaledCanvas })
+        .then(function(canvas) {
+
+            // Download the picture
+            var a = document.createElement('a');
+            a.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+            // Set the name of the file
+            if (window.uni != null && window.term != null) a.download = window.uni + '_' + window.term + '_ScheduleStorm.png';
+            else a.download = 'ScheduleStorm_Schedule.png';
+
+            a.click();
+
+            // Reset the styling of the source element
+            srcEl.style.position = "";
+            srcEl.style.top = "";
+            srcEl.style.left = "";
+            srcEl.style.width = "";
+            srcEl.style.height = "";
+        });
+    };
 
     /*
         Binds button that allows you to remove all blocked times
