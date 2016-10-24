@@ -15,23 +15,25 @@ Rather than just supporting one university, Schedule Storm is a platform in whic
   * [Why is it better?](https://github.com/Step7750/ScheduleStorm#why-is-it-better)
   * [Tech Stack](https://github.com/Step7750/ScheduleStorm#tech-stack)
 
-## Supported Universities:
+## Supported Universities
   * University of Calgary
-  * University of Alberta (TODO)
-  * Mount Royal University (TODO)
+  * University of Alberta
+  * Mount Royal University
 
 Want us to support your university?
   * If you can, feel free to send pull requests with additional functionality
   * If not, file a new issue and we'll look into it!
 
 ## Features
-  * Very fast and responsive accordion for searching courses
+  * Fast and responsive accordion for searching courses
   * Unified UI with your proposed schedules, class search, and selected courses
   * Add specific classes and allow the generator to fill out the rest
-  * Instant schedule generation when adding courses
-  * Easy to read calendar
+  * Fast client side schedule generation when adding courses
   * Inline RMP Ratings
-  * Dynamic Scoring that takes into account your preferences 
+  * Dynamic Scoring that takes into account your preferences
+  * Download a photo of your schedule, or copy it to clipboard
+  * Create groups of classes and let the generator use "One of", "Two Of", etc.. of them
+  * Block off timeslots by dragging on the calendar
   * Supports many Unis, with a framework for adding more
 
 ## How does it work?
@@ -68,6 +70,7 @@ For the classlist, we wanted to provide the user with a new means of browsing fo
 * Python Backend w/ Falcon for the API Server and threads for each University
 * ES6 JS OOP Frontend (transpiled to ES5 in production to support more clients)
 * Heavy use of JQuery to manipulate the DOM
+* Bootstrap, HTML2Canvas, Clipboard, Operative
 
 ### Backend
 
