@@ -236,7 +236,7 @@ class Generator {
                             // create a copy to work with
                             var combocopy = JSON.parse(JSON.stringify(this.combinations[0][combos]));
 
-                            // geenrate the schedules
+                            // generate the schedules
                             this.generateSchedules([], combocopy);
 
                             this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
@@ -312,7 +312,9 @@ class Generator {
                     else {
                         // Check that if they selected that they only want open classes,
                         // we make sure the most recent one is open
-                        if (schedule.length > 0 && this.onlyOpen == true) {
+
+                        // NOTE: If the user manually specified this class, we don't check whether its open or not
+                        if (schedule.length > 0 && this.onlyOpen == true && schedule[schedule.length-1]["manual"] != true) {
                             var addedClass = schedule[schedule.length-1];
 
                             if (addedClass["status"] != "Open") {
@@ -463,6 +465,11 @@ class Generator {
 
                                             if (thisclass["id"] == queue[0]["types"][type]) {
                                                 // we found the class obj, add it to the schedule
+
+                                                // The user manually specified this class, set the flag
+                                                thisclass["manual"] = true;
+
+                                                // Push it to this schedule
                                                 schedule.push(thisclass);
 
                                                 // remove the type from the queue
@@ -470,6 +477,9 @@ class Generator {
 
                                                 // recursively call the generator
                                                 this.generateSchedules(schedule, queue);
+
+                                                // remove the "manual" key
+                                                delete thisclass["manual"];
 
                                                 // remove the class
                                                 schedule.pop();
