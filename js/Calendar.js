@@ -21,6 +21,7 @@ class Calendar {
         this.bindRemoveBlockedTimes();
         this.bindCopyScheduleToClipboard();
         this.bindFacebookSharing();
+        this.bindImgurUpload();
 
         this.eventcolours = {
             "#FF5E3A": false,
@@ -64,6 +65,7 @@ class Calendar {
         $("#removeBlockedTimes").tooltip();
         $("#copySchedToClipboard").tooltip();
         $("#shareToFacebook").tooltip();
+        $("#uploadToImgur").tooltip();
     }
 
     /*
@@ -79,7 +81,7 @@ class Calendar {
                 // Download the picture
                 var a = document.createElement('a');
                 a.href = canvas.replace("image/png", "image/octet-stream");
-                
+
                 // Set the name of the file
                 if (window.uni != null && window.term != null) a.download = window.uni + '_' + window.term + '_ScheduleStorm.png';
                 else a.download = 'ScheduleStorm_Schedule.png';
@@ -93,6 +95,17 @@ class Calendar {
                 document.body.removeChild(a);
             });
         });
+    }
+
+    /*
+        Binds the imgur button to upload a photo of the schedule to imgur and open it
+    */
+    bindImgurUpload() {
+        var self = this;
+
+        $("#uploadToImgur").click(function () {
+            console.log("Upload to Imgur");
+        })
     }
 
     /*
