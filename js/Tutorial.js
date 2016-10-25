@@ -136,7 +136,7 @@ class Tutorial {
 			  	{
 			  		element: $("#preferencesbutton"),
 			  		title: "Preferences",
-			  		content: "You can change your schedule preferences and edit settings by clicking this button<br><br>You can change your preferences for morning/night classes, consecutive classes, and teacher quality over time slots.<br><br>You can also specify that you only want the generator to allow open classes (some Unis have custom settings)",
+			  		content: "You can change your schedule preferences and edit settings by clicking this button<br><br>You can change your preferences for morning/night classes, consecutive classes, and teacher quality over time slots.<br><br>You can also specify that you only want the generator to allow open classes (some universities have custom settings)",
 			  		placement: "left",
 			  	},
 			  	{
