@@ -20,6 +20,7 @@ class Calendar {
         this.bindSchedulePhotoDL();
         this.bindRemoveBlockedTimes();
         this.bindCopyScheduleToClipboard();
+        this.bindFacebookSharing();
 
         this.eventcolours = {
             "#FF5E3A": false,
@@ -75,6 +76,29 @@ class Calendar {
         $("#dlSchedulePhoto").click(function () {
             // Take the screenshot
             self.takeHighResScreenshot(document.getElementById("maincalendar"), 2);
+        });
+    }
+
+    /*
+        Binds the Facebook share button to actually share on click
+    */
+    bindFacebookSharing() {
+        var self = this;
+
+        $("#shareToFacebook").click(function () {
+            FB.ui(
+              {
+                method: 'feed',
+                name: 'Schedule Storm',
+                link: 'http://schedulestorm.com',
+                picture: 'https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/687474703a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67',
+                caption: 'Schedule Storm is a student schedule builder',
+                description: 'I just generated a schedule using Schedule Storm!'
+              },
+              function(response) {
+                console.log(response);
+              }
+            );
         });
     }
 
