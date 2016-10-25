@@ -32,8 +32,9 @@ class Tutorial {
 		var row = element.parent().find('.has-children').eq(0);
 
 		if (row.length > 0) {
-			// Click the label
-			row.find('label').click();
+
+			// Ensure the row isn't open already, if not, click it
+			if (row.find("ul").length == 1 && row.find(".accordiontableparent").length == 0) row.find('label').click();
 
 			// Call the next row
 			setTimeout(function () {
