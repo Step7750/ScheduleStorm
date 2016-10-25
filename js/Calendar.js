@@ -62,6 +62,7 @@ class Calendar {
         $("#dlSchedulePhoto").tooltip();
         $("#removeBlockedTimes").tooltip();
         $("#copySchedToClipboard").tooltip();
+        $("#shareToFacebook").tooltip();
     }
 
     /*

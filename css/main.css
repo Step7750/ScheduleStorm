@@ -4,6 +4,17 @@ body, html{
     overflow: hidden;
 }
 
+@font-face {
+  font-family: 'facebook-fontello';
+  src: url('./fontello/fontello.eot?11293523');
+  src: url('./fontello/fontello.eot?11293523#iefix') format('embedded-opentype'),
+       url('./fontello/fontello.woff?11293523') format('woff'),
+       url('./fontello/fontello.ttf?11293523') format('truetype'),
+       url('./fontello/fontello.svg?11293523#fontello') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 #calendarStatus {
   position: absolute !important;
   top: 40% !important;
