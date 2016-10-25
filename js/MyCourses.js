@@ -28,7 +28,12 @@ class MyCourses {
     genAddGroupBtn() {
         var self = this;
 
-        var addGroupbtn = $('<li role="presentation" id="addGroupbtn" style="margin-left: 8px;"><a class="MyCourses">&plus;</a></li>');
+        var addGroupbtn = $('<li role="presentation" id="addGroupbtn" style="margin-left: 8px;"' +
+                            'data-toggle="tooltip" title="Add New Course Group"><a class="MyCourses">&plus;</a></li>');
+
+        // Initialize the tooltip
+        addGroupbtn.tooltip();
+
         addGroupbtn.click(function (event) {
             // Add One of group
             self.addGroup(1);
