@@ -20,6 +20,12 @@ body, html{
   border-radius: 0px !important;
 }
 
+#locationselectdropdown {
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .blockedTime {
   background-color: #ecc6c6;
 }
