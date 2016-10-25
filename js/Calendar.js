@@ -263,7 +263,7 @@ class Calendar {
 
                 // make sure there isn't a -1 in the days
                 if (thistime[0].indexOf(-1) == -1) {
-                    this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text, thisclass["name"]);
+                    this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text, thisclass);
                 }
             }
         }
@@ -485,11 +485,83 @@ class Calendar {
     }
 
     /*
+        Generates the HTML for a calendar event tooltip given a class object
+    */
+    generateTooltip(classobj) {
+        // Return html string
+        var htmlString = "";
+
+        // Define the attributes and their names to add
+        var allowedAttributes = [
+                                    {
+                                        "id": "id",
+                                        "name": "Class ID"
+                                    },
+                                    {
+                                        "id": "teachers",
+                                        "name": "Teachers"
+                                    },
+                                    {
+                                        "id": "oldtimes",
+                                        "name": "Times"
+                                    },
+                                    {
+                                        "id": "rooms",
+                                        "name": "Rooms"
+                                    },
+                                    {
+                                        "id": "location",
+                                        "name": "Location"
+                                    },
+                                    {
+                                        "id": "scheduletype",
+                                        "name": "Type"
+                                    },
+                                    {
+                                        "id": "status",
+                                        "name": "Status"
+                                    }
+                                ];
+
+        // Iterate through every attribute
+        for (var attribute in allowedAttributes) {
+            attribute = allowedAttributes[attribute];
+                
+            // Make sure its id is defined in the class
+            if (classobj[attribute["id"]] != undefined) {
+                if (typeof classobj[attribute["id"]] != "object") {
+                    htmlString += "<b style='font-weight: bold;'>" + attribute["name"] + "</b>: " + classobj[attribute["id"]] + "<br>";
+                }
+                else {
+                    // Prevent dupes
+                    var alreadyAdded = [];
+
+                    // Iterate through the elements and add them
+                    htmlString += "<b style='font-weight: bold;'>" + attribute["name"] + "</b>: <br>";
+                    for (var index in classobj[attribute["id"]]) {
+
+                        // Check if we've already added this element
+                        if (alreadyAdded.indexOf(classobj[attribute["id"]][index]) == -1) {
+                            // we haven't already added this element
+                            htmlString += classobj[attribute["id"]][index] + "<br>";
+
+                            // push it to added elements
+                            alreadyAdded.push(classobj[attribute["id"]][index]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return htmlString;
+    }
+
+    /*
         Add an event with start and end time (24 hours)
 
         Days is an array containing the integers that represent the days that this event is on
     */
-    addEvent(starttime, endtime, days, text, classname) {
+    addEvent(starttime, endtime, days, text, classobj) {
 
         var rowheight = $("#schedule").find("td:first").height() + 1;
 
@@ -529,11 +601,16 @@ class Calendar {
             tdelement.empty();
 
             // create the element and append it
-            var html = '<div class="event" style="height: ' + totalheight + 'px; top: ' + topoffset + 'px; background: ' + this.getEventColour(classname) + ';">';
+            var html = '<div class="event" style="height: ' + totalheight + 'px; top: ' + 
+                        topoffset + 'px; background: ' + this.getEventColour(classobj["name"]) + 
+                        ';" data-toggle="tooltip" title="' + this.generateTooltip(classobj) + '">';
 
             html += text;
 
             html += '</div>';
+
+            // Initialize the tooltip
+            html = $(html).tooltip({container: 'body', html: true});
 
             tdelement.append(html);
         }
