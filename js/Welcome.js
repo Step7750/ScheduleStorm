@@ -128,6 +128,8 @@ class Welcome {
             list.append(button);
         }
 
+        list.append("<br><a href='https://github.com/Step7750/ScheduleStorm#supported-universities'>Don't see your school? Tell Us!</a>");
+
         list.slideDown();
     }
 
