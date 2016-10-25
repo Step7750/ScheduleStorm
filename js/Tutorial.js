@@ -74,6 +74,11 @@ class Tutorial {
 			  		content: "If you want to add a specific class, you can click on the 'plus' icon next to it.<br><br>All other required classes will automatically be filled by the generator"
 			  	},
 			  	{
+			  		element: $("#classdatawraper").find("td")[1],
+			  		title: "Rate My Professor Ratings",
+			  		content: "If you see a number beside a teacher's name, that is their Rate My Professor rating out of 5<br><br>You can specify the weighting of the RMP rating in the generator in preferences"
+			  	},
+			  	{
 			  		element: $("#searchcourses")[0],
 			  		title: "Search Courses",
 			  		content: "Here you can search for teachers, courses, classes, rooms, descriptions, faculties, subjects, prerequisites...<br><br>Almost anything!"
@@ -132,6 +137,11 @@ class Tutorial {
 			  		title: "Preferences",
 			  		content: "You can change your schedule preferences and edit settings by clicking this button<br><br>You can change your preferences for morning/night classes, consecutive classes, and teacher quality over time slots.<br><br>You can also specify that you only want the generator to allow open classes (some Unis have custom settings)",
 			  		placement: "left",
+			  	},
+			  	{
+			  		element: $("#MyUniversity"),
+			  		title: "Change University",
+			  		content: "You can click here to open a dropdown and change your university"
 			  	},
 			  	{
 			  		element: $("#aboutbutton"),
