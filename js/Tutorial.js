@@ -141,7 +141,8 @@ class Tutorial {
 			  	{
 			  		element: $("#MyUniversity"),
 			  		title: "Change University",
-			  		content: "You can click here to open a dropdown and change your university"
+			  		content: "You can click here to open a dropdown and change your university",
+			  		placement: "left"
 			  	},
 			  	{
 			  		element: $("#aboutbutton"),
