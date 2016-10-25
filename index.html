@@ -116,6 +116,8 @@
                             Hate
                             <input id="slider_consecutive" type="text" data-slider-min="-100" data-slider-max="100" data-slider-step="1" data-slider-value="0" style="display: none;" data-value="0" value="0" data-slider-tooltip="hide">
                             Love
+                            <br>
+                            <button type="button" class="btn btn-primary btn" style="margin-top: 40px" onclick="localStorage.removeItem('tour_end'); $('#Preferences').modal('hide'); var thistut = new Tutorial();"><span class="glyphicon glyphicon-info-sign" id="aboutbutton"></span> Start Tour</button>
                         </center>
                     </div>
                     <div class="modal-footer">
@@ -236,7 +238,7 @@
             <div id="MyCourses" class="col-md-5">
                 <span id="CourseList-title" style="float: left; margin-top: 5px;">My Courses</span>
                 <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences" id="preferencesbutton" style="float: right;"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
-                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#About" style="float: right; margin-right: 10px"><span class="glyphicon glyphicon-info-sign" id="aboutbutton"></span> About</button>
+                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#About" style="float: right; margin-right: 10px" id="aboutbutton"><span class="glyphicon glyphicon-info-sign"></span> About</button>
                 <ul class="nav nav-pills noselect" style="float: left; margin-left: 20px;" id="coursegroups"></ul>
                 
                 <!-- Dynamically populated myclasses list -->
