@@ -2,9 +2,9 @@
   <img src="http://i.imgur.com/ZBRXem4.png"/>
 </p>
 
-[ScheduleStorm.com](schedulestorm.com)
+[ScheduleStorm.com](http://schedulestorm.com)
 
-Schedule Storm is a schedule generator web app that let's you input your courses and preferences to generate possible schedules.
+Schedule Storm is a schedule generator web app that lets you input your courses and preferences to generate possible schedules.
 
 Rather than just supporting one university, Schedule Storm is a platform in which you can support your university by extending the modules.
 
