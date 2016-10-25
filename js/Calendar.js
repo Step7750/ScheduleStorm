@@ -242,6 +242,9 @@ class Calendar {
         // make sure its a number
         if (typeof schedule[0] == "number") $("#scheduleScore").text(schedule[0].toFixed(2));
 
+        // Destroy all the tooltips from previous events
+        self.destroyEventTooltips();
+
         // Clear all the current events on the calendar
         self.clearEvents();
 
@@ -251,6 +254,7 @@ class Calendar {
         self.currentSchedule = schedule;
 
         self.setScheduleConstraints(schedule);
+
 
         for (var classv in schedule) {
             var thisclass = schedule[classv];
@@ -270,6 +274,21 @@ class Calendar {
 
         // reset the colour ids
         self.resetColours();
+    }
+
+    /*
+        Destroys every currently displayed event tooltip
+    */
+    destroyEventTooltips() {
+        // Destroy the tooltips
+        $("#schedule").find('.event').each(function (index) {
+            $(this).tooltip('destroy');
+        });
+
+        // Remove any open tooltip div
+        $('[role=tooltip]').each(function (index) {
+            $(this).remove();
+        })
     }
 
     generateScheduleText(schedule) {
