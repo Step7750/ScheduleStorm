@@ -250,7 +250,11 @@ class ClassList {
                         
                         // let mycourses load any saved states
                         window.mycourses.loadState();
+
+                        // Create the tutorial obj
+                        var thistut = new Tutorial();
                         
+                        // Empty out the div
                         $("#classdata").empty();
 
                         // Remove the loading animation and populate the list
