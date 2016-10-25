@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> <!-- Bootstrap -->
         <link rel="stylesheet" href="css/accordion.css"> <!-- Accordion CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.1.3/css/bootstrap-slider.min.css"><!-- Bootstrap Slider -->
-        <link rel="stylesheet" href="css/introjs.min.css"> <!-- Intro.js CSS -->
+        <link rel="stylesheet" href="css/bootstrap-tour.min.css"> <!-- Intro.js CSS -->
         <link rel="stylesheet" href="css/main.css"> <!-- Main CSS -->
         <link rel="stylesheet" href="css/loading.css"> <!-- Loading animation CSS -->
 
@@ -29,7 +29,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
         
         <!-- Intro.js -->
-        <script src="js/intro.min.js"></script>
+        <script src="js/bootstrap-tour.min.js"></script>
 
 
         <!-- Custom JS -->
@@ -235,8 +235,8 @@
 
             <div id="MyCourses" class="col-md-5">
                 <span id="CourseList-title" style="float: left; margin-top: 5px;">My Courses</span>
-                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences" style="float: right;"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
-                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#About" style="float: right; margin-right: 10px"><span class="glyphicon glyphicon-info-sign"></span> About</button>
+                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#Preferences" id="preferencesbutton" style="float: right;"><span class="glyphicon glyphicon-cog"></span> Preferences</button>
+                <button type="button" class="btn btn-primary btn" data-toggle="modal" data-target="#About" style="float: right; margin-right: 10px"><span class="glyphicon glyphicon-info-sign" id="aboutbutton"></span> About</button>
                 <ul class="nav nav-pills noselect" style="float: left; margin-left: 20px;" id="coursegroups"></ul>
                 
                 <!-- Dynamically populated myclasses list -->
@@ -248,7 +248,7 @@
             
             <div id="schedule" class="col-md-5">
                 <div style="padding-bottom: 5px;" class="noselect">
-                    <div style="text-align: center;">
+                    <div style="text-align: center;" id="prevnextdiv">
                         <span style="font-size: 20px; color: #0275d8; cursor: pointer;" id="prevSchedule" title="Go to the previous schedule" data-toggle="tooltip">◀</span>
                         <span style="font-size: 16px; cursor: default;">
                             <div style="display: inline;" id="curGenIndex">0</div>
@@ -258,7 +258,7 @@
                         <span style="font-size: 20px; color: #0275d8; cursor: pointer;" id="nextSchedule" title="Go to the next schedule" data-toggle="tooltip">▶</span>
                     </div>
                     
-                    <div style="float: left; margin-top: -21px;">
+                    <div style="float: left; margin-top: -21px;" id="scheduleutilities">
                         <button class="btn btn-default btn-xs" title="Download a Photo of your Schedule" data-toggle="tooltip" id="dlSchedulePhoto">
                             <span class="glyphicon glyphicon-picture"></span>
                         </button>
