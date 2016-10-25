@@ -104,8 +104,63 @@ class Calendar {
         var self = this;
 
         $("#uploadToImgur").click(function () {
-            console.log("Upload to Imgur");
+            /*
+                Why do we make a separate window/tab now?
+
+                If we simply open up a new window/tab after we already have the photo uploaded
+                and the imgur link, we lose the "trusted" event that came from a user click. 
+                As a result, the window/tab would be blocked as a popup. If we create the window
+                now while we have a trusted event and then change its location when we're ready, 
+                we can bypass this.
+            */
+            var imgurwindow = window.open("http://schedulestorm.com/assets/imgurloading.png",'Uploading to Imgur...', '_blank');
+
+            // Upload the image to imgur and get the link
+            self.uploadToImgur(function (link) {
+                if (link != false) {
+                    imgurwindow.location.href = link;
+                }
+                else {
+                    // There was an error, show the error screen
+                    imgurwindow.location.href = "http://schedulestorm.com/assets/imgurerror.png"
+                }
+            });
         })
+    }
+
+    /*
+        Uploads the current schedule to imgur and returns the URL if successful
+        If not, returns false
+    */
+    uploadToImgur(cb) {
+        var self = this;
+
+        // Takes a screenshot of the calendar
+        self.takeHighResScreenshot(document.getElementById("maincalendar"), 2, function (canvas) {
+            // Send AJAX request to imgur with the photo to upload
+            $.ajax({
+                url: 'https://api.imgur.com/3/image',
+                type: 'POST',
+                headers: {
+                    Authorization: 'Client-ID 9bdb3669a12eeb2'
+                },
+                data: {
+                    type: 'base64',
+                    name: 'schedulestorm.png',
+                    title: 'Schedule Storm',
+                    description: "Made using ScheduleStorm.com for " + 
+                                window.unis[window.uni]["name"] + " - " + 
+                                window.unis[window.uni]["terms"][window.term],
+                    image: canvas.split(',')[1]
+                },
+                dataType: 'json'
+            }).success(function(data) {
+                cb(data.data.link);
+            }).error(function() {
+                cb(false);
+            });
+
+        });
     }
 
     /*
