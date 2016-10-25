@@ -92,14 +92,56 @@ class Calendar {
                 name: 'Schedule Storm',
                 link: 'http://schedulestorm.com',
                 picture: 'https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/687474703a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67',
-                caption: 'Schedule Storm is a student schedule builder',
-                description: self.generateScheduleText(self.currentSchedule)
+                caption: 'Schedule Storm is a schedule generator that lets you input your courses and preferences to generate possible schedules',
+                description: self.generateFacebookDescription(self.currentSchedule)
               },
               function(response) {
                 console.log(response);
               }
             );
         });
+    }
+
+    /*
+        Generates the Facebook description text given a schedule
+    */
+    generateFacebookDescription(schedule) {
+        var returnText = window.unis[window.uni]["name"] + " - " + 
+                         window.unis[window.uni]["terms"][window.term];
+
+        // Make sure we actully have a possible schedule
+        if (schedule.length > 0) {
+            returnText += " --- Classes: ";
+
+            var coursesdict = {};
+
+            // Iterate through each class and populate the return Text
+            for (var classv in schedule) {
+                var thisclass = schedule[classv];
+                if (typeof thisclass == "object") {
+
+                    if (coursesdict[thisclass["name"]] == undefined) {
+                        coursesdict[thisclass["name"]] = [];
+                    }
+
+                    coursesdict[thisclass["name"]].push(thisclass["id"]);
+                }
+            }
+
+            // Iterate through the dict keys and add the values to the returnText
+            var keylength = Object.keys(coursesdict).length;
+            var index = 0;
+            for (var key in coursesdict) {
+                index += 1;
+                returnText += key + " (" + coursesdict[key] + ")";
+
+                if (index < keylength) {
+                    returnText += ", ";
+                }
+            }
+        }
+
+        return returnText;
     }
 
     /*
