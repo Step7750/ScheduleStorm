@@ -57,7 +57,7 @@ class Tutorial {
 		  	steps: [
 			  	{
 			    	title: "What is this?",
-			    	content: "Schedule Storm is a student schedule generator that let's you input your courses and preferences to generate possible schedules. <br><br>You can always restart this tour by going to preferences"
+			    	content: "Schedule Storm is a student schedule generator that lets you input your courses and preferences to generate possible schedules. <br><br>You can always restart this tour by going to preferences"
 			  	},
 			  	{
 			  		element: document.querySelector('#classdatawraper'),
@@ -67,7 +67,7 @@ class Tutorial {
 			  	{
 			  		element: $("#classdatawraper").find('.addCourseButton')[0],
 			  		title: "Add Courses",
-			  		content: "If you want to add a course, simply click on the 'plus' icon next to it's name"
+			  		content: "If you want to add a course, simply click on the 'plus' icon next to its name"
 			  	},
 			  	{
 			  		element: $("#classdatawraper").find('[classid]')[0],
