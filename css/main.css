@@ -238,6 +238,12 @@ body > .row{
     margin-left: 61em;
 }
 
+.popover-title{
+    text-align: center;
+    font-size: 17px;
+    font-weight: bold;
+}
+
 .col-md-6{
     background-color: #eae9e9;
 }
