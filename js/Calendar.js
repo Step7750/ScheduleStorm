@@ -113,12 +113,12 @@ class Calendar {
                 now while we have a trusted event and then change its location when we're ready, 
                 we can bypass this.
             */
-            var imgurwindow = window.open("http://schedulestorm.com/assets/imgurloading.png",'Uploading to Imgur...', '_blank');
+            var imgurwindow = window.open("http://schedulestorm.com/assets/imgurloading.png",'Uploading to Imgur...', "width=900,height=500");
 
             // Upload the image to imgur and get the link
             self.uploadToImgur(function (link) {
                 if (link != false) {
-                    imgurwindow.location.href = link;
+                    imgurwindow.location.href = link + ".png";
                 }
                 else {
                     // There was an error, show the error screen
