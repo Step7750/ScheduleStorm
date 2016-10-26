@@ -1121,6 +1121,9 @@ class Generator {
 
             // Force the current schedule to empty
             window.calendar.currentSchedule = [];
+
+            // Destroy all the tooltips
+            window.calendar.destroyEventTooltips();
         }
     }
 
