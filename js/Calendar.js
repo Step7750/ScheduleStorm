@@ -170,20 +170,55 @@ class Calendar {
         var self = this;
 
         $("#shareToFacebook").click(function () {
-            FB.ui(
-              {
-                method: 'feed',
-                name: 'Schedule Storm',
-                link: 'http://schedulestorm.com',
-                picture: 'https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/687474703a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67',
-                caption: 'Schedule Storm is a schedule generator that lets you input your courses and preferences to generate possible schedules',
-                description: self.generateFacebookDescription(self.currentSchedule)
-              },
-              function(response) {
-                console.log(response);
-              }
-            );
+            // We have to preserve this "trusted" event and thus have to make the window now
+            var facebookwindow = window.open("http://schedulestorm.com/assets/facebookshare.png",'Sharing to Facebook...', '_blank', "width=575,height=592");
+            
+            self.uploadToImgur(function (link) {
+                // Set the default image if no image
+                if (link == false) {
+                    link = "https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/687474703a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67";
+                }
+
+                var url = self.generateFacebookFeedURL(link);
+                facebookwindow.location.href = url;
+            });
         });
+    }
+
+    /*
+        Generates the URL to use to share this schedule to Facebook
+    */
+    generateFacebookFeedURL(picture) {
+
+        var url = "https://www.facebook.com/v2.8/dialog/feed";
+        var parameters = {
+            "app_id": "138997789901870",
+            "caption": "Schedule Storm lets you input your courses and preferences to generate possible schedules",
+            "display": "popup",
+            "e2e": "{}",
+            "link": "http://schedulestorm.com",
+            "locale": "en_US",
+            "name": "Schedule Storm",
+            "domain": "schedulestorm.com",
+            "relation": "opener",
+            "result": '"xxRESULTTOKENxx"',
+            "sdk": "joey",
+            "version": "v2.8"
+        }
+        var index = 0;
+
+        for (var parameter in parameters) {
+            if (index > 0) url += "&";
+            else url += "?";
+
+            url += parameter + "=" + encodeURIComponent(parameters[parameter]);
+            index += 1;
+        }
+
+        url += "&description=" + encodeURIComponent(this.generateFacebookDescription(this.currentSchedule));
+        url += "&picture=" + encodeURIComponent(picture);
+
+        return url;
     }
 
     /*
