@@ -193,7 +193,7 @@ class Calendar {
         var url = "https://www.facebook.com/v2.8/dialog/feed";
         var parameters = {
             "app_id": "138997789901870",
-            "caption": "Schedule Storm lets you input your courses and preferences to generate possible schedules",
+            "caption": "University Student Schedule Generator",
             "display": "popup",
             "e2e": "{}",
             "link": "http://schedulestorm.com",
