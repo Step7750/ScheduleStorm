@@ -171,7 +171,7 @@ class Calendar {
 
         $("#shareToFacebook").click(function () {
             // We have to preserve this "trusted" event and thus have to make the window now
-            var facebookwindow = window.open("http://schedulestorm.com/assets/facebookshare.png",'Sharing to Facebook...', '_blank', "width=575,height=592");
+            var facebookwindow = window.open("http://schedulestorm.com/assets/facebookshare.png",'Sharing to Facebook...', "width=575,height=592");
             
             self.uploadToImgur(function (link) {
                 // Set the default image if no image
