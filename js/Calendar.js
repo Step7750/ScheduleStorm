@@ -77,7 +77,7 @@ class Calendar {
         // on click
         $("#dlSchedulePhoto").click(function () {
             // Take the screenshot
-            self.takeHighResScreenshot(document.getElementById("maincalendar"), 2, function (canvas) {
+            self.takeCalendarHighResScreenshot(1.5, 2, function (canvas) {
                 // Download the picture
                 var a = document.createElement('a');
                 a.href = canvas.replace("image/png", "image/octet-stream");
@@ -116,7 +116,7 @@ class Calendar {
             var imgurwindow = window.open("http://schedulestorm.com/assets/imgurloading.png",'Uploading to Imgur...', "width=900,height=500");
 
             // Upload the image to imgur and get the link
-            self.uploadToImgur(function (link) {
+            self.uploadToImgur(1.5, function (link) {
                 if (link != false) {
                     imgurwindow.location.href = link + ".png";
                 }
@@ -132,11 +132,11 @@ class Calendar {
         Uploads the current schedule to imgur and returns the URL if successful
         If not, returns false
     */
-    uploadToImgur(cb) {
+    uploadToImgur(ratio, cb) {
         var self = this;
 
         // Takes a screenshot of the calendar
-        self.takeHighResScreenshot(document.getElementById("maincalendar"), 2, function (canvas) {
+        self.takeCalendarHighResScreenshot(ratio, 2, function (canvas) {
             // Send AJAX request to imgur with the photo to upload
             $.ajax({
                 url: 'https://api.imgur.com/3/image',
@@ -173,7 +173,7 @@ class Calendar {
             // We have to preserve this "trusted" event and thus have to make the window now
             var facebookwindow = window.open("http://schedulestorm.com/assets/facebookshare.png",'Sharing to Facebook...', "width=575,height=592");
             
-            self.uploadToImgur(function (link) {
+            self.uploadToImgur(1.91, function (link) {
                 // Set the default image if no image
                 if (link == false) {
                     link = "https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/687474703a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67";
@@ -264,14 +264,28 @@ class Calendar {
     }
 
     /*
-        Takes a high-res screenshot of the calendar and downloads it as a png to the system
+        Takes a high-res screenshot of the calendar with the specified aspect ratio and downloads it as a png to the system
 
         Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
     */
-    takeHighResScreenshot(srcEl, scaleFactor, cb) {
+    takeCalendarHighResScreenshot(aspectratio, scaleFactor, cb) {
+
+        var srcEl = document.getElementById("maincalendar");
+
+        var wrapdiv = $(srcEl).find('.wrap');
+
+        // Want to remove any scrollbars
+        wrapdiv.removeClass('wrap');
+
         // Save original size of element
         var originalWidth = srcEl.offsetWidth;
-        var originalHeight = srcEl.offsetHeight;
+        var originalHeight = wrapdiv.height() + $(srcEl).find("table").eq(0).height();
+
+        // see if we can scale the width for it to look right for the aspect ratio
+        if ((originalHeight * aspectratio) <= $(window).width()) {
+            originalWidth = originalHeight * aspectratio;
+        }
+
         // Force px size (no %, EMs, etc)
         srcEl.style.width = originalWidth + "px";
         srcEl.style.height = originalHeight + "px";
@@ -300,6 +314,8 @@ class Calendar {
             srcEl.style.left = "";
             srcEl.style.width = "";
             srcEl.style.height = "";
+
+            wrapdiv.addClass('wrap');
 
             // return the data
             cb(canvas.toDataURL("image/png"));
