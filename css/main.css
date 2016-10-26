@@ -689,3 +689,21 @@ td{
         width: 97vw;
     }
 }
+
+@media screen and (max-height: 700px), screen and (max-width: 991px){
+    body > .row{
+        height: 89vh;
+    }
+
+    #courseSelector > ul{
+        height: 91%;
+    }
+
+    #schedule{
+        height: 64.2%;
+    }
+
+    .calendar{
+        height: 92%;
+    }
+}
