@@ -4,6 +4,8 @@
 
 [ScheduleStorm.com](http://schedulestorm.com)
 
+[You Can Find the Server Repo Here](https://github.com/Step7750/ScheduleStorm_Server)
+
 Schedule Storm is a schedule generator web app that lets you input your courses and preferences to generate possible schedules.
 
 Rather than just supporting one university, Schedule Storm is a platform in which you can support your university by extending the modules.
