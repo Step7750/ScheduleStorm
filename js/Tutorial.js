@@ -131,7 +131,7 @@ class Tutorial {
 			  	{
 			  		element: $("#scheduleutilities"),
 			  		title: "Schedule Utilities",
-			  		content: "Useful schedule utilities can be found here, you can:<br>* Download a picture of your schedule<br>* Copy your schedule to clipboard<br>* Remove all blocked timeslots"
+			  		content: "Useful schedule utilities can be found here, you can:<br>* Download a picture of your schedule<br>* Copy your schedule to clipboard<br>* Remove all blocked timeslots<br>* Share your schedule to Facebook"
 			  	},
 			  	{
 			  		element: $("#preferencesbutton"),
@@ -148,7 +148,7 @@ class Tutorial {
 			  	{
 			  		element: $("#aboutbutton"),
 			  		title: "About Us",
-			  		content: "We are two Computer Science students that thought making university schedules should be easier<br><br>Please contact us using Github or Email if you'd like to say 'Hi', file a bug report, want us to add your university, or add a new feature!",
+			  		content: "We are two Computer Science students that thought there was a better way to make university schedules<br><br>Please contact us using Github or Email if you'd like to say 'Hi', file a bug report, want us to add your university, or add a new feature!",
 			  		placement: "left"
 			  	},
 			  	{
