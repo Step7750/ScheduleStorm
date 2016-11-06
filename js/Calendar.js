@@ -23,6 +23,9 @@ class Calendar {
         this.bindFacebookSharing();
         this.bindImgurUpload();
 
+        // Key binds
+        this.keyBinds();
+
         this.eventcolours = {
             "#FF5E3A": false,
             "#099e12": false,
@@ -647,6 +650,44 @@ class Calendar {
     }
 
     /*
+        Goes to the previous schedule
+    */
+    goToPrev() {
+        var self = this;
+
+        if (self.totalGenerated > 0) {
+            self.setCurrentIndex(self.curIndex-1);
+
+            // get the schedule
+            var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
+
+            if (newschedules != false) {
+                // we got the schedule, now populate it
+                self.displaySchedule(newschedules);
+            }
+        }
+    }
+
+    /*
+        Goes to the next schedule
+    */
+    goToNext() {
+        var self = this;
+
+        if (self.totalGenerated > 0) {
+            self.setCurrentIndex(self.curIndex+1);
+
+            // get the schedule
+            var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
+
+            if (newschedules != false) {
+                // we got the schedule, now populate it
+                self.displaySchedule(newschedules);
+            }
+        }
+    }
+
+    /*
         Binds the buttons that let you go through each generated schedule
     */
     bindNextPrev() {
@@ -656,30 +697,29 @@ class Calendar {
         $("#nextSchedule").unbind();
 
         $("#prevSchedule").click(function () {
-            if (self.totalGenerated > 0) {
-                self.setCurrentIndex(self.curIndex-1);
-
-                // get the schedule
-                var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
-
-                if (newschedules != false) {
-                    // we got the schedule, now populate it
-                    self.displaySchedule(newschedules);
-                }
-            }
+            self.goToPrev();
         });
 
         $("#nextSchedule").click(function () {
-            if (self.totalGenerated > 0) {
-                self.setCurrentIndex(self.curIndex+1);
+            self.goToNext();
+        });
+    }
 
-                // get the schedule
-                var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
+    /*
+        Binds the arrow keys and Ctrl+C
+    */
+    keyBinds() {
+        var self = this;
 
-                if (newschedules != false) {
-                    // we got the schedule, now populate it
-                    self.displaySchedule(newschedules);
-                }
+        // Bind arrow keys
+        $(document).on('keydown', function (e){
+            var tag = e.target.tagName.toLowerCase();
+
+            // We don't want to do anything if they have an input focused
+            if (tag != "input") {
+                if (e.keyCode == 37) self.goToPrev();
+                else if (e.keyCode == 39) self.goToNext();
+                else if (e.keyCode == 67 && (e.metaKey || e.ctrlKey)) $("#copySchedToClipboard").click();
             }
         });
     }
