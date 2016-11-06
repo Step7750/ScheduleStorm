@@ -354,6 +354,7 @@ class Calendar {
             }
         });
     }
+
     /*
         Visually removes all blocked times from the Schedule UI
     */
@@ -751,7 +752,23 @@ class Calendar {
                         // Check if we've already added this element
                         if (alreadyAdded.indexOf(classobj[attribute["id"]][index]) == -1) {
                             // we haven't already added this element
-                            htmlString += classobj[attribute["id"]][index] + "<br>";
+
+                            if (attribute["id"] == "teachers") {
+                                var thisteacher = classobj[attribute["id"]][index];
+
+                                htmlString += thisteacher;
+
+                                // If this teacher has an RMP score, add it
+                                if (classList.rmpdata[thisteacher] != undefined && classList.rmpdata[thisteacher]["rating"] != undefined) {
+                                    htmlString += " (" + classList.rmpdata[thisteacher]["rating"] + ")";
+                                }
+
+                                htmlString += "<br>";
+                            }
+                            else {
+                                // Just add the element
+                                htmlString += classobj[attribute["id"]][index] + "<br>"; 
+                            }
 
                             // push it to added elements
                             alreadyAdded.push(classobj[attribute["id"]][index]);
