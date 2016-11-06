@@ -16,6 +16,7 @@ Rather than just supporting one university, Schedule Storm is a platform in whic
   * [How does it work?](https://github.com/Step7750/ScheduleStorm#how-does-it-work)
   * [Why is it better?](https://github.com/Step7750/ScheduleStorm#why-is-it-better)
   * [Tech Stack](https://github.com/Step7750/ScheduleStorm#tech-stack)
+  * [How to Transpile (using Babel)](https://github.com/Step7750/ScheduleStorm#how-to-transpile-(using-babel))
 
 ## Supported Universities
   * University of Calgary
@@ -78,6 +79,19 @@ For the classlist, we wanted to provide the user with a new means of browsing fo
 
 Each university has an instantiated thread from it's module (ex. UCalgary.py). The backend handles API requests and necessary scraping in an all-in-one package. Each supported university must have an entry in the settings file and have an enabled flag. RMP gets a dedicated thread that looks at the currently enabled Unis and scrapes the ratings for them in the specified interval. Each university has it's settings passed into it's thread upon creation. Each university is required to handle scraping, db management, and API response handlers for itself.
 
+
+## How to Transpile (using Babel)
+
+**Ensure you have Node.js and npm installed**
+
+1. Copy the `js/core` directory to a place outside of the Github directory (unless you want to explicitly ignore the node files)
+2. Change the directory to the parent of the new copied `core` directory
+2. Install Babel CLI with: `npm install --save-dev babel-cli`
+3. Install the ES2015 preset with: `npm install --save-dev babel-preset-es2015`
+4. Transpile the core folder with: `babel core --out-file production_core.js --presets es2015`
+5. Copy the resultant `production_core.js` file to the `js` folder in the Github Schedule Storm directory
+
+**Note: Ensure that any changes you make are on the original ES6 `core` file AND the transpiled `production_core.js`**
 
 ## Inspiration from:
 
