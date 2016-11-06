@@ -2748,11 +2748,11 @@ var Generator = function () {
                                         schedule[schedule.length - 2]["group"] = [schedule[schedule.length - 2]["group"]];
                                     }
 
-                                    isPossible = false;
+                                    var isPossible = false;
 
                                     // Check if there is any combination that matches up
-                                    for (firstgroup in schedule[schedule.length - 1]["group"]) {
-                                        for (secondgroup in schedule[schedule.length - 2]["group"]) {
+                                    for (var firstgroup in schedule[schedule.length - 1]["group"]) {
+                                        for (var secondgroup in schedule[schedule.length - 2]["group"]) {
                                             if (schedule[schedule.length - 1]["group"][firstgroup] == schedule[schedule.length - 2]["group"][secondgroup]) {
                                                 isPossible = true;
                                                 break;
