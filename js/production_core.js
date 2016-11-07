@@ -573,6 +573,11 @@ var Calendar = function () {
                 $(this).remove();
             });
         }
+
+        /*
+            Returns copy-paste schedule text
+        */
+
     }, {
         key: "generateScheduleText",
         value: function generateScheduleText(schedule) {
@@ -616,6 +621,11 @@ var Calendar = function () {
 
             return returnText;
         }
+
+        /*
+            Resets the allocation of colours to each class
+        */
+
     }, {
         key: "resetColours",
         value: function resetColours() {
@@ -623,6 +633,11 @@ var Calendar = function () {
                 this.eventcolours[colour] = false;
             }
         }
+
+        /*
+            Given a classname, returns the div bg colour
+        */
+
     }, {
         key: "getEventColour",
         value: function getEventColour(classname) {
@@ -691,7 +706,12 @@ var Calendar = function () {
                 }
             }
 
-            this.resizeCalendarNoScroll(minDay, maxDay, minHour, maxHour);
+            if (maxDay == 4 && minDay == 0 && minHour == 24 && maxHour == 0) {
+                // Just set a default scale
+                this.resizeCalendarNoScroll(0, 4, 9, 17);
+            } else {
+                this.resizeCalendarNoScroll(minDay, maxDay, minHour, maxHour);
+            }
         }
 
         /*
