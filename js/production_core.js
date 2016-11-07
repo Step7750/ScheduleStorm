@@ -36,6 +36,9 @@ var Calendar = function () {
         // Key binds
         this.keyBinds();
 
+        // Bind resize event
+        this.bindResize();
+
         this.eventcolours = {
             "#FF5E3A": false,
             "#099e12": false,
@@ -86,6 +89,25 @@ var Calendar = function () {
         }
 
         /*
+            Binds an event handler to redraw the current schedule when the window is resized (since the event sizes will change)
+             Waits for 500ms since the latest resize event
+        */
+
+    }, {
+        key: "bindResize",
+        value: function bindResize() {
+            var self = this;
+            var resizeTimer;
+
+            $(window).resize(function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    self.redrawSchedule();
+                }, 500);
+            });
+        }
+
+        /*
             Binds the Schedule Photo Download button and implements the DL functionality
         */
 
@@ -128,7 +150,7 @@ var Calendar = function () {
             $("#uploadToImgur").click(function () {
                 /*
                     Why do we make a separate window/tab now?
-                      If we simply open up a new window/tab after we already have the photo uploaded
+                     If we simply open up a new window/tab after we already have the photo uploaded
                     and the imgur link, we lose the "trusted" event that came from a user click. 
                     As a result, the window/tab would be blocked as a popup. If we create the window
                     now while we have a trusted event and then change its location when we're ready, 
@@ -292,7 +314,7 @@ var Calendar = function () {
 
         /*
             Takes a high-res screenshot of the calendar with the specified aspect ratio and downloads it as a png to the system
-              Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
+             Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
         */
 
     }, {
@@ -520,6 +542,18 @@ var Calendar = function () {
 
             // reset the colour ids
             self.resetColours();
+        }
+
+        /*
+            Redraws the current schedule
+        */
+
+    }, {
+        key: "redrawSchedule",
+        value: function redrawSchedule() {
+            if (this.currentSchedule.length > 0) {
+                this.displaySchedule(this.currentSchedule);
+            }
         }
 
         /*
@@ -898,7 +932,7 @@ var Calendar = function () {
 
         /*
             Add an event with start and end time (24 hours)
-              Days is an array containing the integers that represent the days that this event is on
+             Days is an array containing the integers that represent the days that this event is on
         */
 
     }, {
@@ -1170,6 +1204,7 @@ var Calendar = function () {
         value: function resetCalendar() {
             this.blockedTimes = [];
             this.prevBlockedTimes = [];
+            this.currentSchedule = [];
 
             this.setTotalGenerated(0);
             this.setCurrentIndex(-1);
@@ -2426,7 +2461,7 @@ var Generator = function () {
 
         /*
             Removes classes that share the same type, time, rmp score, group, status, and location as another
-              This heuristic does not decrease accuracy since the removed classes have the same properties 
+             This heuristic does not decrease accuracy since the removed classes have the same properties 
             as another that will be used in generation
         */
 
@@ -3688,7 +3723,7 @@ var MyCourses = function () {
         /*
             If there is a saved state, loads it and populates the courses
             If not, sets up the initial state
-              Called by ClassList when done loading the class list
+             Called by ClassList when done loading the class list
         */
 
     }, {

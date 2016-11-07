@@ -26,6 +26,9 @@ class Calendar {
         // Key binds
         this.keyBinds();
 
+        // Bind resize event
+        this.bindResize();
+
         this.eventcolours = {
             "#FF5E3A": false,
             "#099e12": false,
@@ -69,6 +72,21 @@ class Calendar {
         $("#copySchedToClipboard").tooltip();
         $("#shareToFacebook").tooltip();
         $("#uploadToImgur").tooltip();
+    }
+
+    /*
+        Binds an event handler to redraw the current schedule when the window is resized (since the event sizes will change)
+
+        Waits for 500ms since the latest resize event
+    */
+    bindResize() {
+        var self = this;
+        var resizeTimer;
+
+        $(window).resize(function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {self.redrawSchedule()}, 500);
+        });
     }
 
     /*
@@ -467,6 +485,15 @@ class Calendar {
 
         // reset the colour ids
         self.resetColours();
+    }
+
+    /*
+        Redraws the current schedule
+    */
+    redrawSchedule() {
+        if (this.currentSchedule.length > 0) {
+            this.displaySchedule(this.currentSchedule);
+        }
     }
 
     /*
@@ -1091,6 +1118,7 @@ class Calendar {
     resetCalendar() {
         this.blockedTimes = [];
         this.prevBlockedTimes = [];
+        this.currentSchedule = [];
 
         this.setTotalGenerated(0);
         this.setCurrentIndex(-1);
