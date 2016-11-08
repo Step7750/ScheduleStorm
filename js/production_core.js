@@ -1634,12 +1634,68 @@ var ClassList = function () {
         */
 
     }, {
-        key: "generateClasses",
+        key: "generateRMPLink",
 
+
+        /*
+            Returns an RMP link with the data being the rating
+        */
+        value: function generateRMPLink(rmpdata, teacher) {
+            var text = "(N/A)";
+
+            if (rmpdata["rating"] != undefined) {
+                text = "(" + rmpdata["rating"] + ")";
+            }
+
+            if (rmpdata["id"] == undefined) return text;else {
+                return "<a href='https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + rmpdata["id"] + "' target='_blank' class='rmplink' rmpteacher='" + teacher + "'>" + text + "</a>";
+            }
+        }
+
+        /*
+            Returns the tooltip html
+        */
+
+    }, {
+        key: "generateRMPTooltipHTML",
+        value: function generateRMPTooltipHTML(rmpdata) {
+            var html = "<b style='font-weight: bold; font-size: 14px;'>Rate My Professors</b><br>";
+
+            var allowedAttributes = [{
+                "id": "department",
+                "name": "Department"
+            }, {
+                "id": "rating",
+                "name": "Rating"
+            }, {
+                "id": "easyrating",
+                "name": "Difficulty"
+            }, {
+                "id": "numratings",
+                "name": "Number of Ratings"
+            }, {
+                "id": "rooms",
+                "name": "Rooms"
+            }];
+
+            for (var attribute in allowedAttributes) {
+                attribute = allowedAttributes[attribute];
+
+                // Make sure its id is defined
+                if (rmpdata[attribute["id"]] != undefined) {
+                    html += "<b style='font-weight: bold;'>" + attribute["name"] + "</b>: " + rmpdata[attribute["id"]] + "<br>";
+                }
+            }
+
+            return html;
+        }
 
         /*
             Populates a list of given clases
         */
+
+    }, {
+        key: "generateClasses",
         value: function generateClasses(data, element, path, addButton) {
             var self = this;
 
@@ -1705,8 +1761,8 @@ var ClassList = function () {
 
                 var thisclass = orderedClasses[index];
 
-                // If U of A, just show section numbers
-                if (self.uni == "UAlberta" || self.uni == "MTRoyal") var id = thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")";else var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
+                // Show the section data if we can, otherwise default to group
+                if (thisclass["section"] != undefined) var id = thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")";else var id = thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")";
 
                 thishtml += "<td style='width: 18%;'>" + id + "</td>";
 
@@ -1721,20 +1777,12 @@ var ClassList = function () {
                         }
                         teacher = thisclass["teachers"][teacher];
 
-                        // want to find RMP rating
-                        var rating = "";
+                        // Add the abbreviated teachers name
+                        teachers += ClassList.abbreviateName(teacher);
+
+                        // Add the rmp rating if we can
                         if (this.rmpdata[teacher] != undefined) {
-                            rating = this.rmpdata[teacher]["rating"];
-                        }
-
-                        if (teacher != "Staff") {
-                            teacher = ClassList.abbreviateName(teacher);
-                        }
-
-                        teachers += teacher;
-
-                        if (rating != "") {
-                            teachers += " (" + rating + ")";
+                            teachers += " " + this.generateRMPLink(this.rmpdata[teacher], teacher);
                         }
 
                         addedTeachers.push(teacher);
@@ -1743,6 +1791,7 @@ var ClassList = function () {
 
                 var timescopy = thisclass["times"].slice();
                 var addedTimes = [];
+
                 // we want to reduce the size of the times (Th) and remove dupes
                 for (var time in timescopy) {
                     var abbrevTime = ClassList.abbreviateTimes(timescopy[time]);
@@ -1788,6 +1837,21 @@ var ClassList = function () {
 
                 html.find("tbody").append(thishtml);
             }
+
+            // Add tooltips to the rmp ratings
+            html.find('a[rmpteacher]').each(function () {
+                var teacher = $(this).attr("rmpteacher");
+
+                // Generate the tooltip text
+                var tooltiptext = self.generateRMPTooltipHTML(self.rmpdata[teacher]);
+
+                // Add the attributes to the element
+                $(this).attr("title", tooltiptext);
+                $(this).attr("data-toggle", "tooltip");
+
+                // Instantiate the tooltip
+                $(this).tooltip({ container: 'body', html: true });
+            });
 
             element.append(html);
 

@@ -31,6 +31,26 @@ body, html{
   border-radius: 0px !important;
 }
 
+.rmplink {
+  font-size: 13px !important;
+  padding: 0px 0px 0px 0px !important;
+  box-shadow: none !important;
+  position: static !important;
+  display: inline !important;
+  color: #337ab7 !important;
+  text-decoration: none !important;
+}
+
+.rmplink:focus {
+  color: #23527c !important;
+  text-decoration: underline !important;
+}
+
+.rmplink:hover {
+  color: #23527c !important;
+  text-decoration: underline !important;
+}
+
 #locationselectdropdown {
   max-height: 350px;
   overflow-y: auto;
