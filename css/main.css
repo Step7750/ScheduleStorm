@@ -714,7 +714,7 @@ td{
     }
 }
 
-@media screen and (max-height: 700px), screen and (max-width: 991px){
+@media screen and (max-height: 720px), screen and (max-width: 991px){
     body > .row{
         height: 89vh;
     }
@@ -729,5 +729,9 @@ td{
 
     .calendar{
         height: 92%;
+    }
+
+    #courseList{
+        height: 79%;
     }
 }
