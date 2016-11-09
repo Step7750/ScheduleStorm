@@ -32,7 +32,7 @@ body, html{
 }
 
 .rmplink {
-  font-size: 13px !important;
+  font-size: 17px !important;
   padding: 0px 0px 0px 0px !important;
   box-shadow: none !important;
   position: static !important;
@@ -641,6 +641,10 @@ td{
 @media (max-width: 1440px) {
     td{
         font-size: 13px;
+    }
+
+    .rmplink {
+    	font-size: 13px !important;
     }
 
 
