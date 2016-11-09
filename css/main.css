@@ -714,7 +714,7 @@ td{
     }
 }
 
-@media screen and (max-height: 720px), screen and (max-width: 991px){
+@media screen and (max-height: 725px), screen and (max-width: 991px){
     body > .row{
         height: 89vh;
     }
@@ -733,5 +733,15 @@ td{
 
     #courseList{
         height: 79%;
+    }
+}
+
+@media (max-height: 860px) and (max-width: 1920px){
+    body > .row{
+        height: 90vh;
+    }
+
+    .wrap{
+        height: 90%;
     }
 }
