@@ -80,12 +80,10 @@ body, html{
     min-width: 400px;
     height: 95%;
     box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2) ,0 3px 7px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
 }
 .wrap {
     overflow-x: hidden;
     max-width: 1280px;
-    border-radius: 8px;
     background-color: white;
     height: 92%;
 }
