@@ -137,7 +137,7 @@ class Calendar {
             var imgurwindow = window.open("http://schedulestorm.com/assets/imgurloading.png",'Uploading to Imgur...', "width=900,height=500");
 
             // Upload the image to imgur and get the link
-            self.uploadToImgur(1.5, function (link) {
+            self.uploadToImgur(1.6, function (link) {
                 if (link != false) {
                     imgurwindow.location.href = link + ".png";
                 }
