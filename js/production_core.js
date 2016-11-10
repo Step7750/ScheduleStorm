@@ -90,7 +90,7 @@ var Calendar = function () {
 
         /*
             Binds an event handler to redraw the current schedule when the window is resized (since the event sizes will change)
-             Waits for 500ms since the latest resize event
+              Waits for 500ms since the latest resize event
         */
 
     }, {
@@ -150,7 +150,7 @@ var Calendar = function () {
             $("#uploadToImgur").click(function () {
                 /*
                     Why do we make a separate window/tab now?
-                     If we simply open up a new window/tab after we already have the photo uploaded
+                      If we simply open up a new window/tab after we already have the photo uploaded
                     and the imgur link, we lose the "trusted" event that came from a user click. 
                     As a result, the window/tab would be blocked as a popup. If we create the window
                     now while we have a trusted event and then change its location when we're ready, 
@@ -314,7 +314,7 @@ var Calendar = function () {
 
         /*
             Takes a high-res screenshot of the calendar with the specified aspect ratio and downloads it as a png to the system
-             Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
+              Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
         */
 
     }, {
@@ -952,7 +952,7 @@ var Calendar = function () {
 
         /*
             Add an event with start and end time (24 hours)
-             Days is an array containing the integers that represent the days that this event is on
+              Days is an array containing the integers that represent the days that this event is on
         */
 
     }, {
@@ -1558,15 +1558,20 @@ var ClassList = function () {
         value: function generateClassDesc(desc) {
             var html = '<div class="accordiondesc">';
 
+            var append_amt = 0;
+
             if (desc["aka"] != undefined) {
                 html += "AKA: " + desc["aka"] + "<br>";
+                append_amt += 1;
             }
             if (desc["desc"] != undefined) {
                 html += desc["desc"] + "<br><br>";
+                append_amt += 1;
             }
 
             if (desc["units"] != undefined) {
                 html += desc["units"] + " units; ";
+                append_amt += 1;
 
                 if (desc["hours"] == undefined) {
                     html += "<br>";
@@ -1575,9 +1580,10 @@ var ClassList = function () {
 
             if (desc["hours"] != undefined) {
                 html += desc["hours"] + "<br>";
+                append_amt += 1;
             }
 
-            return html;
+            if (append_amt == 0) return "";else return html;
         }
 
         /*
@@ -2545,7 +2551,7 @@ var Generator = function () {
 
         /*
             Removes classes that share the same type, time, rmp score, group, status, and location as another
-             This heuristic does not decrease accuracy since the removed classes have the same properties 
+              This heuristic does not decrease accuracy since the removed classes have the same properties 
             as another that will be used in generation
         */
 
@@ -3807,7 +3813,7 @@ var MyCourses = function () {
         /*
             If there is a saved state, loads it and populates the courses
             If not, sets up the initial state
-             Called by ClassList when done loading the class list
+              Called by ClassList when done loading the class list
         */
 
     }, {

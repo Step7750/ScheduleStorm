@@ -300,26 +300,33 @@ class ClassList {
     generateClassDesc(desc) {
         var html = '<div class="accordiondesc">';
 
+        var append_amt = 0;
+
         if (desc["aka"] != undefined) {
             html += "AKA: " + desc["aka"] + "<br>";
+            append_amt += 1;
         }
         if (desc["desc"] != undefined) {
             html += desc["desc"] + "<br><br>";
+            append_amt += 1;
         }
 
         if (desc["units"] != undefined) {
             html += desc["units"] + " units; ";
+            append_amt += 1;
 
             if (desc["hours"] == undefined) {
-                html += "<br>";   
+                html += "<br>";
             }
         }
 
         if (desc["hours"] != undefined) {
             html += desc["hours"] + "<br>";
+            append_amt += 1;
         }
 
-        return html;
+        if (append_amt == 0) return "";
+        else return html;
     }
 
     /*
