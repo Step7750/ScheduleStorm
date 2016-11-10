@@ -119,7 +119,7 @@ var Calendar = function () {
             // on click
             $("#dlSchedulePhoto").click(function () {
                 // Take the screenshot
-                self.takeCalendarHighResScreenshot(1.5, 2, function (canvas) {
+                self.takeCalendarHighResScreenshot(1.6, 2, function (canvas) {
                     // Download the picture
                     var a = document.createElement('a');
                     a.href = canvas.replace("image/png", "image/octet-stream");
@@ -320,13 +320,21 @@ var Calendar = function () {
     }, {
         key: "takeCalendarHighResScreenshot",
         value: function takeCalendarHighResScreenshot(aspectratio, scaleFactor, cb) {
+            var self = this;
 
             var srcEl = document.getElementById("maincalendar");
 
             var wrapdiv = $(srcEl).find('.wrap');
 
+            var beforeHeight = wrapdiv.height();
+
             // Want to remove any scrollbars
             wrapdiv.removeClass('wrap');
+
+            // If removing the size caused the rows to be smaller, add the class again
+            if (beforeHeight > wrapdiv.height()) {
+                wrapdiv.addClass('wrap');
+            }
 
             // Save original size of element
             var originalWidth = srcEl.offsetWidth;
@@ -356,6 +364,9 @@ var Calendar = function () {
             var scaledContext = scaledCanvas.getContext("2d");
             scaledContext.scale(scaleFactor, scaleFactor);
 
+            // Force the schedule to be redrawn
+            this.redrawSchedule();
+
             html2canvas(srcEl, { canvas: scaledCanvas }).then(function (canvas) {
 
                 // Reset the styling of the source element
@@ -366,6 +377,8 @@ var Calendar = function () {
                 srcEl.style.height = "";
 
                 wrapdiv.addClass('wrap');
+
+                self.redrawSchedule();
 
                 // return the data
                 cb(canvas.toDataURL("image/png"));
