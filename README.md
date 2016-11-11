@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="http://i.imgur.com/ZBRXem4.png"/>
+  <a href="http://schedulestorm.com/">
+    <img src="http://i.imgur.com/ZBRXem4.png"/>
+  </a>
 </p>
 
 [ScheduleStorm.com](http://schedulestorm.com)
@@ -22,6 +24,7 @@ Rather than just supporting one university, Schedule Storm is a platform in whic
   * University of Calgary
   * University of Alberta
   * Mount Royal University
+  * University of Lethbridge
 
 Want us to support your university?
   * If you can, feel free to send pull requests with additional functionality
@@ -34,14 +37,14 @@ Want us to support your university?
   * Fast client side schedule generation when adding courses
   * Inline RMP Ratings
   * Dynamic Scoring that takes into account your preferences
-  * Download a photo of your schedule, or copy it to clipboard
+  * Download a photo of your schedule, share it to Facebook or Imgur, or copy it to clipboard
   * Create groups of classes and let the generator use "One of", "Two Of", etc.. of them
   * Block off timeslots by dragging on the calendar
   * Supports many Unis, with a framework for adding more
 
 ## How does it work?
 
-The front-end of the site is hosted on Github pages and proceeds to query a central API server that we host. The API server holds the university data and replies to the client with whatever they need. 
+The front-end of the site is hosted on Github pages and proceeds to query a central API server that we host. The API server holds the university data and replies to the client with whatever they need.
 
 When a client chooses a specific term and uni, we send over all of the class data and ratemyprofessor ratings in a gzipped response (~350KB compressed, ~3MB uncompressed). 
 
@@ -53,11 +56,7 @@ Since the client has all the data they need, class searching and generation can 
 
 From the very beginning, we wanted to have a very unified experience when using Schedule Storm. When you add a new course, you can instantly see how your schedules changed. When you change your schedule scoring preferences, you can instantly see the new sorting in the background.
 
-We greatly prioritized speed as part of this experience:
-  * Class Searching is completely client side
-  * Class Generation is completely client side
-  * Class Scoring is completely client side
-  * In order to minimize UI lag when generating complex schedules, generation and scoring are in web workers
+Class searching, scoring, and generation are all client side with web workers used to minimize UI lag. 
 
 When most people look for classes, they want to know how "good" the teacher is and compare that to how good the time slot is. As a result, Schedule Storm takes ratemyprofessor ratings into account when generating schedules. If you believe RMP does not give a good indication of a professor's quality, you can simply change your preferences for score weighting.
 
