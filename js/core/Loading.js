@@ -36,7 +36,7 @@ class Loading {
 		Fade out and remove the loading animation
 	*/
 	remove(cb) {
-		self = this;
+		var self = this;
 
 		// Fade out the animation
 		this.html.fadeOut(function () {

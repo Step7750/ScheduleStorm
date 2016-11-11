@@ -3742,7 +3742,7 @@ var Loading = function () {
 	}, {
 		key: "remove",
 		value: function remove(cb) {
-			self = this;
+			var self = this;
 
 			// Fade out the animation
 			this.html.fadeOut(function () {
