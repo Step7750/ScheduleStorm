@@ -7,6 +7,9 @@ class Tutorial {
 			// Set a global defining our progress
 			window.tourInProgress = true;
 
+            // scroll to the top of the class data wraper
+            $("#classdatawraper").scrollTop(0);
+
 			setTimeout(function () {
 				self.openAccordion();
 			}, 500);
