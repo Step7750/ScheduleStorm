@@ -3678,15 +3678,15 @@ var Generator = function () {
                         dayarray.push(map2[day]);
                     }
                 }
+
+                newtime.push(dayarray);
+                newtime.push([starttime, endtime]);
             } else {
                 // We don't know how to process this time
                 // This can happen with courses like web based courses with a time of "TBA"
                 newtime.push([-1]);
                 newtime.push([0, 0]);
             }
-
-            newtime.push(dayarray);
-            newtime.push([starttime, endtime]);
 
             return newtime;
         }

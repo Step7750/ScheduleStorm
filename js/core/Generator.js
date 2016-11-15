@@ -1077,6 +1077,9 @@ class Generator {
                     dayarray.push(map2[day]);
                 }
             }
+
+            newtime.push(dayarray);
+            newtime.push([starttime, endtime]);
         }
         else {
             // We don't know how to process this time
@@ -1084,9 +1087,6 @@ class Generator {
             newtime.push([-1]);
             newtime.push([0, 0]);
         }
-
-        newtime.push(dayarray);
-        newtime.push([starttime, endtime]);
 
         return newtime;
     }
