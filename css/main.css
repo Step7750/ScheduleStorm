@@ -742,4 +742,9 @@ td{
     .wrap{
         height: 90%;
     }
+
+    #calendarStatus{
+        font-size: 27px;
+
+    }
 }
