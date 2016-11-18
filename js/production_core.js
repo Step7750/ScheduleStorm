@@ -2196,9 +2196,6 @@ var ClassList = function () {
     }, {
         key: "bindButton",
         value: function bindButton(classdata, button, type) {
-            //console.log(classdata);
-            //console.log(button);
-
             var self = this;
             // Onclick handler
 
@@ -2270,6 +2267,19 @@ var ClassList = function () {
                     }
                 }
             });
+        }
+
+        /*
+            Empties and repopulates the accordion with the default view (requires classdata to be fetched)
+        */
+
+    }, {
+        key: "repopulateAccordion",
+        value: function repopulateAccordion() {
+            if (this.classdata != undefined) {
+                $("#classdata").empty();
+                this.populateClassList([this.classdata], $("#classdata"), "", true);
+            }
         }
 
         /*
@@ -4703,7 +4713,7 @@ var Preferences = function () {
 
     return Preferences;
 }();
-'use strict';
+"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -4720,8 +4730,11 @@ var Tutorial = function () {
 			// Set a global defining our progress
 			window.tourInProgress = true;
 
-            // scroll to the top of the class data wraper
-            $("#classdatawraper").scrollTop(0);
+			// scroll to the top of the class data wraper
+			$("#classdatawraper").scrollTop(0);
+
+			// Repopulate the accordion to the default view
+			classList.repopulateAccordion();
 
 			setTimeout(function () {
 				self.openAccordion();
@@ -4735,7 +4748,7 @@ var Tutorial = function () {
 
 
 	_createClass(Tutorial, [{
-		key: 'openAccordion',
+		key: "openAccordion",
 		value: function openAccordion() {
 			this.openedAccordion = true;
 
@@ -4747,7 +4760,7 @@ var Tutorial = function () {
   */
 
 	}, {
-		key: 'openChildRow',
+		key: "openChildRow",
 		value: function openChildRow(element) {
 			var self = this;
 
@@ -4774,7 +4787,7 @@ var Tutorial = function () {
   */
 
 	}, {
-		key: 'createIntro',
+		key: "createIntro",
 		value: function createIntro() {
 			var self = this;
 
@@ -4865,6 +4878,9 @@ var Tutorial = function () {
 				orphan: true,
 				onEnd: function onEnd(tour) {
 					window.tourInProgress = false;
+
+					// repopulate the accordion with the default view
+					classList.repopulateAccordion();
 				}
 			});
 

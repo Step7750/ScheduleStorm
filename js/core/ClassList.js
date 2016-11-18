@@ -939,9 +939,6 @@ class ClassList {
         Binds an accordion button
     */
     bindButton(classdata, button, type) {
-        //console.log(classdata);
-        //console.log(button);
-
         var self = this;
         // Onclick handler
 
@@ -1017,6 +1014,16 @@ class ClassList {
 
             
         })
+    }
+
+    /*
+        Empties and repopulates the accordion with the default view (requires classdata to be fetched)
+    */
+    repopulateAccordion() {
+        if (this.classdata != undefined) {
+            $("#classdata").empty();
+            this.populateClassList([this.classdata], $("#classdata"), "", true);  
+        }
     }
 
     /*

@@ -10,6 +10,9 @@ class Tutorial {
             // scroll to the top of the class data wraper
             $("#classdatawraper").scrollTop(0);
 
+            // Repopulate the accordion to the default view
+            classList.repopulateAccordion();
+
 			setTimeout(function () {
 				self.openAccordion();
 			}, 500);
@@ -163,6 +166,9 @@ class Tutorial {
 			orphan: true,
 			onEnd: function (tour) {
 				window.tourInProgress = false;
+
+				// repopulate the accordion with the default view
+				classList.repopulateAccordion();
 			}
 		});
 
