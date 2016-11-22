@@ -2520,6 +2520,9 @@ var Generator = function () {
         // Defines how many courses were selected, set by addCourseInfo
         this.courseamount = 0;
 
+        // Dict where the keys are the class ids and the values their objects
+        this.classdict = {};
+
         // add additional data to the classes
         this.convertTimes();
         this.addCourseInfo();
@@ -2685,63 +2688,261 @@ var Generator = function () {
                     possibleschedules: [],
                     combinations: [],
                     classes: {},
-                    init: function init(classes, blockedTimes, term, uni, enggFlag, onlyOpen, callback) {
+                    init: function init(classes, blockedTimes, term, uni, enggFlag, onlyOpen, classdict, callback) {
                         this.classes = classes;
                         this.onlyOpen = onlyOpen;
                         this.blockedTimes = blockedTimes;
                         this.uni = uni;
                         this.term = term;
                         this.enggFlag = enggFlag;
+                        this.classdict = classdict;
 
-                        this.findCombinations();
-
-                        this.iterateCombos();
-
-                        callback(this.possibleschedules);
-                    },
-                    /*
-                        Iterates through every group combinations to find possible non-conflicting schedules
-                    */
-                    iterateCombos: function iterateCombos() {
+                        // To benchmark it
+                        this.benchmark = new Date().getTime();
 
                         // reset possible schedules
                         this.possibleschedules = [];
 
+                        // Set the current conflicts dict
+                        this.conflicts = {};
+
+                        // Find the combinations of each group
+                        this.findCombinations();
+
+                        // Find all conflicts with each class
+                        this.findConflicts(this.classdict);
+
+                        // If there are actually combinations, find the generated schedules
                         if (this.combinations.length > 0) {
-                            // there must be more than 0 combos for a schedule
-                            for (var combos in this.combinations[0]) {
-                                // create a copy to work with
-                                var combocopy = JSON.parse(JSON.stringify(this.combinations[0][combos]));
+                            // Generate the schedules
+                            this.generateSchedules([], [], this.conflicts, 0, -1);
+                        }
 
-                                // generate the schedules
-                                this.generateSchedules([], combocopy);
+                        console.log("Generated possible schedules in the blob in " + (new Date().getTime() - this.benchmark) + "ms");
 
-                                this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
+                        // Send them back to the calling code
+                        callback(this.possibleschedules);
+                    },
+                    /*
+                        For the given classes, finds the domain for each class section such that each section
+                        must have exactly one class chosen from it
+                          Domains are sorted from lowest to highest length to reduce branching factor early on
+                        
+                        The contents of each domain are also sorted so that we can use binary search later on
+                    */
+                    findDomains: function findDomains(classes) {
+                        // maps classes to their properties
+                        var domains = [];
 
-                                if (this.combinations.length > 1) {
-                                    // console.log("Processing further groups");
-                                    this.possibleschedules = [];
-                                    // We have to add the other groups
-                                    for (var group = 1; group < this.combinations.length; group++) {
-                                        for (var newcombo in this.combinations[group]) {
+                        for (var classindex in classes) {
+                            var thisclass = classes[classindex];
 
-                                            // for every previous schedule
-                                            // TODO: If this starts to become slow, we might want to apply some heuristics
-                                            for (var possibleschedule in this.possibleschedulescopy) {
-                                                var combocopy = JSON.parse(JSON.stringify(this.combinations[group][newcombo]));
-                                                this.generateSchedules(this.possibleschedulescopy[possibleschedule], combocopy);
+                            for (var type in thisclass["types"]) {
+                                // Set this current domain
+                                var thisdomain = [];
+
+                                if (thisclass["types"][type] != true) {
+                                    // only this class in the domain
+
+                                    // find the class obj
+                                    for (var classindex in thisclass["obj"]["classes"]) {
+                                        var otherclass = thisclass["obj"]["classes"][classindex];
+
+                                        // Check if it is the wanted id
+                                        if (otherclass["id"] == thisclass["types"][type]) {
+                                            // check whether we can add it to the domain
+                                            if (this.classAllowed(otherclass)) {
+                                                thisdomain.push(otherclass["id"]);
+                                                break;
                                             }
                                         }
+                                    }
+                                } else {
+                                    // iterate through each class and if they have this type and are allowed, add them to the domain
+                                    for (var classindex in thisclass["obj"]["classes"]) {
+                                        var otherclass = thisclass["obj"]["classes"][classindex];
 
-                                        if (group < this.combinations.length - 1) {
-                                            // clear the schedules (we don't want partially working schedules)
-                                            this.possibleschedulescopy = JSON.parse(JSON.stringify(this.possibleschedules));
-                                            this.possibleschedules = [];
+                                        // If it is of the same type, add it to the domain
+                                        if (otherclass["type"] == type) {
+                                            // If the class doesn't conflict with the general rules, add it to the domain
+                                            if (this.classAllowed(otherclass)) {
+                                                thisdomain.push(otherclass["id"]);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // If there is nothing in this domain, it is impossible to have a schedule
+                                if (thisdomain.length == 0) return false;
+
+                                // Sort this domain for when we use binary search
+                                thisdomain.sort();
+
+                                domains.push(thisdomain);
+                            }
+                        }
+
+                        // Sort so that the smallest domains are first
+                        domains.sort(function (a, b) {
+                            return a.length - b.length;
+                        });
+
+                        return domains;
+                    },
+                    /*
+                        Uses binary search to find the element in the sorted list and returns the index if successful. If not, returns -1
+                    */
+                    binaryIndexOf: function binaryIndexOf(list, element) {
+                        var min = 0;
+                        var max = list.length - 1;
+
+                        while (min <= max) {
+                            var mid = Math.floor((min + max) / 2);
+                            var midval = list[mid];
+
+                            if (element == midval) return mid;else if (element < midval) max = mid - 1;else if (element > midval) min = mid + 1;
+                        }
+
+                        return -1;
+                    },
+                    /*
+                        Finds all the conflicts in the given classdict and updates the global conflict dictionary
+                    */
+                    findConflicts: function findConflicts(classdict) {
+                        // For each class
+                        for (var classindex in classdict) {
+                            var thisclass = classdict[classindex];
+
+                            // If there isn't a key for this class, set it to an empty array
+                            if (this.conflicts[thisclass["id"]] == undefined) this.conflicts[thisclass["id"]] = [];
+
+                            // check every other class
+                            for (var otherclassindex in classdict) {
+                                var otherclass = classdict[otherclassindex];
+
+                                // If the class is different and conflicts, append it to the conflicts of this class
+                                if (thisclass["id"] != otherclass["id"] && this.isClassConflict(thisclass, otherclass)) {
+                                    this.conflicts[thisclass["id"]].push(otherclass["id"]);
+                                }
+                            }
+
+                            // Sort ascending order (for binary search later on)
+                            this.conflicts[thisclass["id"]].sort();
+                        }
+                    },
+                    /*
+                        Returns a boolean as to whether a given class object is allowed
+                    */
+                    classAllowed: function classAllowed(thisclass) {
+                        // Returns Boolean as to whether this class is allowed to be taken
+
+                        // Check if it is open if the user set classes to only open and this isn't a manual class
+                        if (this.onlyOpen == true && thisclass["manual"] != true) {
+                            if (thisclass["status"] != "Open") {
+                                return false;
+                            }
+                        }
+
+                        // Check if it conflicts with any user times
+                        for (var time in thisclass["times"]) {
+                            var time = thisclass["times"][time];
+
+                            for (var day in time[0]) {
+                                var day = time[0][day];
+
+                                if (this.blockedTimes[day] != undefined) {
+                                    for (var blockedTime in this.blockedTimes[day]) {
+                                        var thisBlockedTime = this.blockedTimes[day][blockedTime];
+
+                                        // The blocked time has a span of 30min, check if it conflicts
+                                        if (this.isConflicting(time[1], [thisBlockedTime, thisBlockedTime + 30])) {
+                                            return false;
                                         }
                                     }
                                 }
                             }
                         }
+
+                        return true;
+                    },
+                    /*
+                        Returns a boolean as to whether class1 or class2 conflict
+                    */
+                    isClassConflict: function isClassConflict(class1, class2) {
+                        // returns a boolean as to whether two classes conflict
+
+                        // For UAlberta, if the user is in engg, if the last class is an engg restricted class and this is the same course,
+                        // make sure they are both engg
+                        if (this.enggFlag == true && this.uni == "UAlberta" && Number(this.term) % 10 === 0) {
+
+                            if (class1["name"] == class2["name"]) {
+                                // make sure they have the same group number
+
+                                // If the first one is engg, then the second one must be
+                                // and vice versa
+                                if (class1['section'][1].match(/[a-z]/i) != null && class2['section'][1].match(/[a-z]/i) == null) {
+                                    return true;
+                                }
+
+                                if (class1['section'][1].match(/[a-z]/i) == null && class2['section'][1].match(/[a-z]/i) != null) {
+                                    return true;
+                                }
+                            }
+                        }
+
+                        // Check whether there is a time conflict between the two
+                        for (var time in class1["times"]) {
+                            var thistime = class1["times"][time];
+                            // compare to last
+                            for (var othertime in class2["times"]) {
+                                var othertime = class2["times"][othertime];
+
+                                // check if any of the days between them are the same
+                                for (var day in thistime[0]) {
+                                    var day = thistime[0][day];
+                                    if (othertime[0].indexOf(day) > -1) {
+                                        // same day, check for time conflict
+                                        if (this.isConflicting(thistime[1], othertime[1])) {
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // if there are group numbers, make sure all classes are in the same group
+                        // Some Unis require your tutorials to match the specific lecture etc...
+                        // we only need to look at the most recent and second most recent groups
+                        // since classes that belong to the same course are appended consecutively
+                        if (class1["name"] == class2["name"]) {
+                            // make sure they have the same group number
+
+                            // If it is a string, make it an array
+                            if (typeof class1["group"] == "string") {
+                                class1["group"] = [class1["group"]];
+                            }
+                            if (typeof class2["group"] == "string") {
+                                class2["group"] = [class2["group"]];
+                            }
+
+                            var isPossible = false;
+
+                            // Check if there is any combination that matches up
+                            for (var firstgroup in class1["group"]) {
+                                for (var secondgroup in class2["group"]) {
+                                    if (class1["group"][firstgroup] == class2["group"][secondgroup]) {
+                                        isPossible = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Check if there is a possible combo, if not, there is a time conflict
+                            if (isPossible == false) return true;
+                        }
+
+                        // The classes don't conflict
+                        return false;
                     },
                     /*
                         Pushes every combination given the type of groups
@@ -2775,230 +2976,117 @@ var Generator = function () {
                             }
                         }
                     },
-                    generateSchedules: function generateSchedules(schedule, queue) {
-                        /*
-                            Given a wanted class queue and current schedule, this method will recursively find every schedule that doesn't conflict
-                        */
-                        var timeconflict = false;
+                    /*
+                        Recursive function that uses backtracking and forward checking to generate possible schedules given 
+                        the global combinations variable is set
+                    */
+                    generateSchedules: function generateSchedules(schedule, domains, conflicts, depth, group) {
+                        if (depth == domains.length) {
+                            // We either have found a successful schedule or we need to take into account the next group
 
-                        if (queue.length == 0) {
-                            // we found a successful schedule, push it
-                            // we need to make a copy since the higher depths will undo the actions
-                            this.possibleschedules.push(JSON.parse(JSON.stringify(schedule)));
+                            if (this.combinations.length - 1 == group) {
+                                // found a successful schedule
+                                this.possibleschedules.push(JSON.parse(JSON.stringify(schedule)));
+                            } else {
+                                // we need to take into account the next group
+                                group++;
+
+                                // Gets the current group
+                                var combos = this.combinations[group];
+
+                                // for every combo, continue on
+                                for (var combo in combos) {
+                                    // Get the combo and copy the current domain
+                                    var thiscombo = combos[combo];
+                                    var this_domain = JSON.parse(JSON.stringify(domains));
+
+                                    // Figure out the domains of the combo
+                                    var extra_domain = this.findDomains(thiscombo);
+
+                                    // If any of the domains are empty, this is impossible
+                                    if (extra_domain == false) continue;
+
+                                    // Combine the extra domain to this domain
+                                    var this_domain = this_domain.concat(extra_domain);
+
+                                    // Continue generating schedules
+                                    this.generateSchedules(schedule, this_domain, conflicts, depth, group);
+                                }
+                            }
                         } else {
-                            // Check that if they selected that they only want open classes,
-                            // we make sure the most recent one is open
+                            // get current domain
+                            var cur_domain = domains[depth];
 
-                            // NOTE: If the user manually specified this class, we don't check whether its open or not
-                            if (schedule.length > 0 && this.onlyOpen == true && schedule[schedule.length - 1]["manual"] != true) {
-                                var addedClass = schedule[schedule.length - 1];
+                            for (var domain_index in cur_domain) {
+                                // Get the current class and conflicts for it
+                                var thisclass = cur_domain[domain_index];
+                                var thisclass_conflicts = conflicts[thisclass];
 
-                                if (addedClass["status"] != "Open") {
-                                    timeconflict = true;
-                                }
-                            }
+                                // Create a copy of the domain
+                                var this_domain = JSON.parse(JSON.stringify(domains));
 
-                            // For UAlberta, if the user is in engg, if the last class is an engg restricted class and this is the same course,
-                            // make sure they are both engg
-                            if (schedule.length > 1 && timeconflict == false && enggFlag == true && this.uni == "UAlberta" && Number(this.term) % 10 === 0) {
+                                // Boolean defining whether it is possible to add this class to the current schedule
+                                var possible = true;
 
-                                if (schedule[schedule.length - 1]["name"] == schedule[schedule.length - 2]["name"]) {
-                                    // make sure they have the same group number
+                                // Forward checking
+                                // In all subsequent domains, remove the values if they have a conflict
+                                for (var x = depth + 1; x < this_domain.length; x++) {
+                                    var foward_domain = this_domain[x];
 
-                                    // If the first one is engg, then the second one must be
-                                    // and vice versa
-                                    if (schedule[schedule.length - 2]['section'][1].match(/[a-z]/i) != null && schedule[schedule.length - 1]['section'][1].match(/[a-z]/i) == null) {
-                                        timeconflict = true;
-                                    }
+                                    var new_domain = [];
 
-                                    if (schedule[schedule.length - 2]['section'][1].match(/[a-z]/i) == null && schedule[schedule.length - 1]['section'][1].match(/[a-z]/i) != null) {
-                                        timeconflict = true;
-                                    }
-                                }
-                            }
+                                    // For every class in this domain, check whether it is conflicting
+                                    for (var domain_class in foward_domain) {
+                                        var domain_class = foward_domain[domain_class];
 
-                            if (schedule.length > 0 && timeconflict == false) {
-                                // Check if the most recent class conflicts with any user blocked times
-                                var recentClass = schedule[schedule.length - 1];
-
-                                for (var time in recentClass["times"]) {
-                                    var time = recentClass["times"][time];
-
-                                    for (var day in time[0]) {
-                                        var day = time[0][day];
-
-                                        if (this.blockedTimes[day] != undefined) {
-                                            for (var blockedTime in this.blockedTimes[day]) {
-                                                var thisBlockedTime = this.blockedTimes[day][blockedTime];
-
-                                                // The blocked time has a span of 30min, check if it conflicts
-                                                if (this.isConflicting(time[1], [thisBlockedTime, thisBlockedTime + 30])) {
-                                                    timeconflict = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if (timeconflict) break;
-                                    }
-
-                                    if (timeconflict) break;
-                                }
-                            }
-
-                            if (schedule.length > 1 && timeconflict == false) {
-                                // TODO: REFACTOR NEEDED
-
-                                // Check whether the most recent index has a time conflict with any of the others
-                                for (var x = 0; x < schedule.length - 1; x++) {
-                                    var thistimes = schedule[x]["times"];
-
-                                    for (var time in thistimes) {
-                                        var thistime = thistimes[time];
-                                        // compare to last
-                                        for (var othertime in schedule[schedule.length - 1]["times"]) {
-                                            var othertime = schedule[schedule.length - 1]["times"][othertime];
-
-                                            // check if any of the days between them are the same
-                                            for (var day in thistime[0]) {
-                                                var day = thistime[0][day];
-                                                if (othertime[0].indexOf(day) > -1) {
-                                                    // same day, check for time conflict
-                                                    if (this.isConflicting(thistime[1], othertime[1])) {
-                                                        timeconflict = true;
-                                                    }
-                                                }
-                                            }
-
-                                            if (timeconflict) break;
-                                        }
-
-                                        if (timeconflict) break;
-                                    }
-
-                                    if (timeconflict) break;
-                                }
-                            }
-
-                            if (schedule.length > 1 && timeconflict == false) {
-                                // if there are group numbers, make sure all classes are in the same group
-                                // Some Unis require your tutorials to match the specific lecture etc...
-                                // we only need to look at the most recent and second most recent groups
-                                // since classes that belong to the same course are appended consecutively
-                                if (schedule[schedule.length - 1]["name"] == schedule[schedule.length - 2]["name"]) {
-                                    // make sure they have the same group number
-
-                                    // If it is a string, make it an array
-                                    if (typeof schedule[schedule.length - 1]["group"] == "string") {
-                                        schedule[schedule.length - 1]["group"] = [schedule[schedule.length - 1]["group"]];
-                                    }
-                                    if (typeof schedule[schedule.length - 2]["group"] == "string") {
-                                        schedule[schedule.length - 2]["group"] = [schedule[schedule.length - 2]["group"]];
-                                    }
-
-                                    var isPossible = false;
-
-                                    // Check if there is any combination that matches up
-                                    for (var firstgroup in schedule[schedule.length - 1]["group"]) {
-                                        for (var secondgroup in schedule[schedule.length - 2]["group"]) {
-                                            if (schedule[schedule.length - 1]["group"][firstgroup] == schedule[schedule.length - 2]["group"][secondgroup]) {
-                                                isPossible = true;
-                                                break;
-                                            }
+                                        if (this.binaryIndexOf(thisclass_conflicts, domain_class) == -1) {
+                                            // this class doesn't conflict, add it to the new domain
+                                            new_domain.push(domain_class);
                                         }
                                     }
 
-                                    // Check if there is a possible combo, if not, there is a time conflict
-                                    if (isPossible == false) timeconflict = true;
-                                }
-                            }
-
-                            if (timeconflict == false) {
-                                // we can continue
-
-                                if (Object.keys(queue[0]["types"]).length > 0) {
-                                    // find an open type
-                                    var foundType = false;
-                                    for (var type in queue[0]["types"]) {
-                                        if (queue[0]["types"][type] == true) {
-                                            // they chose a general class to fulfill
-                                            foundType = type;
-                                            break;
-                                        } else if (queue[0]["types"][type] != false) {
-                                            // they chose a specific class to fulfill
-                                            // add the specific class
-
-                                            // find the class
-                                            for (var classv in queue[0]["obj"]["classes"]) {
-                                                var thisclass = queue[0]["obj"]["classes"][classv];
-
-                                                if (thisclass["id"] == queue[0]["types"][type]) {
-                                                    // we found the class obj, add it to the schedule
-
-                                                    // The user manually specified this class, set the flag
-                                                    thisclass["manual"] = true;
-
-                                                    // Push it to this schedule
-                                                    schedule.push(thisclass);
-
-                                                    // remove the type from the queue
-                                                    delete queue[0]["types"][type];
-
-                                                    // recursively call the generator
-                                                    this.generateSchedules(schedule, queue);
-
-                                                    // remove the "manual" key
-                                                    delete thisclass["manual"];
-
-                                                    // remove the class
-                                                    schedule.pop();
-
-                                                    // add the type again
-                                                    queue[0]["types"][type] = thisclass["id"];
-
-                                                    break;
-                                                }
-                                            }
-
-                                            break;
-                                        }
+                                    // If the domain is empty, there are no classes to choose and no possible schedule
+                                    if (new_domain.length == 0) {
+                                        possible = false;
+                                        break;
+                                    } else {
+                                        this_domain[x] = new_domain;
                                     }
-
-                                    if (foundType != false) {
-                                        // remove the type
-                                        delete queue[0]["types"][foundType];
-
-                                        // we need to iterate through the classes, find which ones match this type
-                                        for (var classv in queue[0]["obj"]["classes"]) {
-                                            var thisclass = queue[0]["obj"]["classes"][classv];
-
-                                            if (thisclass["type"] == foundType) {
-                                                // Push the class
-                                                schedule.push(thisclass);
-
-                                                // recursively go down a depth
-                                                this.generateSchedules(schedule, queue);
-
-                                                // pop the class we added
-                                                schedule.pop();
-                                            }
-                                        }
-
-                                        queue[0]["types"][foundType] = true;
-                                    }
-                                } else {
-                                    // we've already found all the types for this class, move on to the next
-                                    // remove this course
-                                    var thisitem = queue.shift();
-
-                                    this.generateSchedules(schedule, queue);
-
-                                    // add the item back
-                                    queue.unshift(thisitem);
                                 }
+
+                                // One of the domains is empty, this is not possible
+                                if (!possible) continue;
+
+                                // ensure for each current schedule class that it doesn't conflict
+                                // The only reason we do this is because of the group system, when a new domain is added
+                                // it needs to be cross validated against the current schedule since the new variables
+                                // were not in the domain before in order to check inconsistencies
+                                for (var cur_class in schedule) {
+                                    var cur_class = schedule[cur_class];
+
+                                    // If this class conflicts with any of the current schedule classes, this is not possible
+                                    if (this.binaryIndexOf(thisclass_conflicts, cur_class) > -1) {
+                                        possible = false;
+                                    }
+                                }
+
+                                // The newest class conflicts with the current schedule, cotinue
+                                if (!possible) continue;
+
+                                // This schedule + class is possible so far
+                                // shift the class onto the schedule
+                                schedule.push(thisclass);
+
+                                this.generateSchedules(schedule, this_domain, conflicts, depth + 1, group);
+
+                                // pop the class we added
+                                schedule.pop();
                             }
                         }
                     },
+                    /*
+                        Returns a boolean as to whether time1 and time2 conflict
+                    */
                     isConflicting: function isConflicting(time1, time2) {
                         // time1 and time2 are arrays with the first index being the total minutes 
                         // since 12:00AM that day of the starttime and the second being the endtime
@@ -3013,6 +3101,9 @@ var Generator = function () {
                             return false;
                         }
                     },
+                    /*
+                        Returns all k combinations of set 
+                    */
                     k_combinations: function k_combinations(set, k) {
                         /**
                          * Copyright 2012 Akseli Palén.
@@ -3112,9 +3203,8 @@ var Generator = function () {
                 }, 500);
 
                 // Spawn the generator
-                self.schedgenerator.init(self.classes, self.blockedTimes, window.term, window.uni, preferences.getEngineeringValue(), self.onlyOpen, function (result) {
-                    console.log("Web worker finished generating schedules");
-
+                self.schedgenerator.init(self.classes, self.blockedTimes, window.term, window.uni, preferences.getEngineeringValue(), self.onlyOpen, self.classdict, function (result) {
+                    // If this isn't terminated, continue sorting
                     if (self.terminated == false) {
                         self.possibleschedules = result;
 
@@ -3136,6 +3226,7 @@ var Generator = function () {
         value: function schedSorter() {
             var self = this;
 
+            // Reset the status of the calendar
             window.calendar.resetCalendarStatus();
 
             self.doneScoring = false;
@@ -3146,7 +3237,7 @@ var Generator = function () {
             // Instantiate the sorter
             self.schedSort = operative({
                 possibleschedules: [],
-                init: function init(schedules, morningSlider, nightSlider, consecutiveSlider, rmpSlider, rmpData, rmpAvg, callback) {
+                init: function init(schedules, morningSlider, nightSlider, consecutiveSlider, rmpSlider, rmpData, rmpAvg, classdict, callback) {
                     // Set local variables in the blob
                     this.morningSlider = morningSlider;
                     this.nightSlider = nightSlider;
@@ -3154,6 +3245,9 @@ var Generator = function () {
                     this.rmpSlider = rmpSlider;
                     this.rmpData = rmpData;
                     this.rmpAvg = rmpAvg;
+                    this.classdict = classdict;
+
+                    this.benchmark = new Date().getTime();
 
                     // Add the scores for each schedules
                     for (var schedule in schedules) {
@@ -3165,6 +3259,8 @@ var Generator = function () {
 
                     // Now sort
                     schedules.sort(this.compareSchedules);
+
+                    console.log("Sorted possible schedules in the blob in " + (new Date().getTime() - this.benchmark) + "ms");
 
                     callback(schedules);
                 },
@@ -3192,7 +3288,7 @@ var Generator = function () {
                     var totalteachers = 0;
 
                     for (var classv in schedule) {
-                        var thisclass = schedule[classv];
+                        var thisclass = this.classdict[schedule[classv]];
 
                         // add a score based upon the teachers
                         totalteachers += thisclass["teachers"].length;
@@ -3215,8 +3311,6 @@ var Generator = function () {
                         // make this value worth more to the total score
                         avgrmp *= 1 + this.rmpSlider / 20;
                     }
-
-                    //console.log("AVG RMP: " + avgrmp);
 
                     thisscore += avgrmp;
 
@@ -3271,7 +3365,6 @@ var Generator = function () {
 
                                 thisconsecscore += timediff / 10 * (0.006 * -(this.consecutiveSlider / 10));
 
-                                //console.log("Consecutive: " + thisconsecscore);
                                 classtimescore += thisconsecscore;
                             }
                         }
@@ -3296,9 +3389,6 @@ var Generator = function () {
                     }
 
                     thisscore += classtimescore;
-                    //console.log("Classes score: " + classtimescore);
-                    //console.log(formattedschedule);
-
 
                     return thisscore;
                 },
@@ -3311,10 +3401,8 @@ var Generator = function () {
                     // the schedule must not have any conflicting events
                     var formated = [];
 
-                    //console.log(schedule);
-
                     for (var classv in schedule) {
-                        var thisclass = schedule[classv];
+                        var thisclass = this.classdict[schedule[classv]];
 
                         // for each time
                         for (var time in thisclass["times"]) {
@@ -3331,7 +3419,6 @@ var Generator = function () {
                                 }
 
                                 if (formated[day].length == 0) {
-                                    //console.log("Appending " + thistime[1] + " to " + day);
                                     // just append the time
                                     formated[day].push(thistime[1]);
                                 } else {
@@ -3341,12 +3428,10 @@ var Generator = function () {
                                         var thisformatedtime = formated[day][formatedtime];
 
                                         if (thistime[1][1] < thisformatedtime[0]) {
-                                            //console.log("Adding " + thistime[1] + " to " + day);
                                             formated[day].splice(parseInt(formatedtime), 0, thistime[1]);
                                             break;
                                         } else {
                                             if (formated[day][parseInt(formatedtime) + 1] == undefined) {
-                                                //console.log("Pushing " + thistime[1] + " to the end of " + day);
                                                 // push it to the end
                                                 formated[day].push(thistime[1]);
                                             }
@@ -3362,10 +3447,8 @@ var Generator = function () {
             });
 
             // Spawn the web worker
-            self.schedSort.init(this.possibleschedules, this.morningSlider, this.nightSlider, this.consecutiveSlider, this.rmpSlider, window.classList.rmpdata, window.classList.rmpavg, function (result) {
-                console.log("Web worker finished sorting schedules");
-                console.log(result);
-
+            self.schedSort.init(this.possibleschedules, this.morningSlider, this.nightSlider, this.consecutiveSlider, this.rmpSlider, window.classList.rmpdata, window.classList.rmpavg, this.classdict, function (result) {
+                // If this instance isn't terminated continue and populate the calendar
                 if (self.terminated == false) {
                     self.doneScoring = true;
 
@@ -3402,6 +3485,13 @@ var Generator = function () {
                         var thisclass = classobj[classv];
 
                         thisclass["name"] = course;
+
+                        // Check if this class was manually set, if so, modify the flag
+                        if (thiscourse["types"][thisclass["type"]] == thisclass["id"]) {
+                            thisclass["manual"] = true;
+                        }
+
+                        this.classdict[thisclass["id"]] = thisclass;
                     }
                 }
             }
@@ -3461,12 +3551,29 @@ var Generator = function () {
         */
 
     }, {
-        key: "processSchedules",
+        key: "convertScheduleToObj",
+        value: function convertScheduleToObj(schedule) {
+            var newschedule = [];
 
+            for (var thisclass in schedule) {
+                var thisclass = schedule[thisclass];
+
+                if (this.classdict[thisclass] != undefined) {
+                    newschedule.push(this.classdict[thisclass]);
+                } else {
+                    newschedule.push(thisclass);
+                }
+            }
+
+            return newschedule;
+        }
 
         /*
             Processes a list of successful scored schedules and sets up the calendar
         */
+
+    }, {
+        key: "processSchedules",
         value: function processSchedules(schedules) {
             // update the total
             window.calendar.setTotalGenerated(schedules.length);
@@ -3480,7 +3587,7 @@ var Generator = function () {
                 // populate the first one
                 window.calendar.resetCalendarStatus();
 
-                window.calendar.displaySchedule(schedules[0]);
+                window.calendar.displaySchedule(this.convertScheduleToObj(schedules[0]));
             } else {
                 // If there are blocked times, make sure the schedule fits all of them
                 // This is to make sure the user can remove time blocks that were outside
@@ -3506,7 +3613,7 @@ var Generator = function () {
         key: "getSchedule",
         value: function getSchedule(index) {
             if (this.possibleschedules.length - 1 >= index) {
-                return this.possibleschedules[index];
+                return this.convertScheduleToObj(this.possibleschedules[index]);
             } else {
                 return false;
             }
