@@ -66,6 +66,29 @@ We decided to expand upon Winston's class group features and allow you to have A
 
 For the classlist, we wanted to provide the user with a new means of browsing for possible specific classes rather than using their school's (probably) archaic class searching system. When we find a match, professors have a little number next to their name to indicate their RMP rating. We also have in-line course descriptions, requirements, and notes; you won't have to go anywhere else to check whether you have the prerequisites.
 
+
+## Schedule Generator Implementation
+
+The schedule generator uses a Backtracking algorithm with Forward Checking and the Minimum Remaining Values (MRV) heuristic. The generator and sorter are both client side and in web workers to minimize UI lag during generation, but there is additional overhead with data transfer to the parent page for highly complex schedules.
+
+For the vast majority of users, schedule generation will only take a couple of milliseconds (without transport overhead). Using a deliberately intensive example, out of a search space of 4435200 schedules, the generator found the 178080 possible schedules in ~3s.
+
+Testing was done on the possiblility of using a SAT solver (such as MiniSat) and Emscripten as the LLVM to JavaScript compiler, but there was too much overhead in the creation of the object and didn't have very good solutions with the class grouping support and reusing previous results effectively.
+
+#### Generator Steps:
+ 
+* All duplicate classes with virtually the same attributes are removed
+* Class objects are modified so that time conflicts are easier to compute and some attributes are added (ex. "Manual" for manually specified classes)
+* A dictionary is created where the keys are the class ids and the values their objects. This minimizes the total data being thrown and copied around and when we need the attributes of a given class, we can retrieve its attributes in O(1) time complexity.
+* All of the relevant course data and user settings are sent to the web worker for further processing
+* All of the possible combinations for each course group is found and stored ("All of", "Two of", etc...)
+* A dictionary is created that contains, for every class id as the key, an array of class ids that conflict with this class
+* The recursive backtracking algo is then called which finds the domains for the current combination. The generator must satisfy at least one element in each domain for there to be a possible schedule. The domains are sorted using the MRV heuristic to reduce early on branching factor and the contents of each domain is sorted in ascending order for binary search later on.
+* Given the current proposed class in the current domain for a given schedule, it then removes classes from subsequent domains that conflict with this class (Forward Checking). If there is ever an empty domain, we know that a solution is impossible and backtrack.
+* Once the depth level is the same as the domain length, we check if we've gone through every class group for this schedule, if so, we append a copy of the current solution to a global variable. If not, we repeat the previous steps and add to the domain.
+* The possible schedules are returned to the parent page and sent for sorting.
+
+
 ## Tech Stack
 
 * MongoDB
