@@ -17,6 +17,7 @@ Rather than just supporting one university, Schedule Storm is a platform in whic
   * [Features](https://github.com/Step7750/ScheduleStorm#features)
   * [How does it work?](https://github.com/Step7750/ScheduleStorm#how-does-it-work)
   * [Why is it better?](https://github.com/Step7750/ScheduleStorm#why-is-it-better)
+  * [Schedule Generator Implementation](https://github.com/Step7750/ScheduleStorm#schedule-generator-implementation)
   * [Tech Stack](https://github.com/Step7750/ScheduleStorm#tech-stack)
   * [How to Transpile (using Babel)](https://github.com/Step7750/ScheduleStorm#how-to-transpile-using-babel)
 
