@@ -736,7 +736,7 @@ td{
 
 @media (max-height: 860px) and (max-width: 1920px){
     body > .row{
-        height: 90vh;
+        height: 92vh;
     }
 
     .wrap{
@@ -746,5 +746,13 @@ td{
     #calendarStatus{
         font-size: 27px;
 
+    }
+
+    #courseList{
+        height: 80%;
+    }
+
+    .navbar {
+        margin-bottom: 10px;
     }
 }
