@@ -16,13 +16,14 @@ body, html{
 }
 
 #calendarStatus {
-  position: absolute !important;
-  top: 40% !important;
-  left: 50% !important;
-  transform: translateX(-50%) translateY(-40%) !important;
-  z-index: 999 !important;
-  cursor: default;
-  pointer-events: none;
+    position: absolute !important;
+    top: 40% !important;
+    left: 50% !important;
+    transform: translateX(-50%) translateY(-40%) !important;
+    z-index: 999 !important;
+    cursor: default;
+    pointer-events: none;
+    font-size: 30px;
 }
 
 #locationselect {
