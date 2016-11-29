@@ -20,6 +20,47 @@ class ClassList {
         this.createTermDropdown();
         this.createLocationDropdown();
         this.getClasses();
+
+        // bind the scroll tooltip destroy event
+        this.bindTooltipScrollDestroy();
+    }
+    
+    /*
+        Removes all divs for tooltips in the body container
+    */
+    removeAllBodyTooltips() {
+        // Remove any open tooltip div
+        $('[role=tooltip]').each(function (index) {
+            $(this).remove();
+        });
+    }
+
+    /*
+        Binds event to destroy any tooltips on classlist/mycourses scroll
+    */
+    bindTooltipScrollDestroy() {
+        var self = this;
+
+        // Extension to catch scroll end event: http://stackoverflow.com/a/3701328
+        $.fn.scrollEnd = function(callback, timeout) {          
+          $(this).scroll(function(){
+                var $this = $(this);
+                if ($this.data('scrollTimeout')) {
+                    clearTimeout($this.data('scrollTimeout'));
+                }
+
+                $this.data('scrollTimeout', setTimeout(callback,timeout));
+            });
+        };
+
+        // Bind scrollEnd events on the class data and course list
+        $("#classdatawraper").scrollEnd(function(){
+            self.removeAllBodyTooltips();
+        }, 300);
+
+        $("#courseList").scrollEnd(function(){
+            self.removeAllBodyTooltips();
+        }, 300);
     }
 
     /*
