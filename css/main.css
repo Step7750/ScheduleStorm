@@ -306,8 +306,8 @@ body > .row{
     background-color: #eae9e9;
 
     width: -webkit-calc(50% - 15px);
-    height: -moz-calc(50% - 15px);
-    height: calc(50% - 15px);
+    width: -moz-calc(50% - 15px);
+    width: calc(50% - 15px);
 
     padding: 15px;
 }
