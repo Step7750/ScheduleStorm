@@ -56,11 +56,11 @@ class ClassList {
         // Bind scrollEnd events on the class data and course list
         $("#classdatawraper").scrollEnd(function(){
             self.removeAllBodyTooltips();
-        }, 300);
+        }, 150);
 
         $("#courseList").scrollEnd(function(){
             self.removeAllBodyTooltips();
-        }, 300);
+        }, 150);
     }
 
     /*
