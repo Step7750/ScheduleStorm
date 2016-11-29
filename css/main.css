@@ -1,6 +1,6 @@
 body, html{
     background: #f1f1f1;
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -24,6 +24,10 @@ body, html{
     cursor: default;
     pointer-events: none;
     font-size: 30px;
+}
+
+#classdatawraper {
+    margin-top: 5px;
 }
 
 #locationselect {
@@ -77,16 +81,29 @@ body, html{
 
 .calendar {
     margin: 0 auto;
-    max-width: 1280px;
-    min-width: 400px;
-    height: 95%;
-    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2) ,0 3px 7px rgba(0, 0, 0, 0.1);
+
+    height: -webkit-calc(100% - 25px);
+    height: -moz-calc(100% - 25px);
+    height: calc(100% - 25px);
+
+    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.2), 0 3px 7px rgba(0, 0, 0, 0.1);
+    background-color: white;
 }
+
+#classdatawraper {
+    height: -webkit-calc(100% - 44px);
+    height: -moz-calc(100% - 44px);
+    height: calc(100% - 44px);
+}
+
 .wrap {
     overflow-x: hidden;
-    max-width: 1280px;
+
+    height: -webkit-calc(100% - 50px);
+    height: -moz-calc(100% - 50px);
+    height: calc(100% - 50px);
+
     background-color: white;
-    height: 92%;
 }
 
 thead {
@@ -213,7 +230,9 @@ tbody tr td {
 }
 
 body > .row{
-    height: 92vh;
+    height: -webkit-calc(100% - 80px);
+    height: -moz-calc(100% - 80px);
+    height: calc(100% - 80px);
 }
 
 .event {
@@ -241,6 +260,13 @@ body > .row{
     height: 550%;
 }
 
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
 
 .icon {
   font-size: 1.5rem;
@@ -260,9 +286,6 @@ body > .row{
     font-size: 42px;
     color: #ffffff;
 }
-.row{
-    margin-left: 10px;
-}
 
 #customSize{
     margin-left: 61em;
@@ -281,7 +304,11 @@ body > .row{
 .col-md-5{
     margin-left: 15px;
     background-color: #eae9e9;
-    width: 47.5%;
+
+    width: -webkit-calc(50% - 15px);
+    height: -moz-calc(50% - 15px);
+    height: calc(50% - 15px);
+
     padding: 15px;
 }
 
@@ -303,9 +330,13 @@ body > .row{
 
 #schedule{
     padding-top: 5px;
+    padding-bottom: 5px;
     margin-top: 15px;
     background: #eae9e9;
-    height: 65.3%;
+
+    height: -webkit-calc(66.6666666% - 15px);
+    height: -moz-calc(66.6666666% - 15px);
+    height: calc(66.6666666% - 15px);
 }
 
 p {
@@ -316,14 +347,17 @@ p {
     padding: 20px;
 }
 
-#CourseList-title{
+#CourseList-title {
     font-size: 27px;
     color: #000000;
 }
 
 #courseList {
     overflow: auto;
-    height: 85%;
+
+    height: -webkit-calc(100% - 36px);
+    height: -moz-calc(100% - 36px);
+    height: calc(100% - 36px);
 }
 
 .navbar-default {
@@ -567,11 +601,11 @@ p {
 }
 
 #MyCourses{
-    height: 31%;
+    height: 33.333%;
 }
 
 #courseSelector{
-    height: 98%;
+    height: 100%;
     padding: 15px;
 }
 
@@ -614,8 +648,8 @@ td{
     width: 45px;
 }
 
-#courseSelector > ul{
-    height: 93%;
+.navbar {
+    margin-bottom: 10px;
 }
 
 
@@ -643,9 +677,8 @@ td{
     }
 
     .rmplink {
-    	font-size: 13px !important;
+        font-size: 13px !important;
     }
-
 
     thead th{
         font-size: 0.8rem;
@@ -654,14 +687,6 @@ td{
 
     #CourseList-title {
         font-size: 20px;
-    }
-
-    body > .row{
-        height: 90vh;
-    }
-
-    #courseSelector > ul{
-        height: 91%;
     }
 
     .cd-accordion-menu label, .cd-accordion-menu a{
@@ -673,13 +698,11 @@ td{
     }
 }
 
+/*
+    Reduced accordion font size for smaller widths
+*/
 
 @media (max-width: 1024px){
-
-    #courseList{
-        height: 85%;
-    }
-
     .event{
         font-size: 0.7rem;
     }
@@ -688,11 +711,11 @@ td{
         font-size: 1.1rem;
     }
 
-    body > .row{
-        height: 90vh;
-    }
-
 }
+
+/*
+    Mobile View
+*/
 
 @media (max-width: 991px){
     body, html{
@@ -707,53 +730,10 @@ td{
     #MyCourses{
         margin-top: 15px;
     }
-
-    body > .row{
-        width: 97vw;
-    }
-}
-
-@media screen and (max-height: 725px), screen and (max-width: 991px){
-    body > .row{
-        height: 89vh;
-    }
-
-    #courseSelector > ul{
-        height: 91%;
-    }
-
-    #schedule{
-        height: 64.2%;
-    }
-
-    .calendar{
-        height: 92%;
-    }
-
-    #courseList{
-        height: 79%;
-    }
 }
 
 @media (max-height: 860px) and (max-width: 1920px){
-    body > .row{
-        height: 92vh;
-    }
-
-    .wrap{
-        height: 90%;
-    }
-
     #calendarStatus{
         font-size: 27px;
-
-    }
-
-    #courseList{
-        height: 80%;
-    }
-
-    .navbar {
-        margin-bottom: 10px;
     }
 }
