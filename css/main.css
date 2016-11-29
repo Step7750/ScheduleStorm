@@ -31,39 +31,39 @@ body, html{
 }
 
 #locationselect {
-  -webkit-border-radius: 0px !important;
-  -moz-border-radius: 0px !important;
-  border-radius: 0px !important;
+    -webkit-border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    border-radius: 0px !important;
 }
 
 .rmplink {
-  font-size: 17px !important;
-  padding: 0px 0px 0px 0px !important;
-  box-shadow: none !important;
-  position: static !important;
-  display: inline !important;
-  color: #337ab7 !important;
-  text-decoration: none !important;
+    font-size: 17px !important;
+    padding: 0px 0px 0px 0px !important;
+    box-shadow: none !important;
+    position: static !important;
+    display: inline !important;
+    color: #337ab7 !important;
+    text-decoration: none !important;
 }
 
 .rmplink:focus {
-  color: #23527c !important;
-  text-decoration: underline !important;
+    color: #23527c !important;
+    text-decoration: underline !important;
 }
 
 .rmplink:hover {
-  color: #23527c !important;
-  text-decoration: underline !important;
+    color: #23527c !important;
+    text-decoration: underline !important;
 }
 
 #locationselectdropdown {
-  max-height: 350px;
-  overflow-y: auto;
-  overflow-x: hidden;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .blockedTime {
-  background-color: #ecc6c6;
+    background-color: #ecc6c6;
 }
 
 .outer {
@@ -72,11 +72,11 @@ body, html{
 }
 
 .dropdown-items {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .dropdown-menu {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .calendar {
@@ -120,56 +120,54 @@ thead th {
 }
 
 header {
-  background: #fff;
-  padding: 1rem;
-  color: rgba(0, 0, 0, 0.7);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 8px 8px 0 0;
+    background: #fff;
+    padding: 1rem;
+    color: rgba(0, 0, 0, 0.7);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
 }
 
 header h1 {
- font-size: 1.25rem;
- text-align: center;
- font-weight: normal;
+    font-size: 1.25rem;
+    text-align: center;
+    font-weight: normal;
 
 }
 
 tbody {
-  top: 100px;
+    top: 100px;
 }
 
 table {
-  background: #fff;
-  width: 100%;
-  height: 10%;
-  border-collapse: collapse;
-  table-layout: fixed;
-
+    background: #fff;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
 }
 
 .headcol {
-  width: 60px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgba(0, 0, 0, 0.5);
-  padding: 0rem 0;
-  text-align: center;
-  border: 0;
-  position: relative;
-  top: -6px;
-  border-bottom: 1px solid transparent;
+    width: 60px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0rem 0;
+    text-align: center;
+    border: 0;
+    position: relative;
+    top: -6px;
+    border-bottom: 1px solid transparent;
 }
 
 thead th {
-  font-size: 1rem;
-  font-weight: bold;
-  color: rgba(0, 0, 0, 0.9);
-  padding: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.9);
+    padding: 1rem;
 }
 
 thead {
@@ -183,40 +181,40 @@ thead {
 }
 
 tr, tr td {
-  height: 20px;
+    height: 20px;
 }
 td {
-  text-align: center;
+    text-align: center;
 }
 tr:nth-child(odd) td:not(.headcol) {
-  border-bottom: 1px solid #e8e8e8;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 tr:nth-child(even) td:not(.headcol) {
-  border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #eee;
 }
 
 tr td {
-  border-right: 1px solid #eee;
-  padding: 0;
+    border-right: 1px solid #eee;
+    padding: 0;
 }
 
 tbody tr td {
-  position: relative;
-  vertical-align: top;
-  height: 20px;
-  padding: 0.25rem 0.25rem 0 0.25rem;
-  width: auto;
+    position: relative;
+    vertical-align: top;
+    height: 20px;
+    padding: 0.25rem 0.25rem 0 0.25rem;
+    width: auto;
 
 }
 
 .secondary {
-  color: rgba(0, 0, 0, 0.4);
+    color: rgba(0, 0, 0, 0.4);
 }
 
 
 .checkbox {
-   display: none;
+    display: none;
 }
 
 .checkbox + label {
@@ -236,24 +234,24 @@ body > .row{
 }
 
 .event {
-  color: white;
-  border-radius: 2px;
-  text-align: left;
-  font-size: 0.875rem;
-  z-index: 2;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  padding: 0.3rem;
-  overflow-x: hidden;
-  transition: all 0.2s;
-  cursor: pointer;
-  position: absolute;
-  overflow: hidden;
+    color: white;
+    border-radius: 2px;
+    text-align: left;
+    font-size: 0.875rem;
+    z-index: 2;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    padding: 0.3rem;
+    overflow-x: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: absolute;
+    overflow: hidden;
 }
 
 .event:hover {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .event.double {
@@ -269,13 +267,13 @@ body > .row{
 
 
 .icon {
-  font-size: 1.5rem;
-  margin: 0 1rem;
-  text-align: center;
-  cursor: pointer;
-  vertical-align: middle;
-  position: relative;
-  top: -2px;
+    font-size: 1.5rem;
+    margin: 0 1rem;
+    text-align: center;
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+    top: -2px;
 }
 .dropdown-items{
     font-size: 20px;
@@ -501,16 +499,16 @@ p {
 }
 
 .addCourseButton {
-  padding: 0 !important;
-  float: right;
-  color: #0275d8;
-  font-size: 35px;
-  margin-top: -7px;
-  border-color: #ffffff;
-  position: relative;
-  top: 0px;
-  right: 20px;
-  margin-right: -20px;
+    padding: 0 !important;
+    float: right;
+    color: #0275d8;
+    font-size: 35px;
+    margin-top: -7px;
+    border-color: #ffffff;
+    position: relative;
+    top: 0px;
+    right: 20px;
+    margin-right: -20px;
 }
 
 .addCourseButton:hover{
@@ -527,16 +525,16 @@ p {
 }
 
 .removeCourseButton {
-  padding: 0 !important;
-  float: right;
-  color: #f33d3a;
-  font-size: 35px;
-  margin-top: -7px;
-  border-color: #ffffff;
-  position: relative;
-  top: 0px;
-  right: 20px;
-  margin-right: -20px;
+    padding: 0 !important;
+    float: right;
+    color: #f33d3a;
+    font-size: 35px;
+    margin-top: -7px;
+    border-color: #ffffff;
+    position: relative;
+    top: 0px;
+    right: 20px;
+    margin-right: -20px;
 }
 
 .removeCourseButton:hover{
@@ -558,16 +556,16 @@ p {
 */
 
 .removeBtn {
-  padding: 0 !important;
-  float: right;
-  color: #f33d3a;
-  font-size: 35px;
-  margin-top: -7px;
-  border-color: #ffffff;
-  position: relative;
-  top: 0px;
-  right: 20px;
-  margin-right: -20px;
+    padding: 0 !important;
+    float: right;
+    color: #f33d3a;
+    font-size: 35px;
+    margin-top: -7px;
+    border-color: #ffffff;
+    position: relative;
+    top: 0px;
+    right: 20px;
+    margin-right: -20px;
 }
 
 .removeBtn:hover{
