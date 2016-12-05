@@ -10,6 +10,12 @@ class Tutorial {
             // scroll to the top of the class data wraper
             $("#classdatawraper").scrollTop(0);
 
+            // Hide scrollbars
+            // This is for firefox since the pointer events can still move scrollbars 
+            // (which can raise events and cause the tour element to disappear)
+            $("#classdatawraper").css('overflow', 'hidden');
+            $("#courseList").css('overflow', 'hidden');
+
             // Repopulate the accordion to the default view
             classList.repopulateAccordion();
 
@@ -167,6 +173,10 @@ class Tutorial {
             onEnd: function (tour) {
                 window.tourInProgress = false;
 
+                // Show the scrollbars again
+                $("#classdatawraper").css('overflow', 'auto');
+                $("#courseList").css('overflow', 'auto');
+
                 // repopulate the accordion with the default view
                 classList.repopulateAccordion();
             },
@@ -178,7 +188,7 @@ class Tutorial {
             onHidden: function(tour) {
                 // On hide, enable pointer events
                 var step = tour._options.steps[tour._current];
-                $(step.element).css('pointerEvents', 'auto');
+                $(step.element).css('pointerEvents', '');
             }
         });
 
