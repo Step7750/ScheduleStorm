@@ -864,7 +864,7 @@ var Calendar = function () {
                 var tag = e.target.tagName.toLowerCase();
 
                 // We don't want to do anything if they have an input focused
-                if (tag != "input") {
+                if (tag != "input" && !window.tourInProgress) {
                     if (e.keyCode == 37) self.goToPrev();else if (e.keyCode == 39) self.goToNext();else if (e.keyCode == 67 && (e.metaKey || e.ctrlKey)) $("#copySchedToClipboard").click();
                 }
             });
