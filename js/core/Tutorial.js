@@ -59,7 +59,7 @@ class Tutorial {
 	createIntro() {
 		var self = this;
 
-		var tour = new Tour({
+		window.tour = new Tour({
 		  	steps: [
 			  	{
 			    	title: "What is this?",
@@ -169,13 +169,23 @@ class Tutorial {
 
 				// repopulate the accordion with the default view
 				classList.repopulateAccordion();
-			}
+			},
+            onShown: function(tour) {
+                // If shown, disable pointer events
+                var step = tour._options.steps[tour._current];
+                $(step.element).css('pointerEvents', 'none');
+            },
+            onHidden: function(tour) {
+                // On hide, enable pointer events
+                var step = tour._options.steps[tour._current];
+                $(step.element).css('pointerEvents', 'auto');
+            }
 		});
 
 		// Initialize the tour
-		tour.init();
+		window.tour.init();
 
 		// Start the tour
-		tour.start().goTo(0);
+		window.tour.start().goTo(0);
 	}
 }

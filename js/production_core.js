@@ -90,7 +90,7 @@ var Calendar = function () {
 
         /*
             Binds an event handler to redraw the current schedule when the window is resized (since the event sizes will change)
-              Waits for 500ms since the latest resize event
+             Waits for 500ms since the latest resize event
         */
 
     }, {
@@ -150,7 +150,7 @@ var Calendar = function () {
             $("#uploadToImgur").click(function () {
                 /*
                     Why do we make a separate window/tab now?
-                      If we simply open up a new window/tab after we already have the photo uploaded
+                     If we simply open up a new window/tab after we already have the photo uploaded
                     and the imgur link, we lose the "trusted" event that came from a user click. 
                     As a result, the window/tab would be blocked as a popup. If we create the window
                     now while we have a trusted event and then change its location when we're ready, 
@@ -314,7 +314,7 @@ var Calendar = function () {
 
         /*
             Takes a high-res screenshot of the calendar with the specified aspect ratio and downloads it as a png to the system
-              Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
+             Thanks to: https://github.com/niklasvh/html2canvas/issues/241#issuecomment-247705673
         */
 
     }, {
@@ -965,7 +965,7 @@ var Calendar = function () {
 
         /*
             Add an event with start and end time (24 hours)
-              Days is an array containing the integers that represent the days that this event is on
+             Days is an array containing the integers that represent the days that this event is on
         */
 
     }, {
@@ -2624,7 +2624,7 @@ var Generator = function () {
 
         /*
             Removes classes that share the same type, time, rmp score, group, status, and location as another
-              This heuristic does not decrease accuracy since the removed classes have the same properties 
+             This heuristic does not decrease accuracy since the removed classes have the same properties 
             as another that will be used in generation
         */
 
@@ -2773,7 +2773,7 @@ var Generator = function () {
                     /*
                         For the given classes, finds the domain for each class section such that each section
                         must have exactly one class chosen from it
-                          Domains are sorted from lowest to highest length to reduce branching factor early on
+                         Domains are sorted from lowest to highest length to reduce branching factor early on
                         
                         The contents of each domain are also sorted so that we can use binary search later on
                     */
@@ -3990,7 +3990,7 @@ var MyCourses = function () {
         /*
             If there is a saved state, loads it and populates the courses
             If not, sets up the initial state
-              Called by ClassList when done loading the class list
+             Called by ClassList when done loading the class list
         */
 
     }, {
@@ -4945,7 +4945,7 @@ var Tutorial = function () {
 		value: function createIntro() {
 			var self = this;
 
-			var tour = new Tour({
+			window.tour = new Tour({
 				steps: [{
 					title: "What is this?",
 					content: "Schedule Storm is a student schedule generator that lets you input your courses and preferences to generate possible schedules. <br><br>You can always restart this tour by going to preferences"
@@ -5035,14 +5035,24 @@ var Tutorial = function () {
 
 					// repopulate the accordion with the default view
 					classList.repopulateAccordion();
+				},
+				onShown: function onShown(tour) {
+					// If shown, disable pointer events
+					var step = tour._options.steps[tour._current];
+					$(step.element).css('pointerEvents', 'none');
+				},
+				onHidden: function onHidden(tour) {
+					// On hide, enable pointer events
+					var step = tour._options.steps[tour._current];
+					$(step.element).css('pointerEvents', 'auto');
 				}
 			});
 
 			// Initialize the tour
-			tour.init();
+			window.tour.init();
 
 			// Start the tour
-			tour.start().goTo(0);
+			window.tour.start().goTo(0);
 		}
 	}]);
 
