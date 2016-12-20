@@ -26,6 +26,7 @@ Rather than just supporting one university, Schedule Storm is a platform in whic
   * University of Alberta
   * Mount Royal University
   * University of Lethbridge
+  * University of Waterloo
 
 Want us to support your university?
   * If you can, feel free to send pull requests with additional functionality
