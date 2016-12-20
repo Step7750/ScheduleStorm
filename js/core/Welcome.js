@@ -74,7 +74,16 @@ class Welcome {
             // Add this Uni to the dropdown
 
             var uniobj = data[uni];
-            var html = $('<li class="dropdown-items"><a uni="' + uni +'">' + uniobj["name"] +'</a></li>');
+
+            var uniHTML = '<li class="dropdown-items"><a uni="' + uni +'">' + uniobj["name"];
+            
+            if (uniobj["scraping"] == true) {
+                uniHTML += '<span class="label label-default" style="margin-left: 10px;">Updating</span>';
+            }
+
+            uniHTML += '</a></li>';
+
+            var html = $(uniHTML);
 
             // Bind an onclick event to it
             html.click(function () {
@@ -113,7 +122,10 @@ class Welcome {
 
         // Iterate through the unis and add the buttons
         for (var uni in unis) {
-            var button = $(this.createButton(unis[uni]["name"], uni));
+            var labelText = undefined;
+            if (this.unis[uni]["scraping"] == true) labelText = "Updating";
+
+            var button = $(this.createButton(unis[uni]["name"], uni, labelText));
             button.click(function() {
 
                 thisobj.uni = $(this).attr("value");
@@ -168,10 +180,16 @@ class Welcome {
     }
 
     /*
-        Returns the text for an HTML button given text, value
+        Returns the text for an HTML button given text, value and label text
     */
-    createButton(text, value) {
-        return '<button type="button" class="btn btn-default" value="' + value +'">' + text + '</button>'
+    createButton(text, value, labelText) {
+        var html = '<button type="button" class="btn btn-default" value="' + value +'">' + text;
+
+        if (labelText != undefined) html += '<span class="label label-default" style="margin-left: 10px;">' + labelText + '</span>';
+        
+        html += '</button>';
+
+        return html;
     }
 }
 

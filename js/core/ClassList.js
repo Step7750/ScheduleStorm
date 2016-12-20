@@ -298,12 +298,17 @@ class ClassList {
                         // Empty out the div
                         $("#classdata").empty();
 
-                        // Remove the loading animation and populate the list
+                        // Populate the list
                         self.populateClassList([data["classes"]], $("#classdata"), "");
                         self.bindSearch();
                     }
                 });
-                
+            })
+            .error(function (data) {
+                // Show the error
+                loading.remove(function () {
+                    $("#classdata").text(data.responseJSON.error).slideDown();
+                });
             });
         });
     }

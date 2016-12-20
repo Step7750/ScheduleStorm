@@ -1571,10 +1571,15 @@ var ClassList = function () {
                             // Empty out the div
                             $("#classdata").empty();
 
-                            // Remove the loading animation and populate the list
+                            // Populate the list
                             self.populateClassList([data["classes"]], $("#classdata"), "");
                             self.bindSearch();
                         }
+                    });
+                }).error(function (data) {
+                    // Show the error
+                    loading.remove(function () {
+                        $("#classdata").text(data.responseJSON.error).slideDown();
                     });
                 });
             });
@@ -5157,7 +5162,16 @@ var Welcome = function () {
                 // Add this Uni to the dropdown
 
                 var uniobj = data[uni];
-                var html = $('<li class="dropdown-items"><a uni="' + uni + '">' + uniobj["name"] + '</a></li>');
+
+                var uniHTML = '<li class="dropdown-items"><a uni="' + uni + '">' + uniobj["name"];
+
+                if (uniobj["scraping"] == true) {
+                    uniHTML += '<span class="label label-default" style="margin-left: 10px;">Updating</span>';
+                }
+
+                uniHTML += '</a></li>';
+
+                var html = $(uniHTML);
 
                 // Bind an onclick event to it
                 html.click(function () {
@@ -5199,7 +5213,10 @@ var Welcome = function () {
 
             // Iterate through the unis and add the buttons
             for (var uni in unis) {
-                var button = $(this.createButton(unis[uni]["name"], uni));
+                var labelText = undefined;
+                if (this.unis[uni]["scraping"] == true) labelText = "Updating";
+
+                var button = $(this.createButton(unis[uni]["name"], uni, labelText));
                 button.click(function () {
 
                     thisobj.uni = $(this).attr("value");
@@ -5257,13 +5274,19 @@ var Welcome = function () {
         }
 
         /*
-            Returns the text for an HTML button given text, value
+            Returns the text for an HTML button given text, value and label text
         */
 
     }, {
         key: "createButton",
-        value: function createButton(text, value) {
-            return '<button type="button" class="btn btn-default" value="' + value + '">' + text + '</button>';
+        value: function createButton(text, value, labelText) {
+            var html = '<button type="button" class="btn btn-default" value="' + value + '">' + text;
+
+            if (labelText != undefined) html += '<span class="label label-default" style="margin-left: 10px;">' + labelText + '</span>';
+
+            html += '</button>';
+
+            return html;
         }
     }]);
 
