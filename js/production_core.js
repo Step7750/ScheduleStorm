@@ -9,20 +9,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Calendar = function () {
     // Handles the UI construction of the calendar
     function Calendar() {
+        var _this = this;
+
         _classCallCheck(this, Calendar);
 
-        var self = this;
-
         this.weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-        this.resetCalendar();
-
+        this.eventcolours = {
+            "#FF5E3A": false,
+            "#099e12": false,
+            "#1D62F0": false,
+            "#FF2D55": false,
+            "#8E8E93": false,
+            "#0b498c": false,
+            "#34AADC": false,
+            "#5AD427": false
+        };
         this.removeTimes = false;
-
         this.isLoading = false;
-
         this.currentSchedule = [];
 
+        this.resetCalendar();
         this.bindNextPrev();
         this.initializeTooltips();
 
@@ -39,24 +45,13 @@ var Calendar = function () {
         // Bind resize event
         this.bindResize();
 
-        this.eventcolours = {
-            "#FF5E3A": false,
-            "#099e12": false,
-            "#1D62F0": false,
-            "#FF2D55": false,
-            "#8E8E93": false,
-            "#0b498c": false,
-            "#34AADC": false,
-            "#5AD427": false
-        };
-
         // We want to bind the mouse up handler for blocking times
         $(document).mouseup(function () {
-            self.mouseDown = false;
+            _this.mouseDown = false;
 
             // Change each deep array to strings for comparison
-            var blockedTimesString = JSON.stringify(self.blockedTimes);
-            var prevBlockedTimesString = JSON.stringify(self.prevBlockedTimes);
+            var blockedTimesString = JSON.stringify(_this.blockedTimes);
+            var prevBlockedTimesString = JSON.stringify(_this.prevBlockedTimes);
 
             // Check if the blocked times changed, if so, restart generation
             if (blockedTimesString != prevBlockedTimesString) {
@@ -64,7 +59,7 @@ var Calendar = function () {
             }
 
             // Reset prev
-            self.prevBlockedTimes = self.blockedTimes;
+            _this.prevBlockedTimes = _this.blockedTimes;
         });
     }
 
@@ -96,13 +91,15 @@ var Calendar = function () {
     }, {
         key: "bindResize",
         value: function bindResize() {
-            var self = this;
-            var resizeTimer;
+            var _this2 = this;
+
+            var resizeTimer = void 0;
 
             $(window).resize(function () {
-                clearTimeout(resizeTimer);
+                if (resizeTimer) clearTimeout(resizeTimer);
+
                 resizeTimer = setTimeout(function () {
-                    self.redrawSchedule();
+                    return _this2.redrawSchedule();
                 }, 500);
             });
         }
@@ -114,18 +111,17 @@ var Calendar = function () {
     }, {
         key: "bindSchedulePhotoDL",
         value: function bindSchedulePhotoDL() {
-            var self = this;
+            var _this3 = this;
 
-            // on click
             $("#dlSchedulePhoto").click(function () {
                 // Take the screenshot
-                self.takeCalendarHighResScreenshot(1.6, 2, function (canvas) {
+                _this3.takeCalendarHighResScreenshot(1.6, 2, function (canvas) {
                     // Download the picture
                     var a = document.createElement('a');
                     a.href = canvas.replace("image/png", "image/octet-stream");
 
                     // Set the name of the file
-                    if (window.uni != null && window.term != null) a.download = window.uni + '_' + window.term + '_ScheduleStorm.png';else a.download = 'ScheduleStorm_Schedule.png';
+                    if (window.uni && window.term) a.download = window.uni + "_" + window.term + "_ScheduleStorm.png";else a.download = 'ScheduleStorm_Schedule.png';
 
                     // Append it to the body
                     document.body.appendChild(a);
@@ -145,7 +141,7 @@ var Calendar = function () {
     }, {
         key: "bindImgurUpload",
         value: function bindImgurUpload() {
-            var self = this;
+            var _this4 = this;
 
             $("#uploadToImgur").click(function () {
                 /*
@@ -156,16 +152,11 @@ var Calendar = function () {
                     now while we have a trusted event and then change its location when we're ready, 
                     we can bypass this.
                 */
-                var imgurwindow = window.open("http://schedulestorm.com/assets/imgurloading.png", 'Uploading to Imgur...', "width=900,height=500");
+                var imgurWindow = window.open("http://schedulestorm.com/assets/imgurloading.png", 'Uploading to Imgur...', "width=900,height=500");
 
                 // Upload the image to imgur and get the link
-                self.uploadToImgur(1.6, function (link) {
-                    if (link != false) {
-                        imgurwindow.location.href = link + ".png";
-                    } else {
-                        // There was an error, show the error screen
-                        imgurwindow.location.href = "http://schedulestorm.com/assets/imgurerror.png";
-                    }
+                _this4.uploadToImgur(1.6, function (link) {
+                    if (link) imgurWindow.location.href = link;else imgurWindow.location.href = "http://schedulestorm.com/assets/imgurerror.png"; // error
                 });
             });
         }
@@ -178,10 +169,8 @@ var Calendar = function () {
     }, {
         key: "uploadToImgur",
         value: function uploadToImgur(ratio, cb) {
-            var self = this;
-
             // Takes a screenshot of the calendar
-            self.takeCalendarHighResScreenshot(ratio, 2, function (canvas) {
+            this.takeCalendarHighResScreenshot(ratio, 2, function (canvas) {
                 // Send AJAX request to imgur with the photo to upload
                 $.ajax({
                     url: 'https://api.imgur.com/3/image',
@@ -198,9 +187,9 @@ var Calendar = function () {
                     },
                     dataType: 'json'
                 }).success(function (data) {
-                    cb(data.data.link);
+                    return cb(data.data.link);
                 }).error(function () {
-                    cb(false);
+                    return cb(false);
                 });
             });
         }
@@ -212,20 +201,17 @@ var Calendar = function () {
     }, {
         key: "bindFacebookSharing",
         value: function bindFacebookSharing() {
-            var self = this;
+            var _this5 = this;
 
             $("#shareToFacebook").click(function () {
                 // We have to preserve this "trusted" event and thus have to make the window now
-                var facebookwindow = window.open("http://schedulestorm.com/assets/facebookshare.png", 'Sharing to Facebook...', "width=575,height=592");
+                var facebookWindow = window.open("http://schedulestorm.com/assets/facebookshare.png", "Sharing to Facebook...", "width=575,height=592");
 
-                self.uploadToImgur(1.91, function (link) {
+                _this5.uploadToImgur(1.91, function (link) {
                     // Set the default image if no image
-                    if (link == false) {
-                        link = "https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/687474703a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67";
-                    }
+                    if (!link) link = "https://camo.githubusercontent.com/ac09e7e7a60799733396a0f4d496d7be8116c542/6874747" + "03a2f2f692e696d6775722e636f6d2f5a425258656d342e706e67";
 
-                    var url = self.generateFacebookFeedURL(link);
-                    facebookwindow.location.href = url;
+                    facebookWindow.location.href = _this5.generateFacebookFeedURL(link);
                 });
             });
         }
@@ -237,7 +223,6 @@ var Calendar = function () {
     }, {
         key: "generateFacebookFeedURL",
         value: function generateFacebookFeedURL(picture) {
-
             var url = "https://www.facebook.com/v2.8/dialog/feed";
             var parameters = {
                 "app_id": "138997789901870",
@@ -277,36 +262,52 @@ var Calendar = function () {
         value: function generateFacebookDescription(schedule) {
             var returnText = window.unis[window.uni]["name"] + " - " + window.unis[window.uni]["terms"][window.term];
 
-            // Make sure we actully have a possible schedule
-            if (schedule.length > 0) {
-                returnText += " --- Classes: ";
+            if (schedule.length === 0) return returnText;
 
-                var coursesdict = {};
+            returnText += " --- Classes: ";
 
-                // Iterate through each class and populate the return Text
-                for (var classv in schedule) {
-                    var thisclass = schedule[classv];
-                    if ((typeof thisclass === "undefined" ? "undefined" : _typeof(thisclass)) == "object") {
+            var coursesDict = {};
 
-                        if (coursesdict[thisclass["name"]] == undefined) {
-                            coursesdict[thisclass["name"]] = [];
-                        }
+            // Iterate through each class and populate the course dict
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
-                        coursesdict[thisclass["name"]].push(thisclass["id"]);
-                    }
+            try {
+                for (var _iterator = schedule[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var thisClass = _step.value;
+
+                    if ((typeof thisClass === "undefined" ? "undefined" : _typeof(thisClass)) !== "object") continue;
+
+                    if (coursesDict[thisClass["name"]] === undefined) coursesDict[thisClass["name"]] = [];
+
+                    coursesDict[thisClass["name"]].push(thisClass["id"]);
                 }
 
                 // Iterate through the dict keys and add the values to the returnText
-                var keylength = Object.keys(coursesdict).length;
-                var index = 0;
-                for (var key in coursesdict) {
-                    index += 1;
-                    returnText += key + " (" + coursesdict[key] + ")";
-
-                    if (index < keylength) {
-                        returnText += ", ";
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
                     }
                 }
+            }
+
+            var dictLength = Object.keys(coursesDict).length;
+            var index = 0;
+
+            for (var key in coursesDict) {
+                index += 1;
+                returnText += key + " (" + coursesDict[key] + ")";
+
+                if (index < dictLength) returnText += ", ";
             }
 
             return returnText;
@@ -320,30 +321,24 @@ var Calendar = function () {
     }, {
         key: "takeCalendarHighResScreenshot",
         value: function takeCalendarHighResScreenshot(aspectratio, scaleFactor, cb) {
-            var self = this;
+            var _this6 = this;
 
             var srcEl = document.getElementById("maincalendar");
-
             var wrapdiv = $(srcEl).find('.wrap');
-
             var beforeHeight = wrapdiv.height();
 
             // Want to remove any scrollbars
             wrapdiv.removeClass('wrap');
 
             // If removing the size caused the rows to be smaller, add the class again
-            if (beforeHeight > wrapdiv.height()) {
-                wrapdiv.addClass('wrap');
-            }
+            if (beforeHeight > wrapdiv.height()) wrapdiv.addClass('wrap');
 
             // Save original size of element
             var originalWidth = srcEl.offsetWidth;
             var originalHeight = wrapdiv.height() + $(srcEl).find("table").eq(0).height();
 
             // see if we can scale the width for it to look right for the aspect ratio
-            if (originalHeight * aspectratio <= $(window).width()) {
-                originalWidth = originalHeight * aspectratio;
-            }
+            if (originalHeight * aspectratio <= $(window).width()) originalWidth = originalHeight * aspectratio;
 
             // Force px size (no %, EMs, etc)
             srcEl.style.width = originalWidth + "px";
@@ -368,7 +363,6 @@ var Calendar = function () {
             this.redrawSchedule();
 
             html2canvas(srcEl, { canvas: scaledCanvas }).then(function (canvas) {
-
                 // Reset the styling of the source element
                 srcEl.style.position = "";
                 srcEl.style.top = "";
@@ -378,7 +372,7 @@ var Calendar = function () {
 
                 wrapdiv.addClass('wrap');
 
-                self.redrawSchedule();
+                _this6.redrawSchedule();
 
                 // return the data
                 cb(canvas.toDataURL("image/png"));
@@ -392,19 +386,19 @@ var Calendar = function () {
             Binds button that allows you to remove all blocked times
         */
         value: function bindRemoveBlockedTimes() {
-            var self = this;
+            var _this7 = this;
 
             $("#removeBlockedTimes").click(function () {
                 // Make sure there are actually blocked times before regenning
-                if (JSON.stringify(self.blockedTimes) != "[]") {
-                    self.blockedTimes = [];
-                    self.prevBlockedTimes = [];
+                if (JSON.stringify(_this7.blockedTimes) == "[]") return;
 
-                    // Visually remove all of the blocked times
-                    self.removeAllBlockedTimeUI();
+                _this7.blockedTimes = [];
+                _this7.prevBlockedTimes = [];
 
-                    window.mycourses.startGeneration();
-                }
+                // Visually remove all of the blocked times
+                _this7.removeAllBlockedTimeUI();
+
+                window.mycourses.startGeneration();
             });
         }
 
@@ -415,11 +409,11 @@ var Calendar = function () {
     }, {
         key: "bindCopyScheduleToClipboard",
         value: function bindCopyScheduleToClipboard() {
-            var self = this;
+            var _this8 = this;
 
-            self.copyschedclipboard = new Clipboard('#copySchedToClipboard', {
-                text: function text(trigger) {
-                    return self.generateScheduleText(self.currentSchedule);
+            new Clipboard('#copySchedToClipboard', {
+                text: function text() {
+                    return _this8.generateScheduleText(_this8.currentSchedule);
                 }
             });
         }
@@ -444,10 +438,10 @@ var Calendar = function () {
             this.clearEvents();
 
             // If it is already loading, don't add another loading sign
-            if (this.isLoading == false) {
-                this.loading = new Loading($("#schedule").find(".wrap:first"), message, "position: absolute; top: 20%; left: 40%;");
-                this.isLoading = true;
-            }
+            if (this.isLoading) return;
+
+            this.loading = new Loading($("#schedule").find(".wrap:first"), message, "position: absolute; top: 20%; left: 40%;");
+            this.isLoading = true;
         }
 
         /*
@@ -457,16 +451,15 @@ var Calendar = function () {
     }, {
         key: "doneLoading",
         value: function doneLoading(cb) {
-            var self = this;
-            self.loadingcb = cb;
+            var _this9 = this;
 
-            if (self.isLoading) {
-                self.loading.remove(function () {
-                    self.isLoading = false;
-                    self.loadingcb();
+            if (this.isLoading) {
+                this.loading.remove(function () {
+                    _this9.isLoading = false;
+                    cb();
                 });
             } else {
-                self.isLoading = false;
+                this.isLoading = false;
                 cb();
             }
         }
@@ -518,43 +511,76 @@ var Calendar = function () {
     }, {
         key: "displaySchedule",
         value: function displaySchedule(schedule) {
-            var self = this;
-
-            // set the score
-            // make sure its a number
+            // set the score, make sure its a number
             if (typeof schedule[0] == "number") $("#scheduleScore").text(schedule[0].toFixed(2));
 
             // Destroy all the tooltips from previous events
-            self.destroyEventTooltips();
+            this.destroyEventTooltips();
 
             // Clear all the current events on the calendar
-            self.clearEvents();
+            this.clearEvents();
 
-            console.log("This schedule");
-            console.log(schedule);
+            this.currentSchedule = schedule;
+            this.setScheduleConstraints(schedule);
 
-            self.currentSchedule = schedule;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-            self.setScheduleConstraints(schedule);
+            try {
+                for (var _iterator2 = schedule[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var thisClass = _step2.value;
 
-            for (var classv in schedule) {
-                var thisclass = schedule[classv];
+                    if (!thisClass.times) continue;
 
-                var text = thisclass["name"] + " - " + thisclass["type"] + " - " + thisclass["id"];
+                    var text = thisClass["name"] + " - " + thisClass["type"] + " - " + thisClass["id"];
 
-                // for every time
-                for (var time in thisclass["times"]) {
-                    var thistime = thisclass["times"][time];
+                    var _iteratorNormalCompletion3 = true;
+                    var _didIteratorError3 = false;
+                    var _iteratorError3 = undefined;
 
-                    // make sure there isn't a -1 in the days
-                    if (thistime[0].indexOf(-1) == -1) {
-                        this.addEvent(Generator.totalMinutesToTime(thistime[1][0]), Generator.totalMinutesToTime(thistime[1][1]), thistime[0], text, thisclass);
+                    try {
+                        for (var _iterator3 = thisClass["times"][Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                            var thisTime = _step3.value;
+
+                            // make sure there isn't a -1 in the days
+                            if (thisTime[0].indexOf(-1) === -1) {
+                                this.addEvent(Generator.totalMinutesToTime(thisTime[1][0]), Generator.totalMinutesToTime(thisTime[1][1]), thisTime[0], text, thisClass);
+                            }
+                        }
+                    } catch (err) {
+                        _didIteratorError3 = true;
+                        _iteratorError3 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                                _iterator3.return();
+                            }
+                        } finally {
+                            if (_didIteratorError3) {
+                                throw _iteratorError3;
+                            }
+                        }
+                    }
+                }
+
+                // reset the colour ids
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
                     }
                 }
             }
 
-            // reset the colour ids
-            self.resetColours();
+            this.resetColours();
         }
 
         /*
@@ -564,9 +590,7 @@ var Calendar = function () {
     }, {
         key: "redrawSchedule",
         value: function redrawSchedule() {
-            if (this.currentSchedule.length > 0) {
-                this.displaySchedule(this.currentSchedule);
-            }
+            if (this.currentSchedule.length > 0) this.displaySchedule(this.currentSchedule);
         }
 
         /*
@@ -594,42 +618,53 @@ var Calendar = function () {
     }, {
         key: "generateScheduleText",
         value: function generateScheduleText(schedule) {
-            var returnText = "Generated by ScheduleStorm.com for " + window.unis[window.uni]["name"] + " " + window.unis[window.uni]["terms"][window.term] + "\n\n";
+            var returnText = "Generated by ScheduleStorm.com for " + window.unis[window.uni]["name"] + " \n                        " + window.unis[window.uni]["terms"][window.term] + " \n\n";
 
-            var allowedAttributes = ["id", "name", "type", "rooms", "teachers", "times", "section"];
+            if (schedule.length === 0) {
+                returnText += "There were no possible schedules generated :(";
+                return returnText;
+            }
 
-            if (schedule.length > 0) {
-                // Iterate through each class and populate the return Text
-                for (var classv in schedule) {
-                    var thisclass = schedule[classv];
+            // Iterate through each class and populate the return Text
+            var _iteratorNormalCompletion4 = true;
+            var _didIteratorError4 = false;
+            var _iteratorError4 = undefined;
 
-                    var thisrow = "";
+            try {
+                for (var _iterator4 = schedule[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var thisClass = _step4.value;
 
-                    // Make sure this is a class object
-                    if (typeof thisclass != "number") {
+                    var thisRow = "";
 
-                        // Fill up the row with the correct formatting and order of attributes
-                        if (thisclass["id"] != undefined) thisrow += thisclass["id"] + " | ";
+                    if (typeof thisClass === "number") continue;
 
-                        if (thisclass["name"] != undefined) thisrow += thisclass["name"] + " | ";
+                    // Fill up the row with the correct formatting and order of attributes
+                    if (thisClass.id) thisRow += thisClass.id + " | ";
+                    if (thisClass.name) thisRow += thisClass.name + " | ";
 
-                        if (thisclass["section"] != undefined) {
-                            thisrow += thisclass["type"] + "-" + thisclass["section"] + " (" + thisclass["id"] + ")" + " | ";
-                        } else if (thisclass["group"] != undefined) {
-                            thisrow += thisclass["type"] + "-" + thisclass["group"] + " (" + thisclass["id"] + ")" + " | ";
-                        }
+                    if (thisClass.section) thisRow += thisClass.type + " - " + thisClass.section + " (" + thisClass.id + ") | ";else if (thisClass.group) thisRow += thisClass.type + " - " + thisClass.group + " (" + thisClass.id + ") | ";
 
-                        thisrow += thisclass["teachers"] + " | ";
-                        thisrow += thisclass["rooms"] + " | ";
-                        thisrow += thisclass["oldtimes"] + " | ";
-                        thisrow += thisclass["status"];
-                    }
+                    thisRow += thisClass.teachers + " | ";
+                    thisRow += thisClass.rooms + " | ";
+                    thisRow += thisClass.oldtimes + " | ";
+                    thisRow += thisClass.status;
 
                     // Add the row if it was actually populated
-                    if (thisrow != "") returnText += thisrow + "\n";
+                    if (thisRow) returnText += thisRow + "\n";
                 }
-            } else {
-                returnText += "There were no possible schedules generated :(";
+            } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
+                        _iterator4.return();
+                    }
+                } finally {
+                    if (_didIteratorError4) {
+                        throw _iteratorError4;
+                    }
+                }
             }
 
             return returnText;
@@ -653,19 +688,17 @@ var Calendar = function () {
 
     }, {
         key: "getEventColour",
-        value: function getEventColour(classname) {
+        value: function getEventColour(className) {
             // check if we already have a colour for this class
             for (var colour in this.eventcolours) {
-                if (this.eventcolours[colour] == classname) {
-                    return colour;
-                }
+                if (this.eventcolours[colour] === className) return colour;
             }
 
             // add a new colour for this class
-            for (var colour in this.eventcolours) {
-                if (this.eventcolours[colour] == false) {
-                    this.eventcolours[colour] = classname;
-                    return colour;
+            for (var _colour in this.eventcolours) {
+                if (this.eventcolours[_colour] === false) {
+                    this.eventcolours[_colour] = className;
+                    return _colour;
                 }
             }
 
@@ -685,46 +718,75 @@ var Calendar = function () {
             var minHour = 24;
             var maxHour = 0;
 
-            for (var classv in schedule) {
-                var thisclass = schedule[classv];
+            var _iteratorNormalCompletion5 = true;
+            var _didIteratorError5 = false;
+            var _iteratorError5 = undefined;
 
-                // for every time
-                for (var time in thisclass["times"]) {
-                    var thistime = thisclass["times"][time];
+            try {
+                for (var _iterator5 = schedule[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+                    var thisClass = _step5.value;
 
-                    // make sure there isn't a -1 in the days
-                    if (thistime[0].indexOf(-1) == -1) {
-                        // check whether the date changes constraints
-                        var thisMaxDay = Math.max.apply(null, thistime[0]);
+                    if (!thisClass.times) continue;
 
-                        if (thisMaxDay > maxDay) {
-                            maxDay = thisMaxDay;
+                    var _iteratorNormalCompletion6 = true;
+                    var _didIteratorError6 = false;
+                    var _iteratorError6 = undefined;
+
+                    try {
+                        for (var _iterator6 = thisClass.times[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+                            var thisTime = _step6.value;
+
+                            // make sure there isn't a -1 in the days
+                            if (thisTime[0].indexOf(-1) !== -1) continue;
+
+                            var thisMaxDay = Math.max.apply(null, thisTime[0]);
+
+                            if (thisMaxDay > maxDay) maxDay = thisMaxDay;
+
+                            // check whether these times change the constraints
+                            var startTime = Generator.totalMinutesToTime(thisTime[1][0]);
+                            var startHour = parseInt(startTime.split(":")[0]);
+
+                            if (startHour < minHour) minHour = startHour;
+
+                            var endTime = Generator.totalMinutesToTime(thisTime[1][1]);
+                            var endHour = parseInt(endTime.split(":")[0]) + 1;
+
+                            if (endHour > maxHour) maxHour = endHour;
                         }
-
-                        // check whether these times change the constraints
-                        var startTime = Generator.totalMinutesToTime(thistime[1][0]);
-                        var startHour = parseInt(startTime.split(":")[0]);
-
-                        if (startHour < minHour) {
-                            minHour = startHour;
+                    } catch (err) {
+                        _didIteratorError6 = true;
+                        _iteratorError6 = err;
+                    } finally {
+                        try {
+                            if (!_iteratorNormalCompletion6 && _iterator6.return) {
+                                _iterator6.return();
+                            }
+                        } finally {
+                            if (_didIteratorError6) {
+                                throw _iteratorError6;
+                            }
                         }
+                    }
+                }
 
-                        var endTime = Generator.totalMinutesToTime(thistime[1][1]);
-                        var endHour = parseInt(endTime.split(":")[0]) + 1;
-
-                        if (endHour > maxHour) {
-                            maxHour = endHour;
-                        }
+                // If nothing changed, set default
+            } catch (err) {
+                _didIteratorError5 = true;
+                _iteratorError5 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
+                        _iterator5.return();
+                    }
+                } finally {
+                    if (_didIteratorError5) {
+                        throw _iteratorError5;
                     }
                 }
             }
 
-            if (maxDay == 4 && minDay == 0 && minHour == 24 && maxHour == 0) {
-                // Just set a default scale
-                this.resizeCalendarNoScroll(0, 4, 9, 17);
-            } else {
-                this.resizeCalendarNoScroll(minDay, maxDay, minHour, maxHour);
-            }
+            if (maxDay === 4 && minDay === 0 && minHour === 24 && maxHour === 0) this.resizeCalendar(0, 4, 9, 17);else this.resizeCalendar(minDay, maxDay, minHour, maxHour);
         }
 
         /*
@@ -734,21 +796,13 @@ var Calendar = function () {
     }, {
         key: "setCurrentIndex",
         value: function setCurrentIndex(index) {
-            var self = this;
+            if (index > this.totalGenerated - 1) index = 0;
+            if (index < 0) index = this.totalGenerated - 1;
 
-            if (index > self.totalGenerated - 1) {
-                // go down to the start at 0
-                index = 0;
-            }
-            if (index < 0) {
-                // go to the max index
-                index = self.totalGenerated - 1;
-            }
-
-            self.curIndex = index;
+            this.curIndex = index;
 
             // show it on the UI
-            self.updateIndexUI(self.curIndex + 1);
+            this.updateIndexUI(this.curIndex + 1);
         }
 
         /*
@@ -772,17 +826,14 @@ var Calendar = function () {
         }
 
         /*
-            Sets the total amount of generated schedules for the UI
+            Sets the total amount of generated schedules for the UI and logistically
         */
 
     }, {
         key: "setTotalGenerated",
         value: function setTotalGenerated(total) {
-            var self = this;
-
-            self.totalGenerated = total;
-
-            self.updateTotalUI(self.totalGenerated);
+            this.totalGenerated = total;
+            this.updateTotalUI(this.totalGenerated);
         }
 
         /*
@@ -792,19 +843,13 @@ var Calendar = function () {
     }, {
         key: "goToPrev",
         value: function goToPrev() {
-            var self = this;
+            if (this.totalGenerated === 0) return;
 
-            if (self.totalGenerated > 0) {
-                self.setCurrentIndex(self.curIndex - 1);
+            this.setCurrentIndex(this.curIndex - 1);
 
-                // get the schedule
-                var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
-
-                if (newschedules != false) {
-                    // we got the schedule, now populate it
-                    self.displaySchedule(newschedules);
-                }
-            }
+            // get the schedule
+            var newSchedule = window.mycourses.generator.getSchedule(this.curIndex);
+            if (newSchedule) this.displaySchedule(newSchedule);
         }
 
         /*
@@ -814,19 +859,13 @@ var Calendar = function () {
     }, {
         key: "goToNext",
         value: function goToNext() {
-            var self = this;
+            if (this.totalGenerated === 0) return;
 
-            if (self.totalGenerated > 0) {
-                self.setCurrentIndex(self.curIndex + 1);
+            this.setCurrentIndex(this.curIndex + 1);
 
-                // get the schedule
-                var newschedules = window.mycourses.generator.getSchedule(self.curIndex);
-
-                if (newschedules != false) {
-                    // we got the schedule, now populate it
-                    self.displaySchedule(newschedules);
-                }
-            }
+            // get the schedule
+            var newSchedule = window.mycourses.generator.getSchedule(this.curIndex);
+            if (newSchedule) this.displaySchedule(newSchedule);
         }
 
         /*
@@ -836,17 +875,17 @@ var Calendar = function () {
     }, {
         key: "bindNextPrev",
         value: function bindNextPrev() {
-            var self = this;
+            var _this10 = this;
+
             // unbind any current binds
             $("#prevSchedule").unbind();
             $("#nextSchedule").unbind();
 
             $("#prevSchedule").click(function () {
-                self.goToPrev();
+                return _this10.goToPrev();
             });
-
             $("#nextSchedule").click(function () {
-                self.goToNext();
+                return _this10.goToNext();
             });
         }
 
@@ -857,16 +896,16 @@ var Calendar = function () {
     }, {
         key: "keyBinds",
         value: function keyBinds() {
-            var self = this;
+            var _this11 = this;
 
             // Bind arrow keys
             $(document).on('keydown', function (e) {
                 var tag = e.target.tagName.toLowerCase();
 
-                // We don't want to do anything if they have an input focused
-                if (tag != "input" && !window.tourInProgress) {
-                    if (e.keyCode == 37) self.goToPrev();else if (e.keyCode == 39) self.goToNext();else if (e.keyCode == 67 && (e.metaKey || e.ctrlKey)) $("#copySchedToClipboard").click();
-                }
+                // We don't want to do anything if they have an input focused or a tour
+                if (tag === "input" || window.tourInProgress) return;
+
+                if (e.keyCode === 37) _this11.goToPrev();else if (e.keyCode === 39) _this11.goToNext();else if (e.keyCode === 67 && (e.metaKey || e.ctrlKey)) $("#copySchedToClipboard").click();
             });
         }
 
@@ -917,45 +956,61 @@ var Calendar = function () {
             }];
 
             // Iterate through every attribute
-            for (var attribute in allowedAttributes) {
-                attribute = allowedAttributes[attribute];
+            var _iteratorNormalCompletion7 = true;
+            var _didIteratorError7 = false;
+            var _iteratorError7 = undefined;
 
-                // Make sure its id is defined in the class
-                if (classobj[attribute["id"]] != undefined) {
-                    if (_typeof(classobj[attribute["id"]]) != "object") {
-                        htmlString += "<b style='font-weight: bold;'>" + attribute["name"] + "</b>: " + classobj[attribute["id"]] + "<br>";
-                    } else {
-                        // Prevent dupes
-                        var alreadyAdded = [];
+            try {
+                for (var _iterator7 = allowedAttributes[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+                    var attribute = _step7.value;
 
-                        // Iterate through the elements and add them
-                        htmlString += "<b style='font-weight: bold;'>" + attribute["name"] + "</b>: <br>";
-                        for (var index in classobj[attribute["id"]]) {
+                    // Make sure its id is defined in the class
+                    if (!classobj[attribute.id]) continue;
 
-                            // Check if we've already added this element
-                            if (alreadyAdded.indexOf(classobj[attribute["id"]][index]) == -1) {
-                                // we haven't already added this element
+                    htmlString += "<b style='font-weight: bold;'>" + attribute.name + "</b>: ";
 
-                                if (attribute["id"] == "teachers") {
-                                    var thisteacher = classobj[attribute["id"]][index];
+                    if (_typeof(classobj[attribute.id]) !== "object") {
+                        // just add the attribute
+                        htmlString += classobj[attribute.id] + "<br>";
+                        continue;
+                    }
 
-                                    htmlString += thisteacher;
+                    // Iterate through the object
+                    htmlString += "<br>";
 
-                                    // If this teacher has an RMP score, add it
-                                    if (classList.rmpdata[thisteacher] != undefined && classList.rmpdata[thisteacher]["rating"] != undefined) {
-                                        htmlString += " (" + classList.rmpdata[thisteacher]["rating"] + ")";
-                                    }
+                    // Prevent dupes
+                    var alreadyAdded = [];
 
-                                    htmlString += "<br>";
-                                } else {
-                                    // Just add the element
-                                    htmlString += classobj[attribute["id"]][index] + "<br>";
-                                }
+                    for (var index in classobj[attribute.id]) {
+                        var elem = classobj[attribute.id][index];
 
-                                // push it to added elements
-                                alreadyAdded.push(classobj[attribute["id"]][index]);
-                            }
+                        // Check if we've already added this element
+                        if (alreadyAdded.indexOf(elem) !== -1) continue;
+
+                        htmlString += elem;
+
+                        if (attribute["id"] === "teachers" && classList.rmpdata[elem] && classList.rmpdata[elem]["rating"]) {
+                            // This teacher has an RMP score, add it
+                            htmlString += " (" + classList.rmpdata[elem]["rating"] + ")";
                         }
+
+                        htmlString += "<br>";
+
+                        // push it to added elements
+                        alreadyAdded.push(elem);
+                    }
+                }
+            } catch (err) {
+                _didIteratorError7 = true;
+                _iteratorError7 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion7 && _iterator7.return) {
+                        _iterator7.return();
+                    }
+                } finally {
+                    if (_didIteratorError7) {
+                        throw _iteratorError7;
                     }
                 }
             }
@@ -971,55 +1026,66 @@ var Calendar = function () {
     }, {
         key: "addEvent",
         value: function addEvent(starttime, endtime, days, text, classobj) {
-
-            var rowheight = $("#schedule").find("td:first").height() + 1;
-
-            var starthour = parseInt(starttime.split(":")[0]);
-            var startmin = parseInt(starttime.split(":")[1]);
-
-            var endhour = parseInt(endtime.split(":")[0]);
-            var endmin = parseInt(endtime.split(":")[1]);
+            var rowHeight = $("#schedule").find("td:first").height() + 1;
+            var startHour = parseInt(starttime.split(":")[0]);
+            var startMin = parseInt(starttime.split(":")[1]);
+            var endHour = parseInt(endtime.split(":")[0]);
+            var endMin = parseInt(endtime.split(":")[1]);
 
             // round down to closest 30min or hour
-            var roundedstartmin = Math.floor(startmin / 30) * 30;
+            var roundedStartMin = Math.floor(startMin / 30) * 30;
 
             // figure out how many minutes are in between the two times
-            var totalstartmin = starthour * 60 + startmin;
-            var totalendmin = endhour * 60 + endmin;
+            var totalStartMin = startHour * 60 + startMin;
+            var totalEndMin = endHour * 60 + endMin;
 
-            var totalmin = totalendmin - totalstartmin;
+            var totalMin = totalEndMin - totalStartMin;
 
             // Calculate the height of the box
-            var totalheight = 0;
-
-            // Every 30min is rowheight
-            totalheight += totalmin / 30 * rowheight;
+            var totalHeight = totalMin / 30 * rowHeight;
 
             // calculate how far from the top the element is
-            var topoffset = startmin % 30 / 30 * rowheight;
+            var topOffset = startMin % 30 / 30 * rowHeight;
 
             // draw the events
-            for (var day in days) {
-                day = days[day];
+            var _iteratorNormalCompletion8 = true;
+            var _didIteratorError8 = false;
+            var _iteratorError8 = undefined;
 
-                // find the parent
-                var tdelement = $("#schedule").find("#" + starthour + "-" + roundedstartmin);
-                tdelement = tdelement.find("td:eq(" + (day + 1) + ")");
+            try {
+                for (var _iterator8 = days[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+                    var day = _step8.value;
 
-                // empty it
-                tdelement.empty();
+                    // find the parent
+                    var tdElement = $("#schedule").find("#" + startHour + "-" + roundedStartMin);
+                    tdElement = tdElement.find("td:eq(" + (day + 1) + ")");
 
-                // create the element and append it
-                var html = '<div class="event" style="height: ' + totalheight + 'px; top: ' + topoffset + 'px; background: ' + this.getEventColour(classobj["name"]) + ';" data-toggle="tooltip" title="' + this.generateTooltip(classobj) + '">';
+                    // empty it
+                    tdElement.empty();
 
-                html += text;
+                    var eventColour = this.getEventColour(classobj.name);
+                    var tooltipText = this.generateTooltip(classobj);
 
-                html += '</div>';
+                    var html = "<div class=\"event\" style=\"height: " + totalHeight + "px; top: " + topOffset + "px; \n                        background: " + eventColour + ";\" data-toggle=\"tooltip\" title=\"" + tooltipText + "\">\n                            " + text + "\n                        </div>";
 
-                // Initialize the tooltip
-                html = $(html).tooltip({ container: 'body', html: true });
+                    // Initialize the tooltip
+                    html = $(html).tooltip({ container: 'body', html: true });
 
-                tdelement.append(html);
+                    tdElement.append(html);
+                }
+            } catch (err) {
+                _didIteratorError8 = true;
+                _iteratorError8 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion8 && _iterator8.return) {
+                        _iterator8.return();
+                    }
+                } finally {
+                    if (_didIteratorError8) {
+                        throw _iteratorError8;
+                    }
+                }
             }
         }
 
@@ -1028,25 +1094,16 @@ var Calendar = function () {
         */
 
     }, {
-        key: "resizeCalendarNoScroll",
-        value: function resizeCalendarNoScroll(startDay, endDay, startHour, endHour) {
+        key: "resizeCalendar",
+        value: function resizeCalendar(startDay, endDay, startHour, endHour) {
+            var self = this;
 
             // If the difference between the start and end hours is less than 6, extend the end hour
             // This is to make sure the appearance of the calendar doesn't look weird and
             // that every row is 20px high
 
-            var self = this;
-
-            if (endHour - startHour < 6) {
-                endHour += 6 - (endHour - startHour);
-            }
-
-            if (endHour > 24) {
-                endHour = 24;
-            }
-
-            var windowheight = $(window).height();
-            var calendarheight = windowheight * 0.49;
+            if (endHour - startHour < 6) endHour += 6 - (endHour - startHour);
+            if (endHour > 24) endHour = 24;
 
             this.emptyCalendar();
 
@@ -1071,7 +1128,6 @@ var Calendar = function () {
             var hour = startHour - 1; // 24 hour
 
             while (hour < endHour) {
-
                 if (min >= 60) {
                     min = 0;
                     hour += 1;
@@ -1079,29 +1135,23 @@ var Calendar = function () {
 
                 // find 12 hour equivalent
                 var hours12 = (hour + 11) % 12 + 1;
+                var hourText = "";
 
-                var hourtext = "";
-                if (min == 0) {
-                    // we want to ensure 2 0's
-                    hourtext += hours12 + ":00";
-                }
+                if (min == 0) hourText += hours12 + ":00";
 
                 // generate the text
-                table += "<tr id='" + hour + "-" + min + "'><td class='headcol'>" + hourtext + "</td>";
+                table += "\n                <tr id=\"" + hour + "-" + min + "\">\n                    <td class=\"headcol\">" + hourText + "</td>\n            ";
 
-                var iteratelength = endDay - startDay + 1;
+                var iterateLength = endDay - startDay + 1;
 
-                for (var x = 0; x < iteratelength; x++) {
-                    table += "<td day='" + x + "'";
+                for (var _x = 0; _x < iterateLength; _x++) {
+                    var blockedTimeClass = "";
 
-                    // Check if this is a blocked time
-                    if (self.blockedTimes[x] != undefined) {
-                        if (self.blockedTimes[x].indexOf(hour + "-" + min) > -1) {
-                            table += ' class="blockedTime"';
-                        }
+                    if (this.blockedTimes[_x] && this.blockedTimes[_x].indexOf(hour + "-" + min) > -1) {
+                        blockedTimeClass = "blockedTime";
                     }
 
-                    table += "></td>";
+                    table += "<td day=\"" + _x + "\" class=\"" + blockedTimeClass + "\"></td>";
                 }
 
                 table += "</tr>";
@@ -1115,15 +1165,15 @@ var Calendar = function () {
 
             // bind the blocked times mouse events 
             table.find("td:not(.headcol)").mousedown(function () {
-                // If the first block you mouse down on causes a certain event,
-                // you can only cause that event when hovering over other blocks
-
-                // Ex. If you start of removing a time block, you can only remove
-                // other timeblocks when you hover
+                /*
+                If the first block you mouse down on causes a certain event,
+                you can only cause that event when hovering over other blocks
+                  Ex. If you start of removing a time block, you can only remove
+                other timeblocks when you hover
+                */
 
                 // Preserve the old copy of the blocked times for the mouseUp document event
                 self.prevBlockedTimes = jQuery.extend(true, [], self.blockedTimes);
-
                 self.mouseDown = true;
 
                 // check the event we're making
@@ -1131,20 +1181,15 @@ var Calendar = function () {
                 var thistime = $(this).parent().attr("id");
 
                 // we want to populate the index if it's undefined
-                if (self.blockedTimes[thisday] == undefined) {
-                    self.blockedTimes[thisday] = [];
-                }
+                if (!self.blockedTimes[thisday]) self.blockedTimes[thisday] = [];
+
+                var blockedTimeIndex = self.blockedTimes[thisday].indexOf(thistime);
 
                 // check whether we've already blocked this timeslot
-                if (self.blockedTimes[thisday].indexOf(thistime) > -1) {
-                    // we want to remove it
+                if (blockedTimeIndex > -1) {
                     self.removeTimes = true;
-                    var thisindex = self.blockedTimes[thisday].indexOf(thistime);
-
-                    // modify the array
-                    self.blockedTimes[thisday].splice(thisindex, 1);
+                    self.blockedTimes[thisday].splice(blockedTimeIndex, 1);
                 } else {
-                    // we want to add blocked times
                     self.removeTimes = false;
                     self.blockedTimes[thisday].push(thistime);
                 }
@@ -1152,29 +1197,22 @@ var Calendar = function () {
                 // Toggle the visual class
                 $(this).toggleClass("blockedTime");
             }).mouseover(function () {
-                if (self.mouseDown) {
-                    // get the data for this time block
-                    var thisday = parseInt($(this).attr("day"));
-                    var thistime = $(this).parent().attr("id");
+                if (!self.mouseDown) return;
 
-                    if (self.blockedTimes[thisday] == undefined) {
-                        self.blockedTimes[thisday] = [];
-                    }
+                // get the data for this time block
+                var thisDay = parseInt($(this).attr("day"));
+                var thisTime = $(this).parent().attr("id");
 
-                    if (self.removeTimes == true && self.blockedTimes[thisday].indexOf(thistime) > -1) {
-                        // we want to remove this timeblock
-                        var thisindex = self.blockedTimes[thisday].indexOf(thistime);
-                        self.blockedTimes[thisday].splice(thisindex, 1);
+                if (!self.blockedTimes[thisDay]) self.blockedTimes[thisDay] = [];
 
-                        // toggle the class
-                        $(this).toggleClass("blockedTime");
-                    } else if (self.removeTimes == false && self.blockedTimes[thisday].indexOf(thistime) == -1) {
-                        // we want to add blocked times
-                        self.blockedTimes[thisday].push(thistime);
+                var blockedTimeIndex = self.blockedTimes[thisDay].indexOf(thisTime);
 
-                        // toggle the class
-                        $(this).toggleClass("blockedTime");
-                    }
+                if (self.removeTimes && blockedTimeIndex > -1) {
+                    self.blockedTimes[thisDay].splice(blockedTimeIndex, 1);
+                    $(this).toggleClass("blockedTime");
+                } else if (!self.removeTimes && blockedTimeIndex === -1) {
+                    self.blockedTimes[thisDay].push(thisTime);
+                    $(this).toggleClass("blockedTime");
                 }
             });
 
@@ -1199,33 +1237,52 @@ var Calendar = function () {
             for (var day in this.blockedTimes) {
                 var thisDay = this.blockedTimes[day];
 
-                if (thisDay != undefined && thisDay.length > 0) {
-                    // Check if it sets a new day range
-                    if (day < minDay) minDay = day;
-                    if (day > maxDay) maxDay = day;
+                if (!thisDay || thisDay.length === 0) continue;
 
-                    // Iterate times
-                    for (var time in thisDay) {
-                        var thistime = thisDay[time];
+                // Check if it sets a new day range
+                if (day < minDay) minDay = day;
+                if (day > maxDay) maxDay = day;
 
-                        var totalMin = parseInt(thistime.split("-")[0]) * 60 + parseInt(thistime.split("-")[1]);
+                // Iterate times
+                var _iteratorNormalCompletion9 = true;
+                var _didIteratorError9 = false;
+                var _iteratorError9 = undefined;
+
+                try {
+                    for (var _iterator9 = thisDay[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+                        var thisTime = _step9.value;
+
+                        var totalMin = parseInt(thisTime.split("-")[0]) * 60 + parseInt(thisTime.split("-")[1]);
 
                         // Check if it sets a new time range
                         if (totalMin > maxTime) maxTime = totalMin;
                         if (totalMin < minTime) minTime = totalMin;
                     }
+                } catch (err) {
+                    _didIteratorError9 = true;
+                    _iteratorError9 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion9 && _iterator9.return) {
+                            _iterator9.return();
+                        }
+                    } finally {
+                        if (_didIteratorError9) {
+                            throw _iteratorError9;
+                        }
+                    }
                 }
             }
 
-            // Make sure there are actually some blocked times
-            if (maxDay > -1 && minDay < 7 && minTime < 1440 && maxTime > 0) {
-                // Make sure its atleast monday to friday
-                if (minDay != 0) minDay = 0;
-                if (maxDay < 4) maxDay = 4;
+            // Make sure there are blocked times
+            if (maxDay === -1 || minDay === 7 || minTime === 1440 || maxTime === 0) return;
 
-                // Draw it
-                this.resizeCalendarNoScroll(minDay, maxDay, Math.floor(minTime / 60), Math.floor(maxTime / 60) + 1);
-            }
+            // Make sure its at least monday to friday
+            if (minDay !== 0) minDay = 0;
+            if (maxDay < 4) maxDay = 4;
+
+            // Resize the calendar
+            this.resizeCalendar(minDay, maxDay, Math.floor(minTime / 60), Math.floor(maxTime / 60) + 1);
         }
 
         /*
@@ -1242,11 +1299,946 @@ var Calendar = function () {
             this.setTotalGenerated(0);
             this.setCurrentIndex(-1);
 
-            this.resizeCalendarNoScroll(0, 4, 9, 17);
+            this.resizeCalendar(0, 4, 9, 17);
         }
     }]);
 
     return Calendar;
+}();
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MyCourses = function () {
+    function MyCourses(uni, term) {
+        _classCallCheck(this, MyCourses);
+
+        this.courses = [];
+        this.generator = false;
+
+        this.uni = uni;
+        this.term = term;
+
+        $("#coursegroups").empty();
+        $("#courseList").empty();
+
+        // Update the preferences shown
+        window.preferences.updatedUni(uni);
+
+        this.numConvert = {
+            0: "All",
+            1: "One",
+            2: "Two",
+            3: "Three",
+            4: "Four",
+            5: "Five"
+        };
+    }
+
+    /*
+        Creates and appends the "Add group" button
+    */
+
+
+    _createClass(MyCourses, [{
+        key: "genAddGroupBtn",
+        value: function genAddGroupBtn() {
+            var self = this;
+
+            var addGroupbtn = $('<li role="presentation" id="addGroupbtn" style="margin-left: 8px;"' + 'data-toggle="tooltip" title="Add New Course Group"><a class="MyCourses">&plus;</a></li>');
+
+            // Initialize the tooltip
+            addGroupbtn.tooltip();
+
+            addGroupbtn.click(function (event) {
+                // Add One of group
+                self.addGroup(1);
+            });
+
+            $("#coursegroups").append(addGroupbtn);
+        }
+
+        /*
+            If there is a saved state, loads it and populates the courses
+            If not, sets up the initial state
+              Called by ClassList when done loading the class list
+        */
+
+    }, {
+        key: "loadState",
+        value: function loadState() {
+
+            // generate the add group btn
+            this.genAddGroupBtn();
+
+            var loadedState = localStorage.getItem(this.uni + "_" + this.term + "_saved");
+
+            // Parse it
+            if (loadedState != null) loadedState = JSON.parse(loadedState);
+
+            // Make sure it has a length > 0
+            if (loadedState != null && loadedState.length > 0) {
+                console.log("Loaded saved state");
+
+                this.courses = loadedState;
+
+                for (var group in this.courses) {
+                    var thisgroup = this.courses[group];
+
+                    if (group == 0) {
+                        // you cannot remove the first group
+                        this.generatePill(group, thisgroup["type"], true);
+                    } else {
+                        this.generatePill(group, thisgroup["type"]);
+                    }
+                }
+                // set the first group active
+                this.setGroupActive(0);
+
+                // start generation
+                this.startGeneration();
+            } else {
+                // add default group
+                this.addGroup(0, true);
+                this.setGroupActive(0);
+            }
+        }
+
+        /*
+            Saves the current selected courses into localStorage
+        */
+
+    }, {
+        key: "saveState",
+        value: function saveState() {
+            localStorage.setItem(this.uni + "_" + this.term + "_saved", JSON.stringify(this.courses));
+        }
+
+        /*
+            Adds a new course group of the specified type (0 for All, 1 for one, etc..)
+        */
+
+    }, {
+        key: "addGroup",
+        value: function addGroup(type, noremove) {
+            // make sure we have 4 total groups or less
+            if (this.courses.length <= 3) {
+                var thisgroup = { "type": type, "courses": {} };
+                var id = this.courses.length;
+                this.courses[id] = thisgroup;
+
+                this.generatePill(id, type, noremove);
+            }
+
+            // Remove the add button if the max group amount is exceeded
+            if (this.courses.length == 4) $("#addGroupbtn").hide();
+        }
+
+        /*
+            Generates, binds, and appends the given pill with the speicifed id and type
+        */
+
+    }, {
+        key: "generatePill",
+        value: function generatePill(id, type, noremove) {
+            var self = this;
+
+            var text = this.numConvert[type] + " of";
+
+            var html = $('<li class="dropdown" groupid="' + id + '"><a style="cursor: pointer;" id="grouptext" data-toggle="dropdown" class="dropdown-toggle">' + text + '<span class="caret"></span></a><ul class="dropdown-menu" aria-labelledby="grouptext" style="min-width: 90px;"></ul></li>');
+
+            html.find("a:first").click(function (e) {
+                // If a pill is already selected, open the dropdown
+                // If not, set the pill as active
+
+                // check if this group is already active
+                var groupid = $(this).parent().attr("groupid");
+
+                // Check if we need to set this as active
+                if (groupid != self.activeGroup) {
+                    // we don't want the dropdown to open for this item
+                    e.stopPropagation();
+
+                    // check if the dropdown for the old active pill is open
+                    // if so, close it
+                    var isopen = $('li[groupid="' + self.activeGroup + '"]').hasClass("open");
+
+                    if (isopen == true) {
+                        // close it
+                        $('li[groupid="' + self.activeGroup + '"]').find('.dropdown-menu').dropdown('toggle');
+                    }
+
+                    // set this group as active
+                    self.setGroupActive(groupid);
+                }
+            });
+
+            // Populate the dropdown
+            html.find('.dropdown-menu').append(this.generatePillDropdown(noremove));
+
+            // Bind the dropdown click handler
+            html.find('li').click(function (event) {
+                // find the group type
+                var grouptype = $(this).attr("grouptype");
+                // find the group id
+                var groupid = $(this).parent().parent().attr("groupid");
+
+                if (grouptype == -1) {
+                    // wants to remove this group
+                    self.removeGroup(groupid);
+                } else {
+                    // Change the group type
+                    self.changeGroupType(groupid, grouptype);
+                }
+            });
+
+            $("#addGroupbtn").before(html);
+        }
+
+        /*
+            Removes the specified group and removes the appropriate HTML elements
+        */
+
+    }, {
+        key: "removeGroup",
+        value: function removeGroup(groupid) {
+            groupid = parseInt(groupid);
+
+            // we need to remove this pill
+            $('li[groupid="' + groupid + '"]').remove();
+
+            // set the previous group to active
+            this.setGroupActive(groupid - 1);
+
+            // we need to change the HTML groupid tags of the groups after this one
+            if (groupid + 1 < this.courses.length) {
+                // this is not the last group
+
+                // decrement the groupid of every subsequent group
+                for (var x = groupid + 1; x < this.courses.length; x++) {
+                    $('li[groupid="' + x + '"]').attr("groupid", x - 1);
+                }
+            }
+
+            // now we need to splice the array
+            this.courses.splice(groupid, 1);
+
+            // Check if we can display the add button again
+            if (this.courses.length < 4) $("#addGroupbtn").show();
+
+            // regenerate the schedules
+            this.startGeneration();
+        }
+
+        /*
+            Changes the type of a group type and updates the element
+        */
+
+    }, {
+        key: "changeGroupType",
+        value: function changeGroupType(id, type) {
+            this.courses[id]["type"] = type;
+
+            // Change the HTML
+            $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
+
+            this.startGeneration();
+        }
+
+        /*
+            Sets the specified group to active
+        */
+
+    }, {
+        key: "setGroupActive",
+        value: function setGroupActive(id) {
+            // remove old active class
+            if (this.activeGroup != undefined) {
+                $('li[groupid="' + this.activeGroup + '"]').removeClass("active");
+            }
+
+            this.activeGroup = id;
+            $('li[groupid="' + id + '"]').addClass("active");
+
+            // now display all the courses in the group
+            this.displayGroup(this.activeGroup);
+        }
+
+        /*
+            Populates the courses in the specified group
+        */
+
+    }, {
+        key: "displayGroup",
+        value: function displayGroup(group) {
+            var self = this;
+
+            // empty out any current courses
+            $("#courseList").empty();
+
+            for (var course in self.courses[self.activeGroup]["courses"]) {
+                var course = self.courses[self.activeGroup]["courses"][course];
+
+                self.displayCourse(course["obj"], course["obj"]["path"]);
+            }
+        }
+
+        /*
+            Generates the dropdown HTML for a group pill
+        */
+
+    }, {
+        key: "generatePillDropdown",
+        value: function generatePillDropdown(noremove) {
+            var html = '';
+
+            for (var x in this.numConvert) {
+                html += '<li grouptype="' + x + '"><a>' + this.numConvert[x] + ' of</a></li>';
+            }
+
+            if (noremove != true) {
+                html += '<li role="separator" class="divider"></li>';
+                html += '<li grouptype="-1"><a>Remove</a></li>';
+            }
+
+            return html;
+        }
+
+        /*
+            Expands the type name (LEC = Lecture, TUT = Tutorial)
+        */
+
+    }, {
+        key: "typeExpand",
+        value: function typeExpand(type) {
+            var map = {
+                "LEC": "Lecture",
+                "TUT": "Tutorial",
+                "LAB": "Lab",
+                "SEM": "Seminar",
+                "LCL": "Lecture/Lab",
+                "LBL": "Lab/Lecture",
+                "CLN": "Clinic",
+                "DD": "Distance Delivery",
+                "BL": "Blended Delivery",
+                "WKT": "Work Term",
+                "FLD": "Field Work",
+                "PRC": "Practicum",
+                "CLI": "Clinical",
+                "IDS": "Internship"
+            };
+
+            if (map[type] != undefined) {
+                return map[type];
+            } else {
+                return type;
+            }
+        }
+
+        /*
+            Deletes the given course in any group except the passed in one
+        */
+
+    }, {
+        key: "deleteCourseFromNonSafe",
+        value: function deleteCourseFromNonSafe(delcourse, safegroup) {
+            // iterate the groups
+            for (var group in this.courses) {
+                if (group != safegroup) {
+                    // we can delete in this group
+                    for (var course in this.courses[group]["courses"]) {
+                        if (course == delcourse) {
+                            delete this.courses[group]["courses"][course];
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
+            Adds the specified course to the current active group and populates the HTML
+        */
+
+    }, {
+        key: "addCourse",
+        value: function addCourse(course, path, classid) {
+            var self = this;
+
+            // We want a separate copy of the obj to work on
+            course = jQuery.extend({}, course);
+
+            // add the path to the obj
+            course["path"] = path;
+
+            var subject = path.split("\\");
+
+            var coursenum = subject[subject.length - 1]; // 203
+            var subject = subject[subject.length - 2]; // CPSC
+
+            var coursecode = subject + " " + coursenum; // CPSC 203
+
+
+            // Add the key if it isn't there
+            if (self.courses[self.activeGroup]["courses"][coursecode] == undefined) {
+                self.courses[self.activeGroup]["courses"][coursecode] = {};
+                self.courses[self.activeGroup]["courses"][coursecode]["types"] = {};
+
+                // add the possible types
+                for (var classv in course["classes"]) {
+                    if (course["classes"][classv]["type"] != undefined) {
+                        var thistype = course["classes"][classv]["type"];
+                        self.courses[self.activeGroup]["courses"][coursecode]["types"][thistype] = true;
+                    }
+                }
+
+                // check to see if any other groups have this course, is so, delete the course from them
+                self.deleteCourseFromNonSafe(coursecode, self.activeGroup);
+
+                self.displayCourse(course, path, undefined, true);
+            }
+
+            var thiscourse = self.courses[self.activeGroup]["courses"][coursecode];
+
+            // set the course obj
+            thiscourse["obj"] = course;
+
+            if (classid != undefined) {
+                var classtype = true;
+
+                // figure out the class type
+                for (var classv in course["classes"]) {
+                    if (course["classes"][classv]["id"] == classid) {
+                        classtype = course["classes"][classv]["type"];
+                        break;
+                    }
+                }
+
+                if (thiscourse["types"][classtype] != true) {
+                    // update the class list button (remove the old class button)
+                    window.classList.updateRemovedClass(thiscourse["types"][classtype]);
+                }
+
+                thiscourse["types"][classtype] = classid;
+
+                // Update the accordion if its open
+                self.updateAccordion(coursecode);
+
+                // update the classlist buttons
+                window.classList.updateAddedCourse(coursecode);
+            }
+
+            this.startGeneration();
+        }
+
+        /*
+            Updates the data in the given open accordion
+        */
+
+    }, {
+        key: "updateAccordion",
+        value: function updateAccordion(course) {
+            var self = this;
+
+            // get the label
+            var label = $('label[path="' + course + '"]');
+
+            // Check if its open
+            if (label.attr("accordopen") == "true") {
+                // update it
+                label.attr("accordopen", "false");
+                label.parent().find("ul:first").slideUp(function () {
+                    $(this).empty();
+                    self.bindButton(label, "course");
+                });
+            }
+        }
+
+        /*
+            Removes a course from the UI and courses obj
+        */
+
+    }, {
+        key: "removeCourse",
+        value: function removeCourse(course) {
+            for (var group in this.courses) {
+                var thisgroup = this.courses[group];
+
+                if (thisgroup["courses"][course] != undefined) {
+
+                    // Remove any remove class buttons since those classes are no longer added
+                    for (var classval in thisgroup["courses"][course]["types"]) {
+                        var thisclassval = thisgroup["courses"][course]["types"][classval];
+
+                        if (thisclassval != true) {
+                            window.classList.updateRemovedClass(thisclassval);
+                        }
+                    }
+
+                    // Delete this course
+                    delete thisgroup["courses"][course];
+
+                    // check if its the active group
+                    // if so, remove the UI element
+                    if (group == this.activeGroup) {
+                        var label = $('label[path="' + course + '"]');
+                        label.parent().slideUp(function () {
+                            $(this).empty();
+                        });
+                    }
+                }
+            }
+
+            // Restart generation
+            this.startGeneration();
+        }
+
+        /*
+            Returns a boolean as to whether a specified course is in any selected group
+        */
+
+    }, {
+        key: "hasCourse",
+        value: function hasCourse(course) {
+            for (var group in this.courses) {
+                var thisgroup = this.courses[group];
+
+                if (thisgroup["courses"][course] != undefined) {
+                    return true;
+                }
+            }
+
+            // We didn't find a result
+            return false;
+        }
+
+        /*
+            Returns a boolean as to whether the specified class id has been selected in any group
+        */
+
+    }, {
+        key: "hasClass",
+        value: function hasClass(classid) {
+            for (var group in this.courses) {
+                var thisgroup = this.courses[group];
+
+                for (var course in thisgroup["courses"]) {
+                    for (var classv in thisgroup["courses"][course]["types"]) {
+                        if (thisgroup["courses"][course]["types"][classv] == classid) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /*
+            Removes the specified class from the UI and generation
+        */
+
+    }, {
+        key: "removeClass",
+        value: function removeClass(classid) {
+            for (var group in this.courses) {
+                var thisgroup = this.courses[group];
+
+                for (var course in thisgroup["courses"]) {
+                    for (var classv in thisgroup["courses"][course]["types"]) {
+                        if (thisgroup["courses"][course]["types"][classv] == classid) {
+                            thisgroup["courses"][course]["types"][classv] = true;
+
+                            // update UI
+                            this.updateAccordion(course);
+
+                            // update the generation
+                            this.startGeneration();
+
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /*
+            Appends the given course to the current courselist HTML
+        */
+
+    }, {
+        key: "displayCourse",
+        value: function displayCourse(course, path, classid, animated) {
+            var self = this;
+
+            var html = "";
+            if (classid == undefined) {
+                html = $(this.generateCourseHTML(course, path));
+
+                html.find("label").click(function (event) {
+                    event.stopPropagation();
+                    self.bindButton(this, "course");
+                });
+
+                // bind remove button
+                html.find(".removeBtn").click(function (event) {
+                    event.stopPropagation();
+
+                    var coursecode = $(this).parent().attr("path");
+
+                    // remove the course in My Courses
+                    self.removeCourse(coursecode);
+
+                    // we want to update the general course remove button
+                    window.classList.updateRemovedCourse($(this).parent().attr("path"));
+                });
+            }
+
+            if (animated) {
+                html.hide().prependTo("#courseList").slideDown();
+            } else {
+                $("#courseList").prepend(html);
+            }
+        }
+
+        /*
+            Binds an accordion click
+        */
+
+    }, {
+        key: "bindButton",
+        value: function bindButton(button, type) {
+            var self = this;
+
+            // Onclick handler
+
+            // do we need to close the element?
+            if ($(button).attr("accordopen") == "true") {
+                // Close the element
+                $(button).attr("accordopen", "false");
+
+                $(button).parent().find("ul").slideUp(function () {
+                    $(this).empty();
+                });
+            } else {
+
+                // Open accordion
+                var thispath = $(button).attr("path");
+                $(button).attr("accordopen", "true");
+
+                var element = $(button).parent().find("ul");
+
+                // Populate depending on type
+                if (type == "course") {
+                    // Element to populate
+                    self.displayCourseDropDown(element, thispath);
+                }
+            }
+        }
+
+        /*
+            Generates the dropdown when clicking on a course in MyCourses
+        */
+
+    }, {
+        key: "displayCourseDropDown",
+        value: function displayCourseDropDown(element, coursecode) {
+            var self = this;
+
+            element.slideUp(function () {
+
+                var thiscourse = self.courses[self.activeGroup]["courses"][coursecode];
+
+                // iterate through each class type
+                for (var type in thiscourse["types"]) {
+                    var thistype = thiscourse["types"][type];
+                    if (thistype == true) {
+                        // They don't have a specific selection, we'll have to generate it
+                        var html = '<div class="accordiondesc" style="padding-left: 50px;" type="' + type + '">' + self.typeExpand(type) + '</div>';
+                        element.append(html);
+                    } else if (thistype != false) {
+                        // this is a specific class
+
+                        // find the obj of the class
+                        var data = { "classes": [] };
+
+                        for (var classv in thiscourse["obj"]["classes"]) {
+                            var thisclass = thiscourse["obj"]["classes"][classv];
+                            if (thisclass["id"] == thistype) {
+                                // we found the obj for this class
+                                data["classes"].push(thisclass);
+                                break;
+                            }
+                        }
+
+                        if (data["classes"].length > 0) {
+                            // generate the table
+                            var html = window.classList.generateClasses(data, element, false, false);
+
+                            // add the remove button
+                            var removebtn = $('<td><button class="btn btn-default" id="removeClassBtn" type="' + type + '" code="' + coursecode + '" myclassid="' + data["classes"][0]["id"] + '">×</button></td>');
+
+                            // bind class removing button
+                            removebtn.find("button").click(function (event) {
+                                event.stopPropagation();
+                                var type = $(this).attr("type");
+                                var coursecode = $(this).attr("code");
+
+                                // set to generic class
+                                self.courses[self.activeGroup]["courses"][coursecode]["types"][type] = true;
+
+                                // update the class list
+                                window.classList.updateRemovedClass($(this).attr("myclassid"));
+
+                                // update UI
+                                self.updateAccordion(coursecode);
+
+                                // update the generation
+                                self.startGeneration();
+                            });
+
+                            html.find("tr:first").append(removebtn);
+                            // <div class="removeBtn">×</div>
+
+                            // edit the css
+                            html.css("padding-left", "50px");
+                            html.css("padding-right", "15px");
+                        }
+                    }
+                }
+
+                element.slideDown();
+            });
+        }
+
+        /*
+            Initiates schedule generation given the current chosen classes
+        */
+
+    }, {
+        key: "startGeneration",
+        value: function startGeneration() {
+            // we want to terminate the previous generator if its still running
+            if (this.generator != false) this.generator.stop();
+
+            // generate the schedules
+            this.generator = new Generator(this.courses);
+
+            // save the current state to localStorage
+            this.saveState();
+        }
+
+        /*
+            Generates the course HTML
+        */
+
+    }, {
+        key: "generateCourseHTML",
+        value: function generateCourseHTML(course, path) {
+            var subject = path.split("\\");
+            var coursenum = subject[subject.length - 1];
+            var subject = subject[subject.length - 2];
+
+            var title = subject + " " + coursenum;
+
+            if (course["description"] != undefined && course["description"]["name"] != undefined) {
+                title += " - " + course["description"]["name"];
+            }
+
+            return this.generateAccordionHTML(title, subject + " " + coursenum);
+        }
+
+        /*
+            Generates the course remove button HTML
+        */
+
+    }, {
+        key: "generateRemoveButton",
+        value: function generateRemoveButton() {
+            return '<button class="btn btn-default">&times;</button>';
+        }
+
+        /*
+            Generates the general accordian structure HTML given a value
+        */
+
+    }, {
+        key: "generateAccordionHTML",
+        value: function generateAccordionHTML(value, path) {
+            return '<li class="has-children"><label path="' + path + '" accordopen="false">' + value + '<div class="removeBtn">×</div></label><ul></ul></li>';
+        }
+    }]);
+
+    return MyCourses;
+}();
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Preferences = function () {
+    function Preferences() {
+        _classCallCheck(this, Preferences);
+
+        this.instantiateSliders();
+        this.loadPreferences();
+
+        // Update the Uni, remove needless options on start
+        this.updatedUni();
+    }
+
+    _createClass(Preferences, [{
+        key: 'instantiateSliders',
+        value: function instantiateSliders() {
+            var self = this;
+
+            self.morningslider = $('#slider_morning').slider().on('slideStop', function () {
+                self.savePreferences();
+            });
+
+            self.nightslider = $('#slider_night').slider().on('slideStop', function () {
+                self.savePreferences();
+            });
+            self.consecutiveslider = $('#slider_consecutive').slider().on('slideStop', function () {
+                self.savePreferences();
+            });
+            self.rmpslider = $('#slider_rmp').slider().on('slideStop', function () {
+                self.savePreferences();
+            });
+
+            // Bind checkbox change event
+            $("#onlyOpenCheckbox").change(function () {
+                self.savePreferences();
+            });
+
+            // Bind Engineering student change event
+            $("#engineeringCheckbox").change(function () {
+                self.savePreferences(true);
+            });
+
+            // Initialize tooltip for engineering checkbox
+            $("#engineeringCheckboxTooltip").tooltip();
+        }
+
+        /*
+            Hides/shows different preferences based upon the current uni selected
+        */
+
+    }, {
+        key: 'updatedUni',
+        value: function updatedUni(newuni) {
+            $("#engineeringCheckbox").parent().hide();
+
+            if (newuni == "UAlberta") {
+                $("#engineeringCheckbox").parent().show();
+            }
+        }
+    }, {
+        key: 'getMorningValue',
+        value: function getMorningValue() {
+            return this.morningslider.slider('getValue');
+        }
+    }, {
+        key: 'getNightValue',
+        value: function getNightValue() {
+            return this.nightslider.slider('getValue');
+        }
+    }, {
+        key: 'getConsecutiveValue',
+        value: function getConsecutiveValue() {
+            return this.consecutiveslider.slider('getValue');
+        }
+    }, {
+        key: 'getRMPValue',
+        value: function getRMPValue() {
+            return this.rmpslider.slider('getValue');
+        }
+    }, {
+        key: 'getOnlyOpenValue',
+        value: function getOnlyOpenValue() {
+            return $("#onlyOpenCheckbox").is(":checked");
+        }
+    }, {
+        key: 'getEngineeringValue',
+        value: function getEngineeringValue() {
+            return $('#engineeringCheckbox').is(':checked');
+        }
+    }, {
+        key: 'setMorningValue',
+        value: function setMorningValue(value) {
+            if (value != null) this.morningslider.slider('setValue', parseInt(value));
+        }
+    }, {
+        key: 'setNightValue',
+        value: function setNightValue(value) {
+            if (value != null) this.nightslider.slider('setValue', parseInt(value));
+        }
+    }, {
+        key: 'setConsecutiveValue',
+        value: function setConsecutiveValue(value) {
+            if (value != null) this.consecutiveslider.slider('setValue', parseInt(value));
+        }
+    }, {
+        key: 'setRMPValue',
+        value: function setRMPValue(value) {
+            if (value != null) this.rmpslider.slider('setValue', parseInt(value));
+        }
+    }, {
+        key: 'setOnlyOpenValue',
+        value: function setOnlyOpenValue(value) {
+            if (value != null) $("#onlyOpenCheckbox").attr("checked", value === "true");
+        }
+    }, {
+        key: 'setEngineeringValue',
+        value: function setEngineeringValue(value) {
+            if (value != null) $("#engineeringCheckbox").attr("checked", value === "true");
+        }
+
+        /*
+            Saves the current slider values to localStorage
+        */
+
+    }, {
+        key: 'savePreferences',
+        value: function savePreferences(regenerate) {
+            localStorage.setItem('morningslider', this.getMorningValue());
+            localStorage.setItem('nightslider', this.getNightValue());
+            localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
+            localStorage.setItem('rmpslider', this.getRMPValue());
+            localStorage.setItem('onlyOpenCheckbox', this.getOnlyOpenValue());
+            localStorage.setItem('engineeringCheckbox', this.getEngineeringValue());
+
+            // update any current schedule generation
+            if (window.mycourses.generator != false) {
+                if (regenerate != true) {
+                    // update the scores
+                    window.mycourses.generator.updateScores();
+                } else {
+                    window.mycourses.startGeneration();
+                }
+            }
+        }
+
+        /*
+            If there are saved preferences in localStorage, this loads them
+        */
+
+    }, {
+        key: 'loadPreferences',
+        value: function loadPreferences() {
+            this.setMorningValue(localStorage.getItem('morningslider'));
+            this.setNightValue(localStorage.getItem('nightslider'));
+            this.setConsecutiveValue(localStorage.getItem('consecutiveslider'));
+            this.setRMPValue(localStorage.getItem('rmpslider'));
+            this.setOnlyOpenValue(localStorage.getItem('onlyOpenCheckbox'));
+            this.setEngineeringValue(localStorage.getItem('engineeringCheckbox'));
+        }
+    }]);
+
+    return Preferences;
 }();
 "use strict";
 
@@ -2540,6 +3532,299 @@ var ClassList = function () {
     }]);
 
     return ClassList;
+}();
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Welcome = function () {
+    function Welcome() {
+        _classCallCheck(this, Welcome);
+
+        this.baseURL = "http://api.schedulestorm.com:5000/v1/";
+
+        // We want to get the list of Unis
+        this.getUnis();
+    }
+
+    /*
+        Obtains the University list from the API server 
+    */
+
+
+    _createClass(Welcome, [{
+        key: "getUnis",
+        value: function getUnis() {
+            // empty the parent
+            $("#uniModalList").find("#dataList").empty();
+
+            var thisobj = this;
+
+            $("#welcomeModal").modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            // Add the loading animation
+            var loading = new Loading($("#uniModalList").find("#dataList"), "Loading University Data...");
+
+            $.getJSON(this.baseURL + "unis", function (data) {
+                // remove the loading animation
+                loading.remove(function () {
+                    // Populate the dropdown in the top right
+                    thisobj.populateUniDropdown(data);
+
+                    window.unis = data;
+                    thisobj.unis = data;
+
+                    var localUni = localStorage.getItem("uni");
+                    var localTerm = localStorage.getItem("term");
+
+                    // Check to see if they have already selected a Uni and Term in localstorage
+                    if (thisobj.unis[localUni] != undefined && thisobj.unis[localUni]["terms"][localTerm] != undefined) {
+                        // Hide the modal
+                        $("#welcomeModal").modal('hide');
+
+                        // Set this uni
+                        thisobj.uni = localUni;
+
+                        // Populate the top right dropdown
+                        $("#MyUniversity").hide().html(thisobj.unis[thisobj.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
+
+                        // Load up the classes
+                        window.classList = new ClassList(localUni, localTerm);
+                        window.mycourses = new MyCourses(localUni, localTerm);
+                    } else {
+                        $("#uniModalList").find("#dataList").hide();
+
+                        // New user with nothing selected, show them welcome prompts
+                        thisobj.populateUnis(data);
+                    }
+                });
+            });
+        }
+
+        /*
+            Populates the top right university dropdown (when the modal isn't showing) and handles the click events
+        */
+
+    }, {
+        key: "populateUniDropdown",
+        value: function populateUniDropdown(data) {
+            var self = this;
+
+            // Get the dropdown element
+            var dropdown = $("#MyUniversity").parent().find('.dropdown-menu');
+
+            for (var uni in data) {
+                // Add this Uni to the dropdown
+
+                var uniobj = data[uni];
+
+                var uniHTML = '<li class="dropdown-items"><a uni="' + uni + '">' + uniobj["name"];
+
+                if (uniobj["scraping"] == true) {
+                    uniHTML += '<span class="label label-default" style="margin-left: 10px;">Updating</span>';
+                }
+
+                uniHTML += '</a></li>';
+
+                var html = $(uniHTML);
+
+                // Bind an onclick event to it
+                html.click(function () {
+
+                    // Get the selected uni code (UCalgary, etc...)
+                    self.uni = $(this).find("a").attr("uni");
+
+                    // Change the text of the element
+                    $("#MyUniversity").hide().html(self.unis[self.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
+
+                    // Make sure the modal is active
+                    $("#welcomeModal").modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+
+                    // Let the user choose what term they want
+                    self.displayTerms(self.uni);
+                });
+
+                // Append it
+                dropdown.append(html);
+            }
+        }
+
+        /*
+            Populates the modal with the Unis
+        */
+
+    }, {
+        key: "populateUnis",
+        value: function populateUnis(unis) {
+            var thisobj = this;
+
+            var list = $("#uniModalList").find("#dataList");
+            var wantedText = $("#uniModalList").find("#wantedData");
+
+            wantedText.text("Please choose your University:");
+
+            // Iterate through the unis and add the buttons
+            for (var uni in unis) {
+                var labelText = undefined;
+                if (this.unis[uni]["scraping"] == true) labelText = "Updating";
+
+                var button = $(this.createButton(unis[uni]["name"], uni, labelText));
+                button.click(function () {
+
+                    thisobj.uni = $(this).attr("value");
+
+                    $("#MyUniversity").hide().html($(this).text() + " <span class='caret'></span>").fadeIn('slow');
+
+                    $("#uniModalList").slideUp(function () {
+                        thisobj.displayTerms(thisobj.uni);
+                    });
+                });
+
+                list.append(button);
+            }
+
+            list.append("<br><a href='https://github.com/Step7750/ScheduleStorm#supported-universities'>Don't see your school? Tell Us!</a>");
+
+            list.slideDown();
+        }
+
+        /*
+            Displays the terms to the user
+        */
+
+    }, {
+        key: "displayTerms",
+        value: function displayTerms(uni) {
+            var thisobj = this; // Keep the reference
+
+            var list = $("#uniModalList").find("#dataList");
+            list.empty();
+            var wantedText = $("#uniModalList").find("#wantedData");
+
+            wantedText.text("Please choose your term:");
+
+            for (var term in this.unis[uni]["terms"]) {
+                var button = $(this.createButton(this.unis[uni]["terms"][term], term));
+
+                button.click(function () {
+
+                    thisobj.term = $(this).attr("value");
+
+                    window.classList = new ClassList(thisobj.uni, thisobj.term);
+                    window.mycourses = new MyCourses(thisobj.uni, thisobj.term);
+
+                    // reset the calendar
+                    window.calendar.resetCalendar();
+
+                    // hide the modal
+                    $("#welcomeModal").modal('hide');
+                });
+                list.append(button);
+            }
+
+            $("#uniModalList").slideDown();
+        }
+
+        /*
+            Returns the text for an HTML button given text, value and label text
+        */
+
+    }, {
+        key: "createButton",
+        value: function createButton(text, value, labelText) {
+            var html = '<button type="button" class="btn btn-default" value="' + value + '">' + text;
+
+            if (labelText != undefined) html += '<span class="label label-default" style="margin-left: 10px;">' + labelText + '</span>';
+
+            html += '</button>';
+
+            return html;
+        }
+    }]);
+
+    return Welcome;
+}();
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Loading = function () {
+	// Creates the loading animation at the specified element
+
+	function Loading(element, loadingtext, styling) {
+		_classCallCheck(this, Loading);
+
+		this.element = element;
+
+		// We need at least 150px for the animation
+		element.css("min-height", "150px");
+
+		// TODO: We should use the user's most recent selections to generate the loading subjects
+		this.html = $(this.createCubeHTML(["CPSC", "ART", "CHEM", "GEOG", "MATH", "STAT"], loadingtext, styling)).hide().appendTo(element).fadeIn();
+	}
+
+	/*
+ 	Constructs the cube html given the subjects
+ */
+
+
+	_createClass(Loading, [{
+		key: "createCubeHTML",
+		value: function createCubeHTML(subjects, text, styling) {
+			this.faces = ["front", "back", "left", "right", "bottom", "top"];
+
+			if (styling == undefined) var html = "<center id='loading'><div style='display: inline;' id='status'>" + text + "</div><div class='Cube panelLoad'>";else var html = "<center id='loading' style='" + styling + "'><div style='display: inline;' id='status'>" + text + "</div><div class='Cube panelLoad'>";
+
+			for (var key in subjects) {
+				html += "<div class='cube-face cube-face-" + this.faces[key] + "'>" + subjects[key] + "</div>";
+			}
+			html += "</div></center>";
+
+			return html;
+		}
+
+		/*
+  	Fade out and remove the loading animation
+  */
+
+	}, {
+		key: "remove",
+		value: function remove(cb) {
+			var self = this;
+
+			// Fade out the animation
+			this.html.fadeOut(function () {
+				// Change the min height on the parent, remove the loader html and initiate the callback
+				self.element.animate({ "min-height": "" }, 500, function () {
+					self.html.remove();
+					cb();
+				});
+			});
+		}
+
+		/*
+  	Sets the status text to the given message
+  */
+
+	}, {
+		key: "setStatus",
+		value: function setStatus(message) {
+			console.log("Changing data");
+			this.html.find("#status:first").text(message);
+		}
+	}]);
+
+	return Loading;
 }();
 "use strict";
 
@@ -3869,1015 +5154,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Loading = function () {
-	// Creates the loading animation at the specified element
-
-	function Loading(element, loadingtext, styling) {
-		_classCallCheck(this, Loading);
-
-		this.element = element;
-
-		// We need at least 150px for the animation
-		element.css("min-height", "150px");
-
-		// TODO: We should use the user's most recent selections to generate the loading subjects
-		this.html = $(this.createCubeHTML(["CPSC", "ART", "CHEM", "GEOG", "MATH", "STAT"], loadingtext, styling)).hide().appendTo(element).fadeIn();
-	}
-
-	/*
- 	Constructs the cube html given the subjects
- */
-
-
-	_createClass(Loading, [{
-		key: "createCubeHTML",
-		value: function createCubeHTML(subjects, text, styling) {
-			this.faces = ["front", "back", "left", "right", "bottom", "top"];
-
-			if (styling == undefined) var html = "<center id='loading'><div style='display: inline;' id='status'>" + text + "</div><div class='Cube panelLoad'>";else var html = "<center id='loading' style='" + styling + "'><div style='display: inline;' id='status'>" + text + "</div><div class='Cube panelLoad'>";
-
-			for (var key in subjects) {
-				html += "<div class='cube-face cube-face-" + this.faces[key] + "'>" + subjects[key] + "</div>";
-			}
-			html += "</div></center>";
-
-			return html;
-		}
-
-		/*
-  	Fade out and remove the loading animation
-  */
-
-	}, {
-		key: "remove",
-		value: function remove(cb) {
-			var self = this;
-
-			// Fade out the animation
-			this.html.fadeOut(function () {
-				// Change the min height on the parent, remove the loader html and initiate the callback
-				self.element.animate({ "min-height": "" }, 500, function () {
-					self.html.remove();
-					cb();
-				});
-			});
-		}
-
-		/*
-  	Sets the status text to the given message
-  */
-
-	}, {
-		key: "setStatus",
-		value: function setStatus(message) {
-			console.log("Changing data");
-			this.html.find("#status:first").text(message);
-		}
-	}]);
-
-	return Loading;
-}();
-"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var MyCourses = function () {
-    function MyCourses(uni, term) {
-        _classCallCheck(this, MyCourses);
-
-        this.courses = [];
-        this.generator = false;
-
-        this.uni = uni;
-        this.term = term;
-
-        $("#coursegroups").empty();
-        $("#courseList").empty();
-
-        // Update the preferences shown
-        window.preferences.updatedUni(uni);
-
-        this.numConvert = {
-            0: "All",
-            1: "One",
-            2: "Two",
-            3: "Three",
-            4: "Four",
-            5: "Five"
-        };
-    }
-
-    /*
-        Creates and appends the "Add group" button
-    */
-
-
-    _createClass(MyCourses, [{
-        key: "genAddGroupBtn",
-        value: function genAddGroupBtn() {
-            var self = this;
-
-            var addGroupbtn = $('<li role="presentation" id="addGroupbtn" style="margin-left: 8px;"' + 'data-toggle="tooltip" title="Add New Course Group"><a class="MyCourses">&plus;</a></li>');
-
-            // Initialize the tooltip
-            addGroupbtn.tooltip();
-
-            addGroupbtn.click(function (event) {
-                // Add One of group
-                self.addGroup(1);
-            });
-
-            $("#coursegroups").append(addGroupbtn);
-        }
-
-        /*
-            If there is a saved state, loads it and populates the courses
-            If not, sets up the initial state
-              Called by ClassList when done loading the class list
-        */
-
-    }, {
-        key: "loadState",
-        value: function loadState() {
-
-            // generate the add group btn
-            this.genAddGroupBtn();
-
-            var loadedState = localStorage.getItem(this.uni + "_" + this.term + "_saved");
-
-            // Parse it
-            if (loadedState != null) loadedState = JSON.parse(loadedState);
-
-            // Make sure it has a length > 0
-            if (loadedState != null && loadedState.length > 0) {
-                console.log("Loaded saved state");
-
-                this.courses = loadedState;
-
-                for (var group in this.courses) {
-                    var thisgroup = this.courses[group];
-
-                    if (group == 0) {
-                        // you cannot remove the first group
-                        this.generatePill(group, thisgroup["type"], true);
-                    } else {
-                        this.generatePill(group, thisgroup["type"]);
-                    }
-                }
-                // set the first group active
-                this.setGroupActive(0);
-
-                // start generation
-                this.startGeneration();
-            } else {
-                // add default group
-                this.addGroup(0, true);
-                this.setGroupActive(0);
-            }
-        }
-
-        /*
-            Saves the current selected courses into localStorage
-        */
-
-    }, {
-        key: "saveState",
-        value: function saveState() {
-            localStorage.setItem(this.uni + "_" + this.term + "_saved", JSON.stringify(this.courses));
-        }
-
-        /*
-            Adds a new course group of the specified type (0 for All, 1 for one, etc..)
-        */
-
-    }, {
-        key: "addGroup",
-        value: function addGroup(type, noremove) {
-            // make sure we have 4 total groups or less
-            if (this.courses.length <= 3) {
-                var thisgroup = { "type": type, "courses": {} };
-                var id = this.courses.length;
-                this.courses[id] = thisgroup;
-
-                this.generatePill(id, type, noremove);
-            }
-
-            // Remove the add button if the max group amount is exceeded
-            if (this.courses.length == 4) $("#addGroupbtn").hide();
-        }
-
-        /*
-            Generates, binds, and appends the given pill with the speicifed id and type
-        */
-
-    }, {
-        key: "generatePill",
-        value: function generatePill(id, type, noremove) {
-            var self = this;
-
-            var text = this.numConvert[type] + " of";
-
-            var html = $('<li class="dropdown" groupid="' + id + '"><a style="cursor: pointer;" id="grouptext" data-toggle="dropdown" class="dropdown-toggle">' + text + '<span class="caret"></span></a><ul class="dropdown-menu" aria-labelledby="grouptext" style="min-width: 90px;"></ul></li>');
-
-            html.find("a:first").click(function (e) {
-                // If a pill is already selected, open the dropdown
-                // If not, set the pill as active
-
-                // check if this group is already active
-                var groupid = $(this).parent().attr("groupid");
-
-                // Check if we need to set this as active
-                if (groupid != self.activeGroup) {
-                    // we don't want the dropdown to open for this item
-                    e.stopPropagation();
-
-                    // check if the dropdown for the old active pill is open
-                    // if so, close it
-                    var isopen = $('li[groupid="' + self.activeGroup + '"]').hasClass("open");
-
-                    if (isopen == true) {
-                        // close it
-                        $('li[groupid="' + self.activeGroup + '"]').find('.dropdown-menu').dropdown('toggle');
-                    }
-
-                    // set this group as active
-                    self.setGroupActive(groupid);
-                }
-            });
-
-            // Populate the dropdown
-            html.find('.dropdown-menu').append(this.generatePillDropdown(noremove));
-
-            // Bind the dropdown click handler
-            html.find('li').click(function (event) {
-                // find the group type
-                var grouptype = $(this).attr("grouptype");
-                // find the group id
-                var groupid = $(this).parent().parent().attr("groupid");
-
-                if (grouptype == -1) {
-                    // wants to remove this group
-                    self.removeGroup(groupid);
-                } else {
-                    // Change the group type
-                    self.changeGroupType(groupid, grouptype);
-                }
-            });
-
-            $("#addGroupbtn").before(html);
-        }
-
-        /*
-            Removes the specified group and removes the appropriate HTML elements
-        */
-
-    }, {
-        key: "removeGroup",
-        value: function removeGroup(groupid) {
-            groupid = parseInt(groupid);
-
-            // we need to remove this pill
-            $('li[groupid="' + groupid + '"]').remove();
-
-            // set the previous group to active
-            this.setGroupActive(groupid - 1);
-
-            // we need to change the HTML groupid tags of the groups after this one
-            if (groupid + 1 < this.courses.length) {
-                // this is not the last group
-
-                // decrement the groupid of every subsequent group
-                for (var x = groupid + 1; x < this.courses.length; x++) {
-                    $('li[groupid="' + x + '"]').attr("groupid", x - 1);
-                }
-            }
-
-            // now we need to splice the array
-            this.courses.splice(groupid, 1);
-
-            // Check if we can display the add button again
-            if (this.courses.length < 4) $("#addGroupbtn").show();
-
-            // regenerate the schedules
-            this.startGeneration();
-        }
-
-        /*
-            Changes the type of a group type and updates the element
-        */
-
-    }, {
-        key: "changeGroupType",
-        value: function changeGroupType(id, type) {
-            this.courses[id]["type"] = type;
-
-            // Change the HTML
-            $('li[groupid="' + id + '"]').find("a:first").html(this.numConvert[type] + ' of<span class="caret"></span>');
-
-            this.startGeneration();
-        }
-
-        /*
-            Sets the specified group to active
-        */
-
-    }, {
-        key: "setGroupActive",
-        value: function setGroupActive(id) {
-            // remove old active class
-            if (this.activeGroup != undefined) {
-                $('li[groupid="' + this.activeGroup + '"]').removeClass("active");
-            }
-
-            this.activeGroup = id;
-            $('li[groupid="' + id + '"]').addClass("active");
-
-            // now display all the courses in the group
-            this.displayGroup(this.activeGroup);
-        }
-
-        /*
-            Populates the courses in the specified group
-        */
-
-    }, {
-        key: "displayGroup",
-        value: function displayGroup(group) {
-            var self = this;
-
-            // empty out any current courses
-            $("#courseList").empty();
-
-            for (var course in self.courses[self.activeGroup]["courses"]) {
-                var course = self.courses[self.activeGroup]["courses"][course];
-
-                self.displayCourse(course["obj"], course["obj"]["path"]);
-            }
-        }
-
-        /*
-            Generates the dropdown HTML for a group pill
-        */
-
-    }, {
-        key: "generatePillDropdown",
-        value: function generatePillDropdown(noremove) {
-            var html = '';
-
-            for (var x in this.numConvert) {
-                html += '<li grouptype="' + x + '"><a>' + this.numConvert[x] + ' of</a></li>';
-            }
-
-            if (noremove != true) {
-                html += '<li role="separator" class="divider"></li>';
-                html += '<li grouptype="-1"><a>Remove</a></li>';
-            }
-
-            return html;
-        }
-
-        /*
-            Expands the type name (LEC = Lecture, TUT = Tutorial)
-        */
-
-    }, {
-        key: "typeExpand",
-        value: function typeExpand(type) {
-            var map = {
-                "LEC": "Lecture",
-                "TUT": "Tutorial",
-                "LAB": "Lab",
-                "SEM": "Seminar",
-                "LCL": "Lecture/Lab",
-                "LBL": "Lab/Lecture",
-                "CLN": "Clinic",
-                "DD": "Distance Delivery",
-                "BL": "Blended Delivery",
-                "WKT": "Work Term",
-                "FLD": "Field Work",
-                "PRC": "Practicum",
-                "CLI": "Clinical",
-                "IDS": "Internship"
-            };
-
-            if (map[type] != undefined) {
-                return map[type];
-            } else {
-                return type;
-            }
-        }
-
-        /*
-            Deletes the given course in any group except the passed in one
-        */
-
-    }, {
-        key: "deleteCourseFromNonSafe",
-        value: function deleteCourseFromNonSafe(delcourse, safegroup) {
-            // iterate the groups
-            for (var group in this.courses) {
-                if (group != safegroup) {
-                    // we can delete in this group
-                    for (var course in this.courses[group]["courses"]) {
-                        if (course == delcourse) {
-                            delete this.courses[group]["courses"][course];
-                        }
-                    }
-                }
-            }
-        }
-
-        /*
-            Adds the specified course to the current active group and populates the HTML
-        */
-
-    }, {
-        key: "addCourse",
-        value: function addCourse(course, path, classid) {
-            var self = this;
-
-            // We want a separate copy of the obj to work on
-            course = jQuery.extend({}, course);
-
-            // add the path to the obj
-            course["path"] = path;
-
-            var subject = path.split("\\");
-
-            var coursenum = subject[subject.length - 1]; // 203
-            var subject = subject[subject.length - 2]; // CPSC
-
-            var coursecode = subject + " " + coursenum; // CPSC 203
-
-
-            // Add the key if it isn't there
-            if (self.courses[self.activeGroup]["courses"][coursecode] == undefined) {
-                self.courses[self.activeGroup]["courses"][coursecode] = {};
-                self.courses[self.activeGroup]["courses"][coursecode]["types"] = {};
-
-                // add the possible types
-                for (var classv in course["classes"]) {
-                    if (course["classes"][classv]["type"] != undefined) {
-                        var thistype = course["classes"][classv]["type"];
-                        self.courses[self.activeGroup]["courses"][coursecode]["types"][thistype] = true;
-                    }
-                }
-
-                // check to see if any other groups have this course, is so, delete the course from them
-                self.deleteCourseFromNonSafe(coursecode, self.activeGroup);
-
-                self.displayCourse(course, path, undefined, true);
-            }
-
-            var thiscourse = self.courses[self.activeGroup]["courses"][coursecode];
-
-            // set the course obj
-            thiscourse["obj"] = course;
-
-            if (classid != undefined) {
-                var classtype = true;
-
-                // figure out the class type
-                for (var classv in course["classes"]) {
-                    if (course["classes"][classv]["id"] == classid) {
-                        classtype = course["classes"][classv]["type"];
-                        break;
-                    }
-                }
-
-                if (thiscourse["types"][classtype] != true) {
-                    // update the class list button (remove the old class button)
-                    window.classList.updateRemovedClass(thiscourse["types"][classtype]);
-                }
-
-                thiscourse["types"][classtype] = classid;
-
-                // Update the accordion if its open
-                self.updateAccordion(coursecode);
-
-                // update the classlist buttons
-                window.classList.updateAddedCourse(coursecode);
-            }
-
-            this.startGeneration();
-        }
-
-        /*
-            Updates the data in the given open accordion
-        */
-
-    }, {
-        key: "updateAccordion",
-        value: function updateAccordion(course) {
-            var self = this;
-
-            // get the label
-            var label = $('label[path="' + course + '"]');
-
-            // Check if its open
-            if (label.attr("accordopen") == "true") {
-                // update it
-                label.attr("accordopen", "false");
-                label.parent().find("ul:first").slideUp(function () {
-                    $(this).empty();
-                    self.bindButton(label, "course");
-                });
-            }
-        }
-
-        /*
-            Removes a course from the UI and courses obj
-        */
-
-    }, {
-        key: "removeCourse",
-        value: function removeCourse(course) {
-            for (var group in this.courses) {
-                var thisgroup = this.courses[group];
-
-                if (thisgroup["courses"][course] != undefined) {
-
-                    // Remove any remove class buttons since those classes are no longer added
-                    for (var classval in thisgroup["courses"][course]["types"]) {
-                        var thisclassval = thisgroup["courses"][course]["types"][classval];
-
-                        if (thisclassval != true) {
-                            window.classList.updateRemovedClass(thisclassval);
-                        }
-                    }
-
-                    // Delete this course
-                    delete thisgroup["courses"][course];
-
-                    // check if its the active group
-                    // if so, remove the UI element
-                    if (group == this.activeGroup) {
-                        var label = $('label[path="' + course + '"]');
-                        label.parent().slideUp(function () {
-                            $(this).empty();
-                        });
-                    }
-                }
-            }
-
-            // Restart generation
-            this.startGeneration();
-        }
-
-        /*
-            Returns a boolean as to whether a specified course is in any selected group
-        */
-
-    }, {
-        key: "hasCourse",
-        value: function hasCourse(course) {
-            for (var group in this.courses) {
-                var thisgroup = this.courses[group];
-
-                if (thisgroup["courses"][course] != undefined) {
-                    return true;
-                }
-            }
-
-            // We didn't find a result
-            return false;
-        }
-
-        /*
-            Returns a boolean as to whether the specified class id has been selected in any group
-        */
-
-    }, {
-        key: "hasClass",
-        value: function hasClass(classid) {
-            for (var group in this.courses) {
-                var thisgroup = this.courses[group];
-
-                for (var course in thisgroup["courses"]) {
-                    for (var classv in thisgroup["courses"][course]["types"]) {
-                        if (thisgroup["courses"][course]["types"][classv] == classid) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        /*
-            Removes the specified class from the UI and generation
-        */
-
-    }, {
-        key: "removeClass",
-        value: function removeClass(classid) {
-            for (var group in this.courses) {
-                var thisgroup = this.courses[group];
-
-                for (var course in thisgroup["courses"]) {
-                    for (var classv in thisgroup["courses"][course]["types"]) {
-                        if (thisgroup["courses"][course]["types"][classv] == classid) {
-                            thisgroup["courses"][course]["types"][classv] = true;
-
-                            // update UI
-                            this.updateAccordion(course);
-
-                            // update the generation
-                            this.startGeneration();
-
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /*
-            Appends the given course to the current courselist HTML
-        */
-
-    }, {
-        key: "displayCourse",
-        value: function displayCourse(course, path, classid, animated) {
-            var self = this;
-
-            var html = "";
-            if (classid == undefined) {
-                html = $(this.generateCourseHTML(course, path));
-
-                html.find("label").click(function (event) {
-                    event.stopPropagation();
-                    self.bindButton(this, "course");
-                });
-
-                // bind remove button
-                html.find(".removeBtn").click(function (event) {
-                    event.stopPropagation();
-
-                    var coursecode = $(this).parent().attr("path");
-
-                    // remove the course in My Courses
-                    self.removeCourse(coursecode);
-
-                    // we want to update the general course remove button
-                    window.classList.updateRemovedCourse($(this).parent().attr("path"));
-                });
-            }
-
-            if (animated) {
-                html.hide().prependTo("#courseList").slideDown();
-            } else {
-                $("#courseList").prepend(html);
-            }
-        }
-
-        /*
-            Binds an accordion click
-        */
-
-    }, {
-        key: "bindButton",
-        value: function bindButton(button, type) {
-            var self = this;
-
-            // Onclick handler
-
-            // do we need to close the element?
-            if ($(button).attr("accordopen") == "true") {
-                // Close the element
-                $(button).attr("accordopen", "false");
-
-                $(button).parent().find("ul").slideUp(function () {
-                    $(this).empty();
-                });
-            } else {
-
-                // Open accordion
-                var thispath = $(button).attr("path");
-                $(button).attr("accordopen", "true");
-
-                var element = $(button).parent().find("ul");
-
-                // Populate depending on type
-                if (type == "course") {
-                    // Element to populate
-                    self.displayCourseDropDown(element, thispath);
-                }
-            }
-        }
-
-        /*
-            Generates the dropdown when clicking on a course in MyCourses
-        */
-
-    }, {
-        key: "displayCourseDropDown",
-        value: function displayCourseDropDown(element, coursecode) {
-            var self = this;
-
-            element.slideUp(function () {
-
-                var thiscourse = self.courses[self.activeGroup]["courses"][coursecode];
-
-                // iterate through each class type
-                for (var type in thiscourse["types"]) {
-                    var thistype = thiscourse["types"][type];
-                    if (thistype == true) {
-                        // They don't have a specific selection, we'll have to generate it
-                        var html = '<div class="accordiondesc" style="padding-left: 50px;" type="' + type + '">' + self.typeExpand(type) + '</div>';
-                        element.append(html);
-                    } else if (thistype != false) {
-                        // this is a specific class
-
-                        // find the obj of the class
-                        var data = { "classes": [] };
-
-                        for (var classv in thiscourse["obj"]["classes"]) {
-                            var thisclass = thiscourse["obj"]["classes"][classv];
-                            if (thisclass["id"] == thistype) {
-                                // we found the obj for this class
-                                data["classes"].push(thisclass);
-                                break;
-                            }
-                        }
-
-                        if (data["classes"].length > 0) {
-                            // generate the table
-                            var html = window.classList.generateClasses(data, element, false, false);
-
-                            // add the remove button
-                            var removebtn = $('<td><button class="btn btn-default" id="removeClassBtn" type="' + type + '" code="' + coursecode + '" myclassid="' + data["classes"][0]["id"] + '">×</button></td>');
-
-                            // bind class removing button
-                            removebtn.find("button").click(function (event) {
-                                event.stopPropagation();
-                                var type = $(this).attr("type");
-                                var coursecode = $(this).attr("code");
-
-                                // set to generic class
-                                self.courses[self.activeGroup]["courses"][coursecode]["types"][type] = true;
-
-                                // update the class list
-                                window.classList.updateRemovedClass($(this).attr("myclassid"));
-
-                                // update UI
-                                self.updateAccordion(coursecode);
-
-                                // update the generation
-                                self.startGeneration();
-                            });
-
-                            html.find("tr:first").append(removebtn);
-                            // <div class="removeBtn">×</div>
-
-                            // edit the css
-                            html.css("padding-left", "50px");
-                            html.css("padding-right", "15px");
-                        }
-                    }
-                }
-
-                element.slideDown();
-            });
-        }
-
-        /*
-            Initiates schedule generation given the current chosen classes
-        */
-
-    }, {
-        key: "startGeneration",
-        value: function startGeneration() {
-            // we want to terminate the previous generator if its still running
-            if (this.generator != false) this.generator.stop();
-
-            // generate the schedules
-            this.generator = new Generator(this.courses);
-
-            // save the current state to localStorage
-            this.saveState();
-        }
-
-        /*
-            Generates the course HTML
-        */
-
-    }, {
-        key: "generateCourseHTML",
-        value: function generateCourseHTML(course, path) {
-            var subject = path.split("\\");
-            var coursenum = subject[subject.length - 1];
-            var subject = subject[subject.length - 2];
-
-            var title = subject + " " + coursenum;
-
-            if (course["description"] != undefined && course["description"]["name"] != undefined) {
-                title += " - " + course["description"]["name"];
-            }
-
-            return this.generateAccordionHTML(title, subject + " " + coursenum);
-        }
-
-        /*
-            Generates the course remove button HTML
-        */
-
-    }, {
-        key: "generateRemoveButton",
-        value: function generateRemoveButton() {
-            return '<button class="btn btn-default">&times;</button>';
-        }
-
-        /*
-            Generates the general accordian structure HTML given a value
-        */
-
-    }, {
-        key: "generateAccordionHTML",
-        value: function generateAccordionHTML(value, path) {
-            return '<li class="has-children"><label path="' + path + '" accordopen="false">' + value + '<div class="removeBtn">×</div></label><ul></ul></li>';
-        }
-    }]);
-
-    return MyCourses;
-}();
-'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Preferences = function () {
-    function Preferences() {
-        _classCallCheck(this, Preferences);
-
-        this.instantiateSliders();
-        this.loadPreferences();
-
-        // Update the Uni, remove needless options on start
-        this.updatedUni();
-    }
-
-    _createClass(Preferences, [{
-        key: 'instantiateSliders',
-        value: function instantiateSliders() {
-            var self = this;
-
-            self.morningslider = $('#slider_morning').slider().on('slideStop', function () {
-                self.savePreferences();
-            });
-
-            self.nightslider = $('#slider_night').slider().on('slideStop', function () {
-                self.savePreferences();
-            });
-            self.consecutiveslider = $('#slider_consecutive').slider().on('slideStop', function () {
-                self.savePreferences();
-            });
-            self.rmpslider = $('#slider_rmp').slider().on('slideStop', function () {
-                self.savePreferences();
-            });
-
-            // Bind checkbox change event
-            $("#onlyOpenCheckbox").change(function () {
-                self.savePreferences();
-            });
-
-            // Bind Engineering student change event
-            $("#engineeringCheckbox").change(function () {
-                self.savePreferences(true);
-            });
-
-            // Initialize tooltip for engineering checkbox
-            $("#engineeringCheckboxTooltip").tooltip();
-        }
-
-        /*
-            Hides/shows different preferences based upon the current uni selected
-        */
-
-    }, {
-        key: 'updatedUni',
-        value: function updatedUni(newuni) {
-            $("#engineeringCheckbox").parent().hide();
-
-            if (newuni == "UAlberta") {
-                $("#engineeringCheckbox").parent().show();
-            }
-        }
-    }, {
-        key: 'getMorningValue',
-        value: function getMorningValue() {
-            return this.morningslider.slider('getValue');
-        }
-    }, {
-        key: 'getNightValue',
-        value: function getNightValue() {
-            return this.nightslider.slider('getValue');
-        }
-    }, {
-        key: 'getConsecutiveValue',
-        value: function getConsecutiveValue() {
-            return this.consecutiveslider.slider('getValue');
-        }
-    }, {
-        key: 'getRMPValue',
-        value: function getRMPValue() {
-            return this.rmpslider.slider('getValue');
-        }
-    }, {
-        key: 'getOnlyOpenValue',
-        value: function getOnlyOpenValue() {
-            return $("#onlyOpenCheckbox").is(":checked");
-        }
-    }, {
-        key: 'getEngineeringValue',
-        value: function getEngineeringValue() {
-            return $('#engineeringCheckbox').is(':checked');
-        }
-    }, {
-        key: 'setMorningValue',
-        value: function setMorningValue(value) {
-            if (value != null) this.morningslider.slider('setValue', parseInt(value));
-        }
-    }, {
-        key: 'setNightValue',
-        value: function setNightValue(value) {
-            if (value != null) this.nightslider.slider('setValue', parseInt(value));
-        }
-    }, {
-        key: 'setConsecutiveValue',
-        value: function setConsecutiveValue(value) {
-            if (value != null) this.consecutiveslider.slider('setValue', parseInt(value));
-        }
-    }, {
-        key: 'setRMPValue',
-        value: function setRMPValue(value) {
-            if (value != null) this.rmpslider.slider('setValue', parseInt(value));
-        }
-    }, {
-        key: 'setOnlyOpenValue',
-        value: function setOnlyOpenValue(value) {
-            if (value != null) $("#onlyOpenCheckbox").attr("checked", value === "true");
-        }
-    }, {
-        key: 'setEngineeringValue',
-        value: function setEngineeringValue(value) {
-            if (value != null) $("#engineeringCheckbox").attr("checked", value === "true");
-        }
-
-        /*
-            Saves the current slider values to localStorage
-        */
-
-    }, {
-        key: 'savePreferences',
-        value: function savePreferences(regenerate) {
-            localStorage.setItem('morningslider', this.getMorningValue());
-            localStorage.setItem('nightslider', this.getNightValue());
-            localStorage.setItem('consecutiveslider', this.getConsecutiveValue());
-            localStorage.setItem('rmpslider', this.getRMPValue());
-            localStorage.setItem('onlyOpenCheckbox', this.getOnlyOpenValue());
-            localStorage.setItem('engineeringCheckbox', this.getEngineeringValue());
-
-            // update any current schedule generation
-            if (window.mycourses.generator != false) {
-                if (regenerate != true) {
-                    // update the scores
-                    window.mycourses.generator.updateScores();
-                } else {
-                    window.mycourses.startGeneration();
-                }
-            }
-        }
-
-        /*
-            If there are saved preferences in localStorage, this loads them
-        */
-
-    }, {
-        key: 'loadPreferences',
-        value: function loadPreferences() {
-            this.setMorningValue(localStorage.getItem('morningslider'));
-            this.setNightValue(localStorage.getItem('nightslider'));
-            this.setConsecutiveValue(localStorage.getItem('consecutiveslider'));
-            this.setRMPValue(localStorage.getItem('rmpslider'));
-            this.setOnlyOpenValue(localStorage.getItem('onlyOpenCheckbox'));
-            this.setEngineeringValue(localStorage.getItem('engineeringCheckbox'));
-        }
-    }]);
-
-    return Preferences;
-}();
-"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 var Tutorial = function () {
     function Tutorial() {
         _classCallCheck(this, Tutorial);
@@ -5072,223 +5348,4 @@ var Tutorial = function () {
     }]);
 
     return Tutorial;
-}();
-"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Welcome = function () {
-    function Welcome() {
-        _classCallCheck(this, Welcome);
-
-        this.baseURL = "http://api.schedulestorm.com:5000/v1/";
-
-        // We want to get the list of Unis
-        this.getUnis();
-    }
-
-    /*
-        Obtains the University list from the API server 
-    */
-
-
-    _createClass(Welcome, [{
-        key: "getUnis",
-        value: function getUnis() {
-            // empty the parent
-            $("#uniModalList").find("#dataList").empty();
-
-            var thisobj = this;
-
-            $("#welcomeModal").modal({
-                backdrop: 'static',
-                keyboard: false
-            });
-
-            // Add the loading animation
-            var loading = new Loading($("#uniModalList").find("#dataList"), "Loading University Data...");
-
-            $.getJSON(this.baseURL + "unis", function (data) {
-                // remove the loading animation
-                loading.remove(function () {
-                    // Populate the dropdown in the top right
-                    thisobj.populateUniDropdown(data);
-
-                    window.unis = data;
-                    thisobj.unis = data;
-
-                    var localUni = localStorage.getItem("uni");
-                    var localTerm = localStorage.getItem("term");
-
-                    // Check to see if they have already selected a Uni and Term in localstorage
-                    if (thisobj.unis[localUni] != undefined && thisobj.unis[localUni]["terms"][localTerm] != undefined) {
-                        // Hide the modal
-                        $("#welcomeModal").modal('hide');
-
-                        // Set this uni
-                        thisobj.uni = localUni;
-
-                        // Populate the top right dropdown
-                        $("#MyUniversity").hide().html(thisobj.unis[thisobj.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
-
-                        // Load up the classes
-                        window.classList = new ClassList(localUni, localTerm);
-                        window.mycourses = new MyCourses(localUni, localTerm);
-                    } else {
-                        $("#uniModalList").find("#dataList").hide();
-
-                        // New user with nothing selected, show them welcome prompts
-                        thisobj.populateUnis(data);
-                    }
-                });
-            });
-        }
-
-        /*
-            Populates the top right university dropdown (when the modal isn't showing) and handles the click events
-        */
-
-    }, {
-        key: "populateUniDropdown",
-        value: function populateUniDropdown(data) {
-            var self = this;
-
-            // Get the dropdown element
-            var dropdown = $("#MyUniversity").parent().find('.dropdown-menu');
-
-            for (var uni in data) {
-                // Add this Uni to the dropdown
-
-                var uniobj = data[uni];
-
-                var uniHTML = '<li class="dropdown-items"><a uni="' + uni + '">' + uniobj["name"];
-
-                if (uniobj["scraping"] == true) {
-                    uniHTML += '<span class="label label-default" style="margin-left: 10px;">Updating</span>';
-                }
-
-                uniHTML += '</a></li>';
-
-                var html = $(uniHTML);
-
-                // Bind an onclick event to it
-                html.click(function () {
-
-                    // Get the selected uni code (UCalgary, etc...)
-                    self.uni = $(this).find("a").attr("uni");
-
-                    // Change the text of the element
-                    $("#MyUniversity").hide().html(self.unis[self.uni]["name"] + " <span class='caret'></span>").fadeIn('slow');
-
-                    // Make sure the modal is active
-                    $("#welcomeModal").modal({
-                        backdrop: 'static',
-                        keyboard: false
-                    });
-
-                    // Let the user choose what term they want
-                    self.displayTerms(self.uni);
-                });
-
-                // Append it
-                dropdown.append(html);
-            }
-        }
-
-        /*
-            Populates the modal with the Unis
-        */
-
-    }, {
-        key: "populateUnis",
-        value: function populateUnis(unis) {
-            var thisobj = this;
-
-            var list = $("#uniModalList").find("#dataList");
-            var wantedText = $("#uniModalList").find("#wantedData");
-
-            wantedText.text("Please choose your University:");
-
-            // Iterate through the unis and add the buttons
-            for (var uni in unis) {
-                var labelText = undefined;
-                if (this.unis[uni]["scraping"] == true) labelText = "Updating";
-
-                var button = $(this.createButton(unis[uni]["name"], uni, labelText));
-                button.click(function () {
-
-                    thisobj.uni = $(this).attr("value");
-
-                    $("#MyUniversity").hide().html($(this).text() + " <span class='caret'></span>").fadeIn('slow');
-
-                    $("#uniModalList").slideUp(function () {
-                        thisobj.displayTerms(thisobj.uni);
-                    });
-                });
-
-                list.append(button);
-            }
-
-            list.append("<br><a href='https://github.com/Step7750/ScheduleStorm#supported-universities'>Don't see your school? Tell Us!</a>");
-
-            list.slideDown();
-        }
-
-        /*
-            Displays the terms to the user
-        */
-
-    }, {
-        key: "displayTerms",
-        value: function displayTerms(uni) {
-            var thisobj = this; // Keep the reference
-
-            var list = $("#uniModalList").find("#dataList");
-            list.empty();
-            var wantedText = $("#uniModalList").find("#wantedData");
-
-            wantedText.text("Please choose your term:");
-
-            for (var term in this.unis[uni]["terms"]) {
-                var button = $(this.createButton(this.unis[uni]["terms"][term], term));
-
-                button.click(function () {
-
-                    thisobj.term = $(this).attr("value");
-
-                    window.classList = new ClassList(thisobj.uni, thisobj.term);
-                    window.mycourses = new MyCourses(thisobj.uni, thisobj.term);
-
-                    // reset the calendar
-                    window.calendar.resetCalendar();
-
-                    // hide the modal
-                    $("#welcomeModal").modal('hide');
-                });
-                list.append(button);
-            }
-
-            $("#uniModalList").slideDown();
-        }
-
-        /*
-            Returns the text for an HTML button given text, value and label text
-        */
-
-    }, {
-        key: "createButton",
-        value: function createButton(text, value, labelText) {
-            var html = '<button type="button" class="btn btn-default" value="' + value + '">' + text;
-
-            if (labelText != undefined) html += '<span class="label label-default" style="margin-left: 10px;">' + labelText + '</span>';
-
-            html += '</button>';
-
-            return html;
-        }
-    }]);
-
-    return Welcome;
 }();
