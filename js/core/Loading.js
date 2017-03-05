@@ -1,3 +1,5 @@
+"use strict";
+
 class Loading {
 	// Creates the loading animation at the specified element
 

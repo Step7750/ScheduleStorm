@@ -1,36 +1,32 @@
+"use strict";
+
 class Tutorial {
     constructor() {
-        var self = this;
-
         // check localstorage to see whether we should start the tut or not
-        if (localStorage.getItem("tour_end") == null && window.tourInProgress != true) {
-            // Set a global defining our progress
-            window.tourInProgress = true;
+        if (localStorage.getItem("tour_end") != null || window.tourInProgress == true) return;
 
-            // scroll to the top of the class data wraper
-            $("#classdatawraper").scrollTop(0);
+        // Set a global defining our progress
+        window.tourInProgress = true;
 
-            // Hide scrollbars
-            // This is for firefox since the pointer events can still move scrollbars 
-            // (which can raise events and cause the tour element to disappear)
-            $("#classdatawraper").css('overflow', 'hidden');
-            $("#courseList").css('overflow', 'hidden');
+        // scroll to the top of the class data wraper
+        $("#classdatawraper").scrollTop(0);
 
-            // Repopulate the accordion to the default view
-            classList.repopulateAccordion();
+        // Hide scrollbars
+        // This is for firefox since the pointer events can still move scrollbars
+        // (which can raise events and cause the tour element to disappear)
+        $("#classdatawraper").css('overflow', 'hidden');
+        $("#courseList").css('overflow', 'hidden');
 
-            setTimeout(function () {
-                self.openAccordion();
-            }, 500);
-        }
+        // Repopulate the accordion to the default view
+        classList.repopulateAccordion();
+
+        setTimeout(() => this.openAccordion(), 500);
     }
 
     /*
         Open the first top level for every level
     */
     openAccordion() {
-        this.openedAccordion = true;
-
         this.openChildRow($('#classdatawraper').children(0));
     }
 
@@ -38,33 +34,23 @@ class Tutorial {
         Opens the first row in the child of the specified element
     */
     openChildRow(element) {
-        var self = this;
-
         // Get the row
-        var row = element.parent().find('.has-children').eq(0);
+        let row = element.parent().find('.has-children').eq(0);
 
         if (row.length > 0) {
-
             // Ensure the row isn't open already, if not, click it
             if (row.find("ul").length == 1 && row.find(".accordiontableparent").length == 0) row.find('label').click();
 
             // Call the next row
-            setTimeout(function () {
-                self.openChildRow(row.find('label').eq(0));
-            }, 50);
+            setTimeout(() => this.openChildRow(row.find('label').eq(0)), 50);
         }
-        else {
-            // start up the tour
-            self.createIntro();
-        }
+        else this.createIntro();
     }
 
     /*
         Initialize and start the tour
     */
     createIntro() {
-        var self = this;
-
         window.tour = new Tour({
             steps: [
                 {
@@ -170,7 +156,7 @@ class Tutorial {
             ],
             backdrop: true,
             orphan: true,
-            onEnd: function (tour) {
+            onEnd: () => {
                 window.tourInProgress = false;
 
                 // Show the scrollbars again
@@ -180,14 +166,14 @@ class Tutorial {
                 // repopulate the accordion with the default view
                 classList.repopulateAccordion();
             },
-            onShown: function(tour) {
+            onShown: (tour) => {
                 // If shown, disable pointer events
-                var step = tour._options.steps[tour._current];
+                let step = tour._options.steps[tour._current];
                 $(step.element).css('pointerEvents', 'none');
             },
-            onHidden: function(tour) {
+            onHidden: (tour) => {
                 // On hide, enable pointer events
-                var step = tour._options.steps[tour._current];
+                let step = tour._options.steps[tour._current];
                 $(step.element).css('pointerEvents', '');
             }
         });

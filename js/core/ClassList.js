@@ -529,8 +529,6 @@ class ClassList {
 
                 teachersHTML += ClassList.abbreviateName(thisTeacher);
 
-                console.log(ClassList.abbreviateName(thisTeacher));
-
                 if (this.rmpdata[thisTeacher]) {
                     teachersHTML += " " + this.generateRMPLink(this.rmpdata[thisTeacher], thisTeacher);
                 }
