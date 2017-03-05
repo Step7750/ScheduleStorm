@@ -1,3 +1,5 @@
+"use strict";
+
 class Calendar {
     // Handles the UI construction of the calendar
     constructor() {
