@@ -460,11 +460,17 @@ class Generator {
                         // Check if there is any combination that matches up
                         for (var firstgroup in class1["group"]) {
                             for (var secondgroup in class2["group"]) {
-                                if (class1["group"][firstgroup] == class2["group"][secondgroup]) {
+                            	if (this.uni == "UCalgary" && (class1["group"][firstgroup] == 9999 || class2["group"][secondgroup] == 9999)) {
+                            		// one of the classes is compatible with every class, so they are compatible
+                            		isPossible = true;
+                            		break;
+                            	}
+                                else if (class1["group"][firstgroup] == class2["group"][secondgroup]) {
                                     isPossible = true;
                                     break;
                                 }
                             }
+                            if (isPossible) break;
                         }
 
                         // Check if there is a possible combo, if not, there is a time conflict
