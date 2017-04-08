@@ -500,6 +500,10 @@ class Generator {
                                 // they selected all of or they wanted more courses than chosen
                                 type = coursekeys.length;
                             }
+                            else if (type == -1) {
+                                // None of, skip
+                                continue;
+                            }
 
                             // convert the courses to an array
                             var thesecourses = [];

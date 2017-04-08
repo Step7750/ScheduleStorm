@@ -2638,6 +2638,7 @@ var MyCourses = function () {
         window.preferences.updatedUni(uni);
 
         this.numConvert = {
+            "-1": "None",
             0: "All",
             1: "One",
             2: "Two",
@@ -2795,7 +2796,7 @@ var MyCourses = function () {
                 // find the group id
                 var groupid = $(this).parent().parent().attr("groupid");
 
-                if (grouptype == -1) {
+                if (grouptype == "remove") {
                     // wants to remove this group
                     self.removeGroup(groupid);
                 } else {
@@ -2904,13 +2905,38 @@ var MyCourses = function () {
         value: function generatePillDropdown(noremove) {
             var html = '';
 
-            for (var x in this.numConvert) {
-                html += '<li grouptype="' + x + '"><a>' + this.numConvert[x] + ' of</a></li>';
+            // Add 'all of' to the top
+            html += '<li grouptype="0"><a>' + this.numConvert[0] + ' of</a></li>';
+
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = Object.keys(this.numConvert).sort()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var x = _step.value;
+
+                    if (x == 0) continue;
+                    html += '<li grouptype="' + x + '"><a>' + this.numConvert[x] + ' of</a></li>';
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
             }
 
             if (noremove != true) {
                 html += '<li role="separator" class="divider"></li>';
-                html += '<li grouptype="-1"><a>Remove</a></li>';
+                html += '<li grouptype="remove"><a>Remove</a></li>';
             }
 
             return html;
@@ -4448,6 +4474,9 @@ var Generator = function () {
                                 if (type == 0 || type > coursekeys.length) {
                                     // they selected all of or they wanted more courses than chosen
                                     type = coursekeys.length;
+                                } else if (type == -1) {
+                                    // None of, skip
+                                    continue;
                                 }
 
                                 // convert the courses to an array

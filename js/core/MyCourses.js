@@ -13,6 +13,7 @@ class MyCourses {
         window.preferences.updatedUni(uni);
 
         this.numConvert = {
+            "-1": "None",
             0: "All",
             1: "One",
             2: "Two",
@@ -158,7 +159,7 @@ class MyCourses {
             // find the group id
             var groupid = $(this).parent().parent().attr("groupid");
 
-            if (grouptype == -1) {
+            if (grouptype == "remove") {
                 // wants to remove this group
                 self.removeGroup(groupid);
             }
@@ -253,13 +254,17 @@ class MyCourses {
     generatePillDropdown(noremove) {
         var html = '';
 
-        for (var x in this.numConvert) {
+        // Add 'all of' to the top
+        html += '<li grouptype="0"><a>' + this.numConvert[0] + ' of</a></li>';
+
+        for (var x of Object.keys(this.numConvert).sort()) {
+            if (x == 0) continue;
             html += '<li grouptype="' + x + '"><a>' + this.numConvert[x] + ' of</a></li>';
         }
 
         if (noremove != true) {
             html += '<li role="separator" class="divider"></li>';
-            html += '<li grouptype="-1"><a>Remove</a></li>';
+            html += '<li grouptype="remove"><a>Remove</a></li>';
         }
 
         return html;
