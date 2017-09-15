@@ -532,7 +532,7 @@ class ClassList {
 
                 // If this student is at U of A and they aren't an engineer, don't display engineering classes
                 if (self.uni === 'UAlberta' && Number(self.term) % 10 === 0 && engineerFlag === false) {
-                    if (thisclass['section'][1].match(/[a-z]/i) === null){
+                    if (thisclass['section'][1].match(/^[eE][a-zA-Z]/i) === null){
                         if (thisclass["type"] == type) {
                             // add to the ordered classes
                             orderedClasses.push(thisclass);

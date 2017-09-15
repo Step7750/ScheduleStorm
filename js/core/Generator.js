@@ -62,7 +62,7 @@ class Generator {
                 for (var classv in thiscourse["obj"]["classes"]) {
                     var thisclass = thiscourse["obj"]["classes"][classv];
 
-                    if (thisclass['section'][1].match(/[a-z]/i) === null){
+                    if (thisclass['section'][1].match(/^[eE][a-zA-Z]/i) === null){
                         nonEnggClasses.push(thisclass);
                     }
                 }
